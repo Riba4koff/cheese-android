@@ -2,12 +2,8 @@ package ru.antares.cheese_android
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -19,6 +15,8 @@ import ru.antares.cheese_android.data.remote.services.auth.dto.DeviceDTO
 import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
 import ru.antares.cheese_android.data.remote.services.auth.response.MakeCallResponse
 import ru.antares.cheese_android.data.remote.services.auth.response.SendCodeResponse
+import ru.antares.cheese_android.data.remote.services.profile.response.Attachment
+import ru.antares.cheese_android.data.remote.services.profile.response.AttachmentAdapter
 
 /**
  * This class tests the AuthorizationService interface,
@@ -41,17 +39,20 @@ class AuthorizationServiceUnitTest {
 
     @Test
     fun testMakeCall() = runBlocking {
-        val expectedResponse = MakeCallResponse(false)
+        val firstExpectedResponse = MakeCallResponse(false)
         mockWebServer.enqueue(
             MockResponse().setBody(
-                Gson().toJson(expectedResponse)
+                Gson().toJson(firstExpectedResponse)
             )
         )
 
         val phone = "+79425223123"
         val response = authService.makeCall(phone)
 
-        assertEquals(expectedResponse, response)
+        if (response.data)
+            assertEquals(firstExpectedResponse, response)
+        else
+            assertEquals(firstExpectedResponse, response)
     }
 
     @Test
@@ -79,7 +80,9 @@ class AuthorizationServiceUnitTest {
     }
 
     private fun createTestAuthService(): AuthorizationService {
-        val gson = GsonBuilder().create()
+        val gson = GsonBuilder()
+            .registerTypeAdapter(Attachment::class.java, AttachmentAdapter())
+            .create()
 
         val retrofit = Retrofit.Builder()
             .baseUrl(mockWebServer.url("https://mobile-backend.cheese.asg-demo.ru/api/v1/"))

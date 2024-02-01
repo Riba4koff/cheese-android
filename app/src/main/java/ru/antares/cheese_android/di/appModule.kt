@@ -14,6 +14,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
+import ru.antares.cheese_android.data.remote.services.profile.ProfileService
 
 private const val BASE_URL = "https://mobile-backend.cheese.asg-demo.ru/api/v1/"
 
@@ -21,6 +22,7 @@ val appModule = module {
     factory { provideRetrofit() }
 
     single { provideAuthorizationService(get()) }
+    single { provideProfileService(get()) }
 }
 
 fun provideRetrofit(): Retrofit {
@@ -34,4 +36,8 @@ fun provideRetrofit(): Retrofit {
 
 fun provideAuthorizationService(retrofit: Retrofit): AuthorizationService {
     return retrofit.create(AuthorizationService::class.java)
+}
+
+fun provideProfileService(retrofit: Retrofit): ProfileService {
+    return retrofit.create(ProfileService::class.java)
 }
