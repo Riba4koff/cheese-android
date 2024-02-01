@@ -12,12 +12,12 @@ import ru.antares.cheese_android.data.remote.services.profile.response.ProfileRe
 interface ProfileService {
     @GET("auth/profile")
     suspend fun get(
-        @Header("Authorization") bearerToken: String
+        @Header("Authorization") authorization: String
     ): Response<ProfileResponse>
 
     @PUT("auth/profile")
     suspend fun update(
-        @Header("Authorization") bearerToken: String,
+        @Header("Authorization") authorization: String,
         @Body request: UpdateProfileRequest
     ): Response<ProfileResponse>
 

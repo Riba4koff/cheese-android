@@ -13,6 +13,8 @@ import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
+import ru.antares.cheese_android.data.remote.services.addresses.AddressesService
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
 import ru.antares.cheese_android.data.remote.services.profile.ProfileService
 
@@ -23,6 +25,7 @@ val appModule = module {
 
     single { provideAuthorizationService(get()) }
     single { provideProfileService(get()) }
+    single { provideAddressesService(get()) }
 }
 
 fun provideRetrofit(): Retrofit {
@@ -40,4 +43,8 @@ fun provideAuthorizationService(retrofit: Retrofit): AuthorizationService {
 
 fun provideProfileService(retrofit: Retrofit): ProfileService {
     return retrofit.create(ProfileService::class.java)
+}
+
+fun provideAddressesService(retrofit: Retrofit): AddressesService {
+    return retrofit.create(AddressesService::class.java)
 }

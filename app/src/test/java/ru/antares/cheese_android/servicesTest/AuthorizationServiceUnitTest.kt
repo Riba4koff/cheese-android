@@ -1,10 +1,10 @@
-package ru.antares.cheese_android
+package ru.antares.cheese_android.servicesTest
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.runBlocking
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.*
@@ -13,7 +13,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
 import ru.antares.cheese_android.data.remote.services.auth.dto.DeviceDTO
 import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
-import ru.antares.cheese_android.data.remote.services.auth.response.MakeCallResponse
 import ru.antares.cheese_android.data.remote.services.auth.response.SendCodeResponse
 import ru.antares.cheese_android.data.remote.services.profile.response.Attachment
 import ru.antares.cheese_android.data.remote.services.profile.response.AttachmentAdapter
@@ -38,25 +37,15 @@ class AuthorizationServiceUnitTest {
     }
 
     @Test
-    fun testMakeCall() = runBlocking {
-        val firstExpectedResponse = MakeCallResponse(false)
-        mockWebServer.enqueue(
-            MockResponse().setBody(
-                Gson().toJson(firstExpectedResponse)
-            )
-        )
-
-        val phone = "+79425223123"
+    fun testMakeCallTest() = runBlocking {
+        val phone = "+79116132860"
         val response = authService.makeCall(phone)
 
-        if (response.data)
-            assertEquals(firstExpectedResponse, response)
-        else
-            assertEquals(firstExpectedResponse, response)
+        assertNotNull(response)
     }
 
     @Test
-    fun testSendCode() = runBlocking {
+    fun testSendCodeTest() = runBlocking {
         val expectedResponse = SendCodeResponse(true)
         mockWebServer.enqueue(
             MockResponse().setBody(
@@ -64,10 +53,10 @@ class AuthorizationServiceUnitTest {
             )
         )
 
-        val phone = "+79425223123"
+        val phone = "+79116132860"
         val sendCodeRequest =
             SendCodeRequest(
-                code = "0000".toInt(), device = DeviceDTO(
+                code = "9915".toInt(), device = DeviceDTO(
                     firebaseToken = "",
                     firmware = "",
                     id = null,

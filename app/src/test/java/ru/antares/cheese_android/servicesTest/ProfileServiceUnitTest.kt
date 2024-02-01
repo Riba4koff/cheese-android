@@ -1,4 +1,4 @@
-package ru.antares.cheese_android
+package ru.antares.cheese_android.servicesTest
 
 import com.google.gson.*
 import junit.framework.TestCase.assertEquals
@@ -14,11 +14,10 @@ import ru.antares.cheese_android.data.remote.services.profile.request.UpdateProf
 import ru.antares.cheese_android.data.remote.services.profile.response.Attachment
 import ru.antares.cheese_android.data.remote.services.profile.response.AttachmentAdapter
 import ru.antares.cheese_android.data.remote.services.profile.response.ProfileResponse
-import java.util.UUID
 
 
 /**
- *  Class for testing the ProfileService interface
+ *  Class for testing the functions of the ProfileService interface
  * */
 class ProfileServiceUnitTest {
     private lateinit var mockWebServer: MockWebServer
@@ -63,7 +62,7 @@ class ProfileServiceUnitTest {
             firstname = updatingName,
             patronymic = updatingPatronymic
         )
-        val response = runBlocking { profileService.update(bearerToken = "Bearer $token", request = request) }
+        val response = runBlocking { profileService.update(authorization = "Bearer $token", request = request) }
 
         assertEquals(expectedResponse, response)
     }
@@ -89,7 +88,7 @@ class ProfileServiceUnitTest {
         mockWebServer.enqueue(MockResponse().setBody(Gson().toJson(expectedResponse)))
 
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBdWRpZW5jZSIsImlzcyI6IkNoZWVzZU1vYmlsZSIsIlNFU1NJT05fSUQiOiJlMDM2NDM2MS1lM2ZlLTQzNjItOGZjMi1iODk1Zjc0MWJiYjkifQ.r9jpTlSFEo5IVlBiEnrrpRk4eCQAJ5chgfQGsHlMSl8"
-        val response = runBlocking { profileService.get("Bearer $token") }
+        val response = runBlocking { profileService.get(authorization = "Bearer $token") }
 
         assertEquals(expectedResponse, response)
     }
