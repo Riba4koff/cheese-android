@@ -2,7 +2,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
-    kotlin("plugin.serialization") version "1.4.21"
 }
 
 android {
@@ -76,15 +75,15 @@ dependencies {
     implementation("com.github.jump-sdk:jetpack_compose_country_code_picker_emoji:2.2.6")
     // endregion
 
-    // region - Retrofit
+    // region - Retrofit2
     val retrofitVersion = "2.9.0"
-
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
     // endregion
 
     // region - kotlinx.serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     // endregion
 
     // region - Dependency Injection (Koin)
@@ -92,5 +91,21 @@ dependencies {
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-androidx-compose:3.5.0")
     implementation("io.insert-koin:koin-androidx-compose-navigation:3.5.0")
+    // endregion
+
+    // region - OkHttp3
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    // endregion
+
+    // region - MockWebServer
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.9.0")
+    // endregion
+
+    // region - Gson
+    val gsonVersion = "2.10"
+    val gsonConverterVersion = "2.9.0"
+
+    implementation ("com.google.code.gson:gson:$gsonVersion")
+    implementation ("com.squareup.retrofit2:converter-gson:$gsonConverterVersion")
     // endregion
 }
