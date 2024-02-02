@@ -68,6 +68,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     // endregion
 
     // region - Country code picker
@@ -90,7 +91,6 @@ dependencies {
     implementation("io.insert-koin:koin-core:3.5.0")
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-androidx-compose:3.5.0")
-    implementation("io.insert-koin:koin-androidx-compose-navigation:3.5.0")
     // endregion
 
     // region - OkHttp3
@@ -101,11 +101,21 @@ dependencies {
     testImplementation("com.squareup.okhttp3:mockwebserver:4.9.0")
     // endregion
 
+    // region - DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    // endregion
+
     // region - Gson
     val gsonVersion = "2.10"
     val gsonConverterVersion = "2.9.0"
 
     implementation ("com.google.code.gson:gson:$gsonVersion")
     implementation ("com.squareup.retrofit2:converter-gson:$gsonConverterVersion")
+    // endregion
+
+    // region - navigation
+    val nav_version = "2.5.3"
+    //noinspection GradleDependency
+    implementation("androidx.navigation:navigation-compose:$nav_version")
     // endregion
 }

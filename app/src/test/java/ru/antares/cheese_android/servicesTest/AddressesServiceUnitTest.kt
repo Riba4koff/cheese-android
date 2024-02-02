@@ -175,7 +175,7 @@ class AddressesServiceUnitTest {
         val gson = GsonBuilder().create()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl(mockWebServer.url("https://mobile-backend.cheese.asg-demo.ru/api/v1//"))
+            .baseUrl(mockWebServer.url("https://mobile-backend.cheese.asg-demo.ru/api/v1/"))
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 

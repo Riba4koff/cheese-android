@@ -6,6 +6,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level.*
 import ru.antares.cheese_android.di.appModule
+import ru.antares.cheese_android.di.viewModelsModule
 
 class App: Application() {
     override fun onCreate() {

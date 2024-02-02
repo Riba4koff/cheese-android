@@ -23,7 +23,9 @@ data class Paddings(
 data class Colors(
     val accent: Color = Color.Unspecified,
     val black: Color = Color.Unspecified,
-    val white: Color = Color.Unspecified
+    val white: Color = Color.Unspecified,
+    val primary: Color = Color.Unspecified,
+    val bottomBarColor: Color = Color.Unspecified
 )
 
 val LocalColors =
@@ -43,9 +45,11 @@ fun CustomAndroidCheeseTheme(
     )
 
     val colors = Colors(
-        accent = Color.Yellow,
+        accent = Color(0xFFFFDB87),
         black = Color.Black,
-        white = Color.White
+        white = Color.White,
+        primary = Color(0xFFFFFFFF),
+        bottomBarColor = Color.White
     )
 
     val view = LocalView.current
@@ -63,7 +67,7 @@ fun CustomAndroidCheeseTheme(
     )
 }
 
-object CustomCheeseAndroidTheme {
+object CheeseTheme {
     internal val colors: Colors
         @Composable
         get() = LocalColors.current
