@@ -1,7 +1,5 @@
 package ru.antares.cheese_android.presentation.view.authorization.confirm_code
 
-import android.util.Log
-import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
@@ -16,12 +14,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.local.datastore.SecurityTokenService
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
+import ru.antares.cheese_android.data.remote.services.auth.response.MakeCallResponse
 import ru.antares.cheese_android.data.repository.auth.models.DeviceModel
 import ru.antares.cheese_android.data.repository.auth.models.SessionModel
 import ru.antares.cheese_android.data.repository.auth.responses.SendCodeResponse
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 import ru.antares.cheese_android.presentation.view.authorization.input_phone.ErrorState
-import java.util.regex.Pattern
 
 class ConfirmCodeViewModel(
     private val phone: String,
@@ -72,21 +70,56 @@ class ConfirmCodeViewModel(
     }
 
     private fun makeCallAgain() = viewModelScope.launch {
-        startTimer()
-    }
+        setLoading(true)
 
-    private fun sendCode() = viewModelScope.launch {
-        _mutableStateFlow.update { state -> state.copy(isLoading = true) }
+        val response = mockMakeCallAgain()
 
-        val response = mockNetworkCall()
-
-        delay(1000L)
+        delay(1000)
 
         when (response) {
             is NetworkResponse.Error -> {
                 _mutableStateFlow.update { state ->
                     state.copy(
-                        error = ErrorState(isError = true, message = response.message),
+                        error = ErrorState(
+                            isError = true,
+                            message = response.message
+                        )
+                    )
+                }
+            }
+
+            is NetworkResponse.Success -> {
+                val successCall = response.data.data
+
+                if (successCall) {
+                    startTimer()
+                } else _mutableStateFlow.update { state ->
+                    state.copy(
+                        error = ErrorState(
+                            isError = true,
+                            message = "Не удалось совершить звонок."
+                        )
+                    )
+                }
+            }
+        }
+
+        setLoading(false)
+    }
+
+    private fun sendCode() = viewModelScope.launch {
+        setLoading(true)
+
+        delay(1000L)
+
+        when (val response = mockSendCodeCall()) {
+            is NetworkResponse.Error -> {
+                _mutableStateFlow.update { state ->
+                    state.copy(
+                        error = ErrorState(
+                            isError = true,
+                            message = response.message
+                        ),
                         codeIsWrong = true
                     )
                 }
@@ -98,11 +131,11 @@ class ConfirmCodeViewModel(
             }
         }
 
-        _mutableStateFlow.update { state -> state.copy(isLoading = false) }
+        setLoading(false)
     }
 
     private fun startTimer() = viewModelScope.launch {
-        _mutableStateFlow.update { state -> state.copy(timer = 60) }
+        _mutableStateFlow.update { state -> state.copy(timer = 5) }
         do {
             delay(1000L)
 
@@ -115,8 +148,8 @@ class ConfirmCodeViewModel(
         } while (stateFlow.value.timer >= 0)
     }
 
-    private fun mockNetworkCall(): NetworkResponse<SendCodeResponse> {
-        return NetworkResponse.Success(
+    private fun mockSendCodeCall(): NetworkResponse<SendCodeResponse> {
+        return if (stateFlow.value.code == "6428") NetworkResponse.Success(
             data = SendCodeResponse(
                 token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBdWRpZW5jZSIsImlzcyI6IkNoZWVzZU1vYmlsZSIsIlNFU1NJT05fSUQiOiI0NjJlOWZiYS1iOTJhLTQ4NjktYmIwMy1iOTZjNmNlN2Q2NzcifQ.xelhbKS7HsshMyw9S8Sz1UerPv47xiNHcyqzTN4eb0k",
                 sessionModel = SessionModel(
@@ -135,6 +168,14 @@ class ConfirmCodeViewModel(
                     opened = false
                 )
             )
-        )
+        ) else NetworkResponse.Error("Неправильный код подтверждения")
+    }
+
+    private fun mockMakeCallAgain(): NetworkResponse<MakeCallResponse> {
+        return NetworkResponse.Success(data = MakeCallResponse(false))
+    }
+
+    private fun setLoading(value: Boolean) {
+        _mutableStateFlow.update { state -> state.copy(isLoading = value) }
     }
 }

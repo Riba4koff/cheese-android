@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
+import ru.antares.cheese_android.data.remote.services.auth.response.MakeCallResponse
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 
 class InputPhoneViewModel(
@@ -72,7 +73,7 @@ class InputPhoneViewModel(
                 }
 
                 is NetworkResponse.Success -> {
-                    val successMakingCall = response.data
+                    val successMakingCall = response.data.data
                     if (successMakingCall) {
                         _navigationActions.send(NavigationEvent.NavigateToConfirmCode(stateFlow.value.phone))
                     } else _mutableStateFlow.update { state ->
@@ -90,8 +91,8 @@ class InputPhoneViewModel(
         return !phoneNumber.matches(phoneNumberRegex)
     }
 
-    private fun mockServerResponse(): NetworkResponse<Boolean> {
+    private fun mockServerResponse(): NetworkResponse<MakeCallResponse> {
         //return NetworkResponse.Error("Сервер не отвечает")
-        return NetworkResponse.Success(true)
+        return NetworkResponse.Success(MakeCallResponse(true))
     }
 }
