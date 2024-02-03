@@ -4,8 +4,11 @@ import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import org.koin.core.logger.Level.*
-import ru.antares.cheese_android.di.appModule
+import org.koin.core.logger.Level.ERROR
+import org.koin.core.logger.Level.INFO
+import org.koin.core.logger.Level.WARNING
+import ru.antares.cheese_android.di.dataModule
+import ru.antares.cheese_android.di.netModule
 import ru.antares.cheese_android.di.viewModelsModule
 
 class App: Application() {
@@ -16,7 +19,7 @@ class App: Application() {
             androidLogger(INFO)
             androidLogger(WARNING)
             androidLogger(ERROR)
-            modules(appModule)
+            modules(netModule, dataModule, viewModelsModule)
         }
     }
 }

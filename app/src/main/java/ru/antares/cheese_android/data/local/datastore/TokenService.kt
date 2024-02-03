@@ -24,6 +24,17 @@ class TokenService(context: Context) : SecurityTokenService {
 
     private val dataStore = context.appDataStore
 
+    override suspend fun getToken(): String = dataStore.data.catch { exception ->
+        if (exception is IOException) {
+            Log.d(TAG, "Can't read preferences: ${exception.localizedMessage}")
+            emit(emptyPreferences())
+        } else {
+            throw exception
+        }
+    }.map { preferences ->
+        preferences[BearerToken] ?: ""
+    }.first()
+
     override val authorized: Flow<AuthorizedState> = dataStore.data.map { preferences ->
         preferences[BearerToken].let { token ->
             if (token.isNullOrEmpty()) AuthorizedState.NOT_AUTHORIZED

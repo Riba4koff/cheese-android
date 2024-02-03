@@ -5,12 +5,13 @@ interface NavigationGraph {
 }
 
 sealed class Screen(
-    vararg parameters: String,
-    val route: String = buildString {
-        append(this)
-        parameters.forEach { parameter -> append("/{$parameter}") }
-    },
+    val route: String,
+    vararg parameters: String
 ) {
+    val url: String = buildString {
+        append(route)
+        parameters.forEach { parameter -> append("/{$parameter}") }
+    }
 
     data object SplashScreen : Screen(route = "SplashScreen")
 
@@ -18,41 +19,45 @@ sealed class Screen(
         override val route: String = "AUTH_NAVIGATION_GRAPH"
 
         data object InputPhone : Screen(route = "SignInScreen")
-        data object ConfirmCode : Screen("phone", route = "ConfirmCode")
+
+        /**
+         *  route: ConfirmCodeScreen/{phone}
+         * */
+        data object ConfirmCode : Screen(route = "ConfirmCodeScreen", "phone")
     }
 
     object HomeNavigationGraph : NavigationGraph {
         override val route: String = "HOME_NAVIGATION_GRAPH"
 
-        data object Home: Screen(route = "HomeScreen")
+        data object Home : Screen(route = "HomeScreen")
         // Screens ...
     }
 
     object CatalogNavigationGraph : NavigationGraph {
         override val route: String = "CATALOG_NAVIGATION_GRAPH"
 
-        data object Catalog: Screen(route = "CatalogScreen")
+        data object Catalog : Screen(route = "CatalogScreen")
         // Screens ...
     }
 
     object CommunityNavigationGraph : NavigationGraph {
         override val route: String = "COMMUNITY_NAVIGATION_GRAPH"
 
-        data object Community: Screen(route = "CommunityScreen")
+        data object Community : Screen(route = "CommunityScreen")
         // Screens ...
     }
 
     object CartNavigationGraph : NavigationGraph {
         override val route: String = "CART_NAVIGATION_GRAPH"
 
-        data object Cart: Screen(route = "CartScreen")
+        data object Cart : Screen(route = "CartScreen")
         // Screens ...
     }
 
     object ProfileNavigationGraph : NavigationGraph {
         override val route: String = "PROFILE_NAVIGATION_GRAPH"
 
-        data object Profile: Screen(route = "ProfileScreen")
+        data object Profile : Screen(route = "ProfileScreen")
         // Screens ...
     }
 }

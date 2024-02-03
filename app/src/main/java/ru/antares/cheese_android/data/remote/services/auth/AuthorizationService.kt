@@ -1,22 +1,26 @@
 package ru.antares.cheese_android.data.remote.services.auth
 
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
 import ru.antares.cheese_android.data.remote.services.auth.response.MakeCallResponse
-import ru.antares.cheese_android.data.remote.services.auth.response.SendCodeResponse
+import ru.antares.cheese_android.data.repository.auth.responses.SendCodeResponse
 
 interface AuthorizationService {
     @GET("auth/phone/{phone}/call")
     suspend fun makeCall(
         @Path("phone") phone: String
-    ): MakeCallResponse
+    ): Response<MakeCallResponse>
 
     @POST("auth/phone/{phone}/call")
     suspend fun sendCode(
         @Path("phone") phone: String,
         @Body request: SendCodeRequest
-    ): SendCodeResponse
+    ): Response<SendCodeResponse>
+
+    @POST("auth/profile/logout")
+    suspend fun logout(): Response<Boolean?>
 }

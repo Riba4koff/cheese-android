@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Месье Рокфор - Сырный бутик</string>
+    <string name="continue_title">Продолжить</string>
+    <string name="error_occured">Произошла ошибка!</string>
+    <string name="phone">Телефон</string>
+    <string name="wrong_confirm_code">Неправильный код потверждения</string>
+    <string name="input_last_fourth_numbers_of_phone">Введите последние четыре цифры  входящего номера</string>
+    <string name="make_call_again">Повторный звонок</string>
 </resources>

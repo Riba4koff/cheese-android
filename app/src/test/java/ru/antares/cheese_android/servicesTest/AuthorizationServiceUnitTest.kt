@@ -17,6 +17,8 @@ import ru.antares.cheese_android.data.remote.services.auth.response.SendCodeResp
 import ru.antares.cheese_android.data.remote.services.profile.response.Attachment
 import ru.antares.cheese_android.data.remote.services.profile.response.AttachmentAdapter
 
+//TODO Добавить тестовый контекст для TokenService
+
 /**
  * This class tests the AuthorizationService interface,
  * which is used to work with user authorization

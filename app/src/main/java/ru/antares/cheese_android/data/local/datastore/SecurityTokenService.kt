@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 interface SecurityTokenService {
     val authorized: Flow<AuthorizedState>
 
+    suspend fun getToken(): String
     suspend fun authorize(token: String)
     suspend fun logout()
 }
