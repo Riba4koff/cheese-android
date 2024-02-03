@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.remote
+package ru.antares.cheese_android.data.remote.models
 
 data class Pagination<T>(
     val result: List<T>,

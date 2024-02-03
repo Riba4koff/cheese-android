@@ -2,6 +2,7 @@
 
 package ru.antares.cheese_android.presentation.navigation.bottomBar
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -26,17 +27,18 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.antares.cheese_android.presentation.navigation.util.Screen
-import ru.antares.cheese_android.ui.theme.CheeseAndroidTheme
+import ru.antares.cheese_android.ui.theme.AndroidCheeseTheme
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewBottomBar() {
-    CheeseAndroidTheme {
+    AndroidCheeseTheme {
         BottomBar(navController = rememberNavController(), countInCart = 1)
     }
 }
@@ -64,23 +66,25 @@ fun BottomBar(
                 )
 
                 BottomBarButtonBody(
-                    modifier = Modifier.pointerInput(Unit) {
-                        detectTapGestures(onTap = {
-                            navController.navigate(destination.route) {
-                                navController.graph.startDestinationRoute?.let { route ->
-                                    popUpTo(route) {
-                                        saveState = true
+                    modifier = Modifier
+                        .pointerInput(Unit) {
+                            detectTapGestures(onTap = {
+                                navController.navigate(destination.route) {
+                                    navController.graph.startDestinationRoute?.let { route ->
+                                        popUpTo(route) {
+                                            saveState = true
+                                        }
                                     }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }, onPress = {
-                            onPressedChange(true)
-                            tryAwaitRelease()
-                            onPressedChange(false)
-                        })
-                    }.scale(scale)
+                            }, onPress = {
+                                onPressedChange(true)
+                                tryAwaitRelease()
+                                onPressedChange(false)
+                            })
+                        }
+                        .scale(scale)
                 ) {
                     SelectedPageBackground(
                         destination = destination,
@@ -101,15 +105,16 @@ private fun SelectedPageBackground(
     destination: BottomBarDestinations,
     currentRoute: String?,
 ) {
+    val animateBackgroundOfBottomBarButtonBackground by animateColorAsState(
+        targetValue = if (destination.route == currentRoute) CheeseTheme.colors.accent
+        else CheeseTheme.colors.primary, label = "Animation of changing  of background bottom bar button"
+    )
     Box(
         modifier = Modifier
             .width(54.dp)
             .clip(RoundedCornerShape(8.dp))
             .height(44.dp)
-            .background(
-                if (destination.route == currentRoute) CheeseTheme.colors.accent
-                else CheeseTheme.colors.primary
-            )
+            .background(animateBackgroundOfBottomBarButtonBackground)
     ) {
         Icon(
             modifier = Modifier
@@ -135,11 +140,12 @@ private fun BottomBarButtonBadgedBox(
             .height(44.dp)
     ) {
         BadgedBox(
+            modifier = Modifier.size(13.dp),
             badge = {
                 if (destination.route == Screen.CartNavigationGraph.route && countInCart > 0) Badge(
-                    modifier = Modifier.offset((38).dp, 12.dp)
+                    modifier = Modifier.offset((24).dp, 12.dp)
                 ) {
-                    Text("$countInCart")
+                    Text("$countInCart", fontSize = 9.sp)
                 }
             }
         ) { /* NOTHING*/ }

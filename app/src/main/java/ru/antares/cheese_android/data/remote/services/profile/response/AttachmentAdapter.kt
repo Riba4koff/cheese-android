@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import java.io.IOException
 
-class AttachmentAdapter : TypeAdapter<Attachment>() {
+class AttachmentAdapter: TypeAdapter<Attachment>() {
 
     @Throws(IOException::class)
     override fun write(out: JsonWriter, value: Attachment?) {

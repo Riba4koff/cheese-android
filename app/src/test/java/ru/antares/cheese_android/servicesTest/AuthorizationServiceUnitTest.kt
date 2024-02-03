@@ -7,15 +7,21 @@ import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.*
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
 import ru.antares.cheese_android.data.remote.services.auth.dto.DeviceDTO
 import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
-import ru.antares.cheese_android.data.remote.services.auth.response.SendCodeResponse
 import ru.antares.cheese_android.data.remote.services.profile.response.Attachment
 import ru.antares.cheese_android.data.remote.services.profile.response.AttachmentAdapter
+import ru.antares.cheese_android.data.repository.auth.models.DeviceModel
+import ru.antares.cheese_android.data.repository.auth.models.SessionModel
+import ru.antares.cheese_android.data.repository.auth.responses.SendCodeResponse
+
+//TODO Добавить тестовый контекст для TokenService
 
 /**
  * This class tests the AuthorizationService interface,
@@ -46,7 +52,24 @@ class AuthorizationServiceUnitTest {
 
     @Test
     fun testSendCodeTest() = runBlocking {
-        val expectedResponse = SendCodeResponse(true)
+        val expectedResponse = SendCodeResponse(
+            token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBdWRpZW5jZSIsImlzcyI6IkNoZWVzZU1vYmlsZSIsIlNFU1NJT05fSUQiOiI0NjJlOWZiYS1iOTJhLTQ4NjktYmIwMy1iOTZjNmNlN2Q2NzcifQ.xelhbKS7HsshMyw9S8Sz1UerPv47xiNHcyqzTN4eb0k",
+            sessionModel = SessionModel(
+                authorizationType = "",
+                authorizedObject = "",
+                device = DeviceModel(
+                    firebaseToken = "",
+                    firmware = "",
+                    id = null,
+                    version = ""
+                ),
+                deviceId = "",
+                start = "",
+                finish = "",
+                id = "",
+                opened = false
+            )
+        )
         mockWebServer.enqueue(
             MockResponse().setBody(
                 Gson().toJson(expectedResponse)
