@@ -35,6 +35,7 @@ import ru.antares.cheese_android.presentation.ErrorAlertDialog
 import ru.antares.cheese_android.presentation.LoadingIndicator
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.authorization.AgreementText
+import ru.antares.cheese_android.presentation.view.authorization.confirm_code.SkipAuthorizationButton
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Preview
@@ -71,6 +72,14 @@ fun InputPhoneScreen(
                 val validPhone = "+7${event.phone}"
                 navController.navigate("${Screen.AuthNavigationGraph.ConfirmCode.route}/$validPhone")
             }
+
+            NavigationEvent.NavigateToHomeScreen -> {
+                navController.navigate(Screen.HomeNavigationGraph.route) {
+                    popUpTo(Screen.AuthNavigationGraph.route) {
+                        inclusive = true
+                    }
+                }
+            }
         }
     }
 
@@ -83,7 +92,9 @@ fun InputPhoneScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                modifier = Modifier.padding(top = CheeseTheme.paddings.large),
+                modifier = Modifier.padding(
+                    top = CheeseTheme.paddings.large + CheeseTheme.paddings.large
+                ),
                 painter = painterResource(id = R.drawable.authorization_logo),
                 contentDescription = "Authorization logo"
             )
@@ -96,7 +107,7 @@ fun InputPhoneScreen(
                 phoneIsNotValid = state.phoneIsValid.not()
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(64.dp))
 
             AgreementText(
                 onPrivacyPolicyClick = {
@@ -108,6 +119,10 @@ fun InputPhoneScreen(
             )
         }
 
+        SkipAuthorizationButton(modifier = Modifier.align(Alignment.TopEnd)) {
+            onEvent(Event.SkipAuthorization)
+        }
+
         if (state.error.isError) ErrorAlertDialog(
             errorMessage = state.error.message,
             onDismissRequest = {
@@ -117,7 +132,6 @@ fun InputPhoneScreen(
 
         LoadingIndicator(isLoading = state.isLoading)
     }
-
 }
 
 @Composable

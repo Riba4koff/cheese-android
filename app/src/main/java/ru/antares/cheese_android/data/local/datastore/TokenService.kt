@@ -2,7 +2,7 @@ package ru.antares.cheese_android.data.local.datastore
 
 import android.content.Context
 import android.util.Log
-import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -19,7 +19,8 @@ private const val TAG = "TOKEN_SERVICE"
 class TokenService(context: Context) : SecurityTokenService {
 
     private companion object KEYS {
-        val BearerToken = stringPreferencesKey("BEARER_TOKEN_KEY")
+        val bearerToken = stringPreferencesKey("BEARER_TOKEN_KEY")
+        var authorizationSkipped = booleanPreferencesKey("AUTHORIZATION_SKIPPED")
     }
 
     private val dataStore = context.appDataStore
@@ -32,20 +33,22 @@ class TokenService(context: Context) : SecurityTokenService {
             throw exception
         }
     }.map { preferences ->
-        preferences[BearerToken] ?: ""
+        preferences[bearerToken] ?: ""
     }.first()
 
     override val authorized: Flow<AuthorizedState> = dataStore.data.map { preferences ->
-        preferences[BearerToken].let { token ->
-            if (token.isNullOrEmpty()) AuthorizedState.NOT_AUTHORIZED
-            else AuthorizedState.AUTHORIZED
+        val authorizationSkipped = preferences[authorizationSkipped] ?: false
+        preferences[bearerToken].let { token ->
+            if (token.isNullOrEmpty().not() || authorizationSkipped) AuthorizedState.AUTHORIZED
+            else AuthorizedState.NOT_AUTHORIZED
         }
     }
 
     override suspend fun authorize(token: String) {
         withContext(Dispatchers.IO) {
             dataStore.edit { preferences ->
-                preferences[BearerToken] = token
+                preferences[bearerToken] = token
+                preferences[authorizationSkipped] = false
             }
         }
     }
@@ -53,7 +56,15 @@ class TokenService(context: Context) : SecurityTokenService {
     override suspend fun logout() {
         withContext(Dispatchers.IO) {
             dataStore.edit { preferences ->
-                preferences[BearerToken] = ""
+                preferences[bearerToken] = ""
+            }
+        }
+    }
+
+    override suspend fun skipAuthorization() {
+        withContext(Dispatchers.IO) {
+            dataStore.edit { preferences ->
+                preferences[authorizationSkipped] = true
             }
         }
     }

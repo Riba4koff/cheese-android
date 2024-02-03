@@ -2,6 +2,7 @@ package ru.antares.cheese_android.presentation.view.authorization.input_phone
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -12,12 +13,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.antares.cheese_android.data.local.datastore.SecurityTokenService
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.services.auth.response.MakeCallResponse
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 
 class InputPhoneViewModel(
-    private val repository: IAuthorizationRepository
+    private val repository: IAuthorizationRepository,
+    private val tokenService: SecurityTokenService
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<InputPhoneState> =
         MutableStateFlow(InputPhoneState())
@@ -46,6 +49,11 @@ class InputPhoneViewModel(
                     Event.CloseAlertDialog -> _mutableStateFlow.update { state ->
                         state.copy(error = ErrorState())
                     }
+
+                    Event.SkipAuthorization -> {
+                        tokenService.skipAuthorization()
+                        _navigationActions.send(NavigationEvent.NavigateToHomeScreen)
+                    }
                 }
             }
         }
@@ -55,8 +63,8 @@ class InputPhoneViewModel(
         events.send(event)
     }
 
-    private fun makeCall() = viewModelScope.launch {
-        _mutableStateFlow.update { state -> state.copy(isLoading = true) }
+    private fun makeCall() = viewModelScope.launch(Dispatchers.IO) {
+        setLoading(true)
 
         val phoneIsValid = isValidPhoneNumber(stateFlow.value.phone)
 
@@ -83,7 +91,11 @@ class InputPhoneViewModel(
             }
         }
 
-        _mutableStateFlow.update { state -> state.copy(isLoading = false) }
+        setLoading(false)
+    }
+
+    private fun setLoading(value: Boolean) {
+        _mutableStateFlow.update { state -> state.copy(isLoading = value) }
     }
 
     private fun isValidPhoneNumber(phoneNumber: String): Boolean {

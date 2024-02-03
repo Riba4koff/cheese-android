@@ -4,4 +4,5 @@ sealed interface Event {
     data class OnCodeChange(val value: String): Event
     data object CloseAlertDialog: Event
     data object MakeCallAgain: Event
+    data object SkipAuthorization : Event
 }

@@ -55,7 +55,7 @@ fun ConfirmCodePreview() {
             navController = rememberNavController(),
             state = ConfirmCodeState(
                 isLoading = false,
-                codeIsWrong = true,
+                codeIsWrong = false,
                 timer = 0,
                 canMakeCallAgain = true
             ),
@@ -96,7 +96,9 @@ fun ConfirmCodeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                modifier = Modifier.padding(top = CheeseTheme.paddings.large),
+                modifier = Modifier.padding(
+                    top = CheeseTheme.paddings.large + CheeseTheme.paddings.large
+                ),
                 painter = painterResource(id = R.drawable.authorization_logo),
                 contentDescription = "Authorization logo"
             )
@@ -112,7 +114,7 @@ fun ConfirmCodeScreen(
                 }, timer = state.timer
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(64.dp))
 
             AgreementText(
                 onPrivacyPolicyClick = {
@@ -124,6 +126,14 @@ fun ConfirmCodeScreen(
             )
         }
 
+        PopBackButton(modifier = Modifier.align(Alignment.TopStart)) {
+            navController.popBackStack()
+        }
+
+        SkipAuthorizationButton(modifier = Modifier.align(Alignment.TopEnd)) {
+            onEvent(Event.SkipAuthorization)
+        }
+
         if (state.error.isError) ErrorAlertDialog(
             errorMessage = state.error.message,
             onDismissRequest = {
@@ -133,6 +143,61 @@ fun ConfirmCodeScreen(
 
         LoadingIndicator(isLoading = state.isLoading)
     }
+}
+
+@Composable
+private fun PopBackButton(modifier: Modifier, onClick: () -> Unit) {
+    val (pressed, onPressedChange) = remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (pressed) 0.95f else 1f,
+        label = "Animation of pressing"
+    )
+
+    Text(
+        modifier = modifier
+            .padding(CheeseTheme.paddings.medium)
+            .pointerInput(Unit) {
+                detectTapGestures(onPress = {
+                    onPressedChange(true)
+                    tryAwaitRelease()
+                    onPressedChange(false)
+                }, onTap = {
+                    onClick()
+                })
+            }
+            .scale(scale),
+        text = stringResource(R.string.back),
+        style = CheeseTheme.textStyles.common14Medium,
+        color = CheeseTheme.colors.white
+    )
+
+}
+
+@Composable
+fun SkipAuthorizationButton(modifier: Modifier, onClick: () -> Unit) {
+    val (pressed, onPressedChange) = remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (pressed) 0.95f else 1f,
+        label = "Animation of pressing"
+    )
+
+    Text(
+        modifier = modifier
+            .padding(CheeseTheme.paddings.medium)
+            .pointerInput(Unit) {
+                detectTapGestures(onPress = {
+                    onPressedChange(true)
+                    tryAwaitRelease()
+                    onPressedChange(false)
+                }, onTap = {
+                    onClick()
+                })
+            }
+            .scale(scale),
+        text = stringResource(R.string.skip),
+        style = CheeseTheme.textStyles.common14Medium,
+        color = CheeseTheme.colors.white
+    )
 }
 
 @Composable
@@ -183,15 +248,17 @@ private fun MakeCallAgainText(onClick: () -> Unit) {
         label = "Animation of pressing"
     )
     Text(
-        modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(onPress = {
-                onPressedChange(true)
-                tryAwaitRelease()
-                onPressedChange(false)
-            }, onTap = {
-                onClick()
-            })
-        }.scale(scale),
+        modifier = Modifier
+            .pointerInput(Unit) {
+                detectTapGestures(onPress = {
+                    onPressedChange(true)
+                    tryAwaitRelease()
+                    onPressedChange(false)
+                }, onTap = {
+                    onClick()
+                })
+            }
+            .scale(scale),
         text = stringResource(R.string.make_call_again),
         style = CheeseTheme.textStyles.common12Light.copy(color = CheeseTheme.colors.white)
     )
@@ -230,7 +297,9 @@ private fun CodeField(
         value = phone,
         onValueChange = { value ->
             if (value.length == 4) focus.clearFocus()
-            if (value.length < 5) { onCodeChange(value) }
+            if (value.length < 5) {
+                onCodeChange(value)
+            }
         },
         colors = textFieldColors,
         shape = CheeseTheme.shapes.small,

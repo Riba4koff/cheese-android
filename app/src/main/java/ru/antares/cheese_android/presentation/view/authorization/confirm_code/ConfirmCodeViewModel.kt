@@ -2,6 +2,7 @@ package ru.antares.cheese_android.presentation.view.authorization.confirm_code
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -59,6 +60,11 @@ class ConfirmCodeViewModel(
                         Event.MakeCallAgain -> {
                             makeCallAgain()
                         }
+
+                        Event.SkipAuthorization -> {
+                            tokenService.skipAuthorization()
+                            _navigationEvents.send(NavigationEvent.NavigateToHomeScreen)
+                        }
                     }
                 }
             }
@@ -69,7 +75,7 @@ class ConfirmCodeViewModel(
         events.send(event)
     }
 
-    private fun makeCallAgain() = viewModelScope.launch {
+    private fun makeCallAgain() = viewModelScope.launch(Dispatchers.IO) {
         setLoading(true)
 
         val response = mockMakeCallAgain()
@@ -107,7 +113,7 @@ class ConfirmCodeViewModel(
         setLoading(false)
     }
 
-    private fun sendCode() = viewModelScope.launch {
+    private fun sendCode() = viewModelScope.launch(Dispatchers.IO) {
         setLoading(true)
 
         delay(1000L)
@@ -172,7 +178,7 @@ class ConfirmCodeViewModel(
     }
 
     private fun mockMakeCallAgain(): NetworkResponse<MakeCallResponse> {
-        return NetworkResponse.Success(data = MakeCallResponse(false))
+        return NetworkResponse.Success(data = MakeCallResponse(true))
     }
 
     private fun setLoading(value: Boolean) {

@@ -6,4 +6,6 @@
     <string name="wrong_confirm_code">Неправильный код потверждения</string>
     <string name="input_last_fourth_numbers_of_phone">Введите последние четыре цифры  входящего номера</string>
     <string name="make_call_again">Повторный звонок</string>
+    <string name="back">Назад</string>
+    <string name="skip">Пропустить</string>
 </resources>
