@@ -109,6 +109,7 @@ private fun SelectedPageBackground(
         targetValue = if (destination.route == currentRoute) CheeseTheme.colors.accent
         else CheeseTheme.colors.primary, label = "Animation of changing  of background bottom bar button"
     )
+    val iconSize = 64.dp
     Box(
         modifier = Modifier
             .width(54.dp)
@@ -118,7 +119,7 @@ private fun SelectedPageBackground(
     ) {
         Icon(
             modifier = Modifier
-                .size(24.dp)
+                .size(iconSize)
                 .align(Alignment.Center),
             painter = painterResource(id = destination.icon),
             contentDescription = null,
