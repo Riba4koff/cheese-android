@@ -17,7 +17,7 @@ import ru.antares.cheese_android.presentation.view.authorization.input_phone.Inp
 import ru.antares.cheese_android.sharedViewModel
 
 fun NavGraphBuilder.authNavigationGraph(
-    navController: NavController
+    globalNavController: NavController
 ) {
     navigation(
         startDestination = Screen.AuthNavigationGraph.InputPhone.route,
@@ -25,14 +25,14 @@ fun NavGraphBuilder.authNavigationGraph(
     ) {
         composable(route = Screen.AuthNavigationGraph.InputPhone.route) { navBackStackEntry ->
             val viewModel: InputPhoneViewModel =
-                navBackStackEntry.sharedViewModel(navController = navController)
+                navBackStackEntry.sharedViewModel(navController = globalNavController)
             val state by viewModel.stateFlow.collectAsStateWithLifecycle()
 
             InputPhoneScreen(
                 state = state,
                 onEvent = viewModel::onEvent,
-                navigationEvents = viewModel.navigationActions,
-                navController = navController
+                navigationEvents = viewModel.navigationEvents,
+                navController = globalNavController
             )
         }
         composable(
@@ -43,13 +43,13 @@ fun NavGraphBuilder.authNavigationGraph(
         ) { navBackStackEntry ->
             val phone = navBackStackEntry.arguments?.getString("phone")!!
             val viewModel: ConfirmCodeViewModel = navBackStackEntry.sharedViewModel(
-                navController = navController,
+                navController = globalNavController,
                 parameters = { parametersOf(phone) }
             )
             val state by viewModel.stateFlow.collectAsStateWithLifecycle()
 
             ConfirmCodeScreen(
-                navController = navController,
+                navController = globalNavController,
                 state = state,
                 onEvent = viewModel::onEvent,
                 navigationEvents = viewModel.navigationEvents

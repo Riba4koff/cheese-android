@@ -6,7 +6,7 @@ import ru.antares.cheese_android.data.remote.services.auth.response.MakeCallResp
 import ru.antares.cheese_android.data.repository.auth.responses.SendCodeResponse
 
 interface IAuthorizationRepository {
-    suspend fun makeCall(phone: String): NetworkResponse<MakeCallResponse>
+    suspend fun makeCall(phone: String): NetworkResponse<Boolean?>
     suspend fun sendCode(phone: String, request: SendCodeRequest): NetworkResponse<SendCodeResponse>
     suspend fun logout(): NetworkResponse<Boolean?>
 }

@@ -63,21 +63,22 @@ fun InputPhoneScreenPreview() {
 fun InputPhoneScreen(
     navController: NavController,
     state: InputPhoneState,
-    onEvent: (Event) -> Unit,
-    navigationEvents: Flow<NavigationEvent>,
+    onEvent: (InputPhoneEvent) -> Unit,
+    navigationEvents: Flow<InputPhoneNavigationEvent>,
 ) {
     ObserveAsEvents(flow = navigationEvents) { event ->
         when (event) {
-            is NavigationEvent.NavigateToConfirmCode -> {
+            is InputPhoneNavigationEvent.NavigateToConfirmCode -> {
                 val validPhone = "+7${event.phone}"
                 navController.navigate("${Screen.AuthNavigationGraph.ConfirmCode.route}/$validPhone")
             }
 
-            NavigationEvent.NavigateToHomeScreen -> {
+            InputPhoneNavigationEvent.NavigateToHomeScreen -> {
                 navController.navigate(Screen.HomeNavigationGraph.route) {
                     popUpTo(Screen.AuthNavigationGraph.route) {
                         inclusive = true
                     }
+                    launchSingleTop = true
                 }
             }
         }
@@ -102,7 +103,7 @@ fun InputPhoneScreen(
             InputPhoneScreenContent(
                 phone = state.phone,
                 onPhoneChange = { phone ->
-                    onEvent(Event.OnPhoneChange(phone))
+                    onEvent(InputPhoneEvent.OnPhoneChange(phone))
                 },
                 phoneIsNotValid = state.phoneIsValid.not()
             )
@@ -120,13 +121,13 @@ fun InputPhoneScreen(
         }
 
         SkipAuthorizationButton(modifier = Modifier.align(Alignment.TopEnd)) {
-            onEvent(Event.SkipAuthorization)
+            onEvent(InputPhoneEvent.SkipAuthorization)
         }
 
         if (state.error.isError) ErrorAlertDialog(
             errorMessage = state.error.message,
             onDismissRequest = {
-                onEvent(Event.CloseAlertDialog)
+                onEvent(InputPhoneEvent.CloseAlertDialog)
             }
         )
 

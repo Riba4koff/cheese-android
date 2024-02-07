@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import ru.antares.cheese_android.presentation.navigation.util.Screen
+import ru.antares.cheese_android.presentation.view.main.cart.CartScreen
 
 fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
     navigation(
@@ -13,7 +14,7 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
         startDestination = Screen.CartNavigationGraph.Cart.route
     ) {
         composable(route = Screen.CartNavigationGraph.Cart.route) { navBackStackEntry ->
-            Text(text = "Корзина")
+            CartScreen()
         }
     }
 }

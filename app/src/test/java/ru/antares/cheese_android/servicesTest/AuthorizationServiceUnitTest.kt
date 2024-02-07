@@ -15,8 +15,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
 import ru.antares.cheese_android.data.remote.services.auth.dto.DeviceDTO
 import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
-import ru.antares.cheese_android.data.remote.services.profile.response.Attachment
-import ru.antares.cheese_android.data.remote.services.profile.response.AttachmentAdapter
+import ru.antares.cheese_android.data.remote.services.main.profile.response.Attachment
+import ru.antares.cheese_android.data.remote.services.main.profile.response.AttachmentAdapter
 import ru.antares.cheese_android.data.repository.auth.models.DeviceModel
 import ru.antares.cheese_android.data.repository.auth.models.SessionModel
 import ru.antares.cheese_android.data.repository.auth.responses.SendCodeResponse

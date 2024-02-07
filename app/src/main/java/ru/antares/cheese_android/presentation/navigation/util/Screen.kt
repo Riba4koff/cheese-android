@@ -58,6 +58,11 @@ sealed class Screen(
         override val route: String = "PROFILE_NAVIGATION_GRAPH"
 
         data object Profile : Screen(route = "ProfileScreen")
+        data object PersonalData: Screen(route = "PersonalDataScreen")
+        data object Addresses: Screen(route = "AddressesScreen")
+        data object Orders: Screen(route = "OrdersScreen")
+        data object AboutApp: Screen(route = "PaymentMethodsScreen")
+        data object Tickets: Screen(route = "TicketsScreen")
         // Screens ...
     }
 }

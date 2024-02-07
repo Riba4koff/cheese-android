@@ -16,7 +16,7 @@ import java.io.IOException
 
 private const val TAG = "TOKEN_SERVICE"
 
-class TokenService(context: Context) : SecurityTokenService {
+class TokenService(context: Context) : ITokenService {
 
     private companion object KEYS {
         val bearerToken = stringPreferencesKey("BEARER_TOKEN_KEY")
@@ -36,10 +36,11 @@ class TokenService(context: Context) : SecurityTokenService {
         preferences[bearerToken] ?: ""
     }.first()
 
-    override val authorized: Flow<AuthorizedState> = dataStore.data.map { preferences ->
+    override val authorizedState: Flow<AuthorizedState> = dataStore.data.map { preferences ->
         val authorizationSkipped = preferences[authorizationSkipped] ?: false
         preferences[bearerToken].let { token ->
-            if (token.isNullOrEmpty().not() || authorizationSkipped) AuthorizedState.AUTHORIZED
+            if (token.isNullOrEmpty().not()) AuthorizedState.AUTHORIZED
+            else if (authorizationSkipped) AuthorizedState.SKIPPED
             else AuthorizedState.NOT_AUTHORIZED
         }
     }

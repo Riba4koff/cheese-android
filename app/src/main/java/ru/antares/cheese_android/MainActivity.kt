@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CheeseTheme {
                 val navController = rememberNavController()
-                CheeseApp(navController = navController)
+                CheeseApp(globalNavController = navController)
             }
         }
     }

@@ -72,16 +72,17 @@ fun ConfirmCodePreview() {
 fun ConfirmCodeScreen(
     navController: NavController,
     state: ConfirmCodeState,
-    onEvent: (Event) -> Unit,
-    navigationEvents: Flow<NavigationEvent>,
+    onEvent: (ConfirmCodeEvent) -> Unit,
+    navigationEvents: Flow<ConfirmCodeNavigationEvent>,
 ) {
     ObserveAsEvents(flow = navigationEvents) { event ->
         when (event) {
-            NavigationEvent.NavigateToHomeScreen -> {
+            ConfirmCodeNavigationEvent.NavigateToHomeScreen -> {
                 navController.navigate(Screen.HomeNavigationGraph.route) {
                     popUpTo(Screen.AuthNavigationGraph.route) {
                         inclusive = true
                     }
+                    launchSingleTop = true
                 }
             }
         }
@@ -106,11 +107,11 @@ fun ConfirmCodeScreen(
             ConfirmCodeScreenContent(
                 code = state.code,
                 onCodeChange = { code ->
-                    onEvent(Event.OnCodeChange(code))
+                    onEvent(ConfirmCodeEvent.OnCodeChange(code))
                 }, codeIsWrong = state.codeIsWrong,
                 canMakeCallAgain = state.canMakeCallAgain,
                 makeCallAgain = {
-                    onEvent(Event.MakeCallAgain)
+                    onEvent(ConfirmCodeEvent.MakeCallAgain)
                 }, timer = state.timer
             )
 
@@ -131,13 +132,13 @@ fun ConfirmCodeScreen(
         }
 
         SkipAuthorizationButton(modifier = Modifier.align(Alignment.TopEnd)) {
-            onEvent(Event.SkipAuthorization)
+            onEvent(ConfirmCodeEvent.SkipAuthorization)
         }
 
         if (state.error.isError) ErrorAlertDialog(
             errorMessage = state.error.message,
             onDismissRequest = {
-                onEvent(Event.CloseAlertDialog)
+                onEvent(ConfirmCodeEvent.CloseAlertDialog)
             }
         )
 

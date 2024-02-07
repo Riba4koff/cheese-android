@@ -10,12 +10,12 @@ import ru.antares.cheese_android.presentation.navigation.graphs.splashScreen
 
 @Composable
 fun CheeseApp(
-    navController: NavHostController,
+    globalNavController: NavHostController,
 ) {
-    NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
-        splashScreen(navController)
-        authNavigationGraph(navController)
-        bottomBarNavigationGraph(navController)
+    NavHost(navController = globalNavController, startDestination = Screen.SplashScreen.route) {
+        splashScreen(globalNavController)
+        authNavigationGraph(globalNavController)
+        bottomBarNavigationGraph(globalNavController)
     }
 }
 

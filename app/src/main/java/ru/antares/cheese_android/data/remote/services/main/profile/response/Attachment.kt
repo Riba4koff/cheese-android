@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.remote.services.profile.response
+package ru.antares.cheese_android.data.remote.services.main.profile.response
 
 import com.google.gson.annotations.SerializedName
 

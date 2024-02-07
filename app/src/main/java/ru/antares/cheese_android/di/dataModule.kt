@@ -7,12 +7,12 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import ru.antares.cheese_android.data.local.datastore.SecurityTokenService
+import ru.antares.cheese_android.data.local.datastore.ITokenService
 import ru.antares.cheese_android.data.local.datastore.TokenService
 
 val dataModule = module {
     single { provideSettingsPreferences(androidApplication()) }
-    singleOf(::TokenService) { bind<SecurityTokenService>() }
+    singleOf(::TokenService) { bind<ITokenService>() }
 }
 
 private const val PREFERENCES_FILE_KEY = "ru.antares.cheese_android"

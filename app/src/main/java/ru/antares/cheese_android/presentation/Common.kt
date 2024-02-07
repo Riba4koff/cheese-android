@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Button
@@ -107,11 +110,37 @@ fun LoadingIndicator(isLoading: Boolean) {
                     .align(Alignment.Center)
             ) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(indicatorSize),
                     color = CheeseTheme.colors.accent,
                     strokeWidth = 2.dp
                 )
             }
         }
+    }
+}
+
+
+@Composable
+fun LoadingScreen(modifier: Modifier) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        LoadingIndicator(isLoading = true)
+    }
+}
+
+@Composable
+fun CheeseTitle(title: String, content: @Composable BoxScope.() -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(CheeseTheme.paddings.medium + CheeseTheme.paddings.small),
+            text = title,
+            style = CheeseTheme.textStyles.largeTitle
+        )
+        content()
     }
 }

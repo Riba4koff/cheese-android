@@ -1,7 +1,6 @@
 package ru.antares.cheese_android.ui.theme
 
 import android.app.Activity
-import android.graphics.drawable.shapes.Shape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -21,9 +20,10 @@ import androidx.compose.ui.unit.sp
 
 @Immutable
 data class Paddings(
+    val smallest: Dp = Dp.Unspecified,
     val small: Dp = Dp.Unspecified,
     val medium: Dp = Dp.Unspecified,
-    val large: Dp = Dp.Unspecified,
+    val large: Dp = Dp.Unspecified
 )
 
 @Immutable
@@ -35,6 +35,8 @@ data class Colors(
     val bottomBarColor: Color = Color.Unspecified,
     val gray: Color = Color.Unspecified,
     val red: Color = Color.Unspecified,
+    val blue: Color = Color.Unspecified,
+    val profileIconColor: Color = Color.Unspecified
 )
 
 @Immutable
@@ -64,6 +66,7 @@ data class TextStyles(
     val common18Bold: TextStyle = TextStyle.Default,
     val common20Bold: TextStyle = TextStyle.Default,
     val common22Bold: TextStyle = TextStyle.Default,
+    val largeTitle: TextStyle = TextStyle.Default
 )
 
 val LocalColors =
@@ -83,6 +86,7 @@ fun CheeseTheme(
     content: @Composable () -> Unit,
 ) {
     val paddings = Paddings(
+        smallest = 4.dp,
         small = 8.dp,
         medium = 16.dp,
         large = 32.dp,
@@ -102,6 +106,8 @@ fun CheeseTheme(
         bottomBarColor = Color.White,
         gray = Color(0xFF999999),
         red = Color(0xFFEF0D1B),
+        blue = Color(0xFF007CF9),
+        profileIconColor = Color(0xFF6C757D)
     )
 
     val textStyles = TextStyles(
@@ -123,6 +129,7 @@ fun CheeseTheme(
         common22Bold = TextStyle(fontSize = 22.sp, fontWeight = W700),
         common22Light = TextStyle(fontSize = 22.sp, fontWeight = W400),
         common22Medium = TextStyle(fontSize = 22.sp, fontWeight = W500),
+        largeTitle = TextStyle(fontSize = 34.sp, fontWeight = W700)
     )
 
     val view = LocalView.current

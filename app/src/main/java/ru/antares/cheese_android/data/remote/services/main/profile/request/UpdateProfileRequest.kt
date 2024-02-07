@@ -1,6 +1,6 @@
-package ru.antares.cheese_android.data.remote.services.profile.request
+package ru.antares.cheese_android.data.remote.services.main.profile.request
 
-import ru.antares.cheese_android.data.remote.services.profile.response.Attachment
+import ru.antares.cheese_android.data.remote.services.main.profile.response.Attachment
 
 data class UpdateProfileRequest(
     val attachments: List<Attachment>? = null,
