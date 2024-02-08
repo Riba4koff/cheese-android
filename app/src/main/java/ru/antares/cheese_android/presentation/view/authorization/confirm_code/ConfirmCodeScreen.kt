@@ -38,10 +38,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import ru.antares.cheese_android.ObserveAsEvents
+import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.presentation.ErrorAlertDialog
-import ru.antares.cheese_android.presentation.LoadingIndicator
+import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
+import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.authorization.AgreementText
 import ru.antares.cheese_android.presentation.view.authorization.input_phone.AuthorizationBackground
@@ -75,7 +75,7 @@ fun ConfirmCodeScreen(
     onEvent: (ConfirmCodeEvent) -> Unit,
     navigationEvents: Flow<ConfirmCodeNavigationEvent>,
 ) {
-    ObserveAsEvents(flow = navigationEvents) { event ->
+    ObserveAsNavigationEvents(flow = navigationEvents) { event ->
         when (event) {
             ConfirmCodeNavigationEvent.NavigateToHomeScreen -> {
                 navController.navigate(Screen.HomeNavigationGraph.route) {
@@ -142,7 +142,7 @@ fun ConfirmCodeScreen(
             }
         )
 
-        LoadingIndicator(isLoading = state.isLoading)
+        LoadingIndicator(modifier = Modifier.align(Alignment.Center), isLoading = state.isLoading)
     }
 }
 

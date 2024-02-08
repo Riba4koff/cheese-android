@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.presentation.view.main.profile
+package ru.antares.cheese_android.presentation.view.main.profile_graph.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,11 +10,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import ru.antares.cheese_android.data.local.datastore.AuthorizedState
 import ru.antares.cheese_android.data.local.datastore.AuthorizedState.AUTHORIZED
 import ru.antares.cheese_android.data.local.datastore.AuthorizedState.NOT_AUTHORIZED
 import ru.antares.cheese_android.data.local.datastore.AuthorizedState.SKIPPED
@@ -22,7 +22,6 @@ import ru.antares.cheese_android.data.local.datastore.ITokenService
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
 import ru.antares.cheese_android.data.repository.main.profile.ProfileRepository
-import ru.antares.cheese_android.domain.errors.ProfileUIError
 import ru.antares.cheese_android.domain.errors.UIError
 
 class ProfileViewModel(
@@ -37,7 +36,7 @@ class ProfileViewModel(
     val state: StateFlow<ProfileScreenState> =
         combine(_mutableStateFlow, tokenService.authorizedState) { state, isAuthorized ->
             when (isAuthorized) {
-                AUTHORIZED -> state
+                AUTHORIZED -> loadProfile()
                 NOT_AUTHORIZED -> ProfileScreenState.NonAuthorizedState
                 SKIPPED -> ProfileScreenState.NonAuthorizedState
             }

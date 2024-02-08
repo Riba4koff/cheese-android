@@ -11,12 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -28,11 +25,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import ru.antares.cheese_android.ObserveAsEvents
+import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.PhoneVisualTransformation
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.presentation.ErrorAlertDialog
-import ru.antares.cheese_android.presentation.LoadingIndicator
+import ru.antares.cheese_android.domain.validators.ValidationTextFieldResult
+import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
+import ru.antares.cheese_android.presentation.components.LoadingIndicator
+import ru.antares.cheese_android.presentation.components.textfields.CheeseTextField
+import ru.antares.cheese_android.presentation.components.textfields.PhoneTextField
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.authorization.AgreementText
 import ru.antares.cheese_android.presentation.view.authorization.confirm_code.SkipAuthorizationButton
@@ -66,7 +66,7 @@ fun InputPhoneScreen(
     onEvent: (InputPhoneEvent) -> Unit,
     navigationEvents: Flow<InputPhoneNavigationEvent>,
 ) {
-    ObserveAsEvents(flow = navigationEvents) { event ->
+    ObserveAsNavigationEvents(flow = navigationEvents) { event ->
         when (event) {
             is InputPhoneNavigationEvent.NavigateToConfirmCode -> {
                 val validPhone = "+7${event.phone}"
@@ -131,7 +131,10 @@ fun InputPhoneScreen(
             }
         )
 
-        LoadingIndicator(isLoading = state.isLoading)
+        LoadingIndicator(
+            modifier = Modifier.align(Alignment.CenterStart),
+            isLoading = state.isLoading
+        )
     }
 }
 
@@ -152,60 +155,14 @@ private fun InputPhoneScreenContent(
             style = CheeseTheme.textStyles.common12Light,
             color = CheeseTheme.colors.white
         )
-        PhoneField(
+        PhoneTextField(
             mask = "+7 (000) 000-00-00",
             maskNumber = '0',
             onPhoneChange = { onPhoneChange(it) },
             phone = phone,
-            phoneIsNotValid = phoneIsNotValid
         )
     }
 }
-
-@Composable
-private fun PhoneField(
-    modifier: Modifier = Modifier,
-    phone: String,
-    mask: String = "+7 (000) 000-00-00",
-    maskNumber: Char = '0',
-    onPhoneChange: (String) -> Unit,
-    phoneIsNotValid: Boolean
-) {
-    val focus = LocalFocusManager.current
-
-    val textFieldColors = TextFieldDefaults.colors(
-        focusedContainerColor = CheeseTheme.colors.white,
-        unfocusedContainerColor = CheeseTheme.colors.white,
-        errorContainerColor = CheeseTheme.colors.white,
-        focusedIndicatorColor = CheeseTheme.colors.accent,
-        unfocusedLabelColor = CheeseTheme.colors.accent
-    )
-
-    OutlinedTextField(
-        modifier = modifier.fillMaxWidth(),
-        value = phone,
-        onValueChange = { value ->
-            if (value.length == 10) focus.clearFocus()
-            if (value.length < 11) {
-                onPhoneChange(value)
-            }
-        },
-        colors = textFieldColors,
-        shape = CheeseTheme.shapes.small,
-        isError = phoneIsNotValid,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        visualTransformation = PhoneVisualTransformation(mask, maskNumber),
-        textStyle = CheeseTheme.textStyles.common16Medium,
-        placeholder = {
-            Text(
-                text = "+7",
-                style = CheeseTheme.textStyles.common16Light,
-                color = Color.Gray
-            )
-        }
-    )
-}
-
 @Composable
 fun AuthorizationBackground(image: Int) {
     Image(

@@ -17,4 +17,17 @@
     <string name="catalog_title">Каталог</string>
     <string name="cart_title">Корзина</string>
     <string name="profile_title">Профиль</string>
+    <string name="personal_data_title">Персональные данные</string>
+    <string name="surname">Фамилия</string>
+    <string name="name">Имя</string>
+    <string name="patronymic">Отчество</string>
+    <string name="birthday">День рождения</string>
+    <string name="email">Почта</string>
+    <string name="save">Сохранить</string>
+    <string name="the_field_must_not_be_empty">Поле не должно быть пустым</string>
+    <string name="empty_string"/>
+    <string name="the_field_must_not_contain_numbers">Поле не должно содержать цифр</string>
+    <string name="length_must_be_more_than_1">Длина должна быть больше 1</string>
+    <string name="incorrect_phone_number">Неккоректный номер телефона</string>
+    <string name="incorrect_email">Неккоректная почта</string>
 </resources>

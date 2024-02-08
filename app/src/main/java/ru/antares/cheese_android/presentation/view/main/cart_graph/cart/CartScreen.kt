@@ -1,23 +1,23 @@
-package ru.antares.cheese_android.presentation.view.main.home
+package ru.antares.cheese_android.presentation.view.main.cart_graph.cart
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.presentation.CheeseTitle
+import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+fun CartScreenPreview() {
     CheeseTheme {
-        HomeScreen()
+        CartScreen()
     }
 }
 
 @Composable
-fun HomeScreen() {
-    CheeseTitle(title = stringResource(R.string.home_title)) {
+fun CartScreen() {
+    CheeseTitleWrapper(title = stringResource(R.string.cart_title)) {
 
     }
 }

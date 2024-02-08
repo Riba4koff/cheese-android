@@ -1,35 +1,21 @@
-package ru.antares.cheese_android.presentation
+package ru.antares.cheese_android.presentation.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.onClick
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Composable
@@ -88,59 +74,20 @@ fun ErrorAlertDialog(
     })
 }
 
+@Preview
 @Composable
-fun LoadingIndicator(isLoading: Boolean) {
-    val indicatorSize = 24.dp
-
-    AnimatedVisibility(
-        visible = isLoading,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        Box(modifier = Modifier
-            .onClick { /*DO NOTHING*/ }
-            .fillMaxSize()) {
-            Box(
-                modifier = Modifier
-                    .background(
-                        CheeseTheme.colors.gray.copy(0.7f),
-                        CheeseTheme.shapes.small
-                    )
-                    .padding(CheeseTheme.paddings.medium)
-                    .align(Alignment.Center)
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(indicatorSize),
-                    color = CheeseTheme.colors.accent,
-                    strokeWidth = 2.dp
-                )
-            }
+fun ErrorAlertDialogPreview() {
+    CheeseTheme {
+        ErrorAlertDialog(errorMessage = "Какая - то") {
+            
         }
     }
 }
 
 
-@Composable
-fun LoadingScreen(modifier: Modifier) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        LoadingIndicator(isLoading = true)
-    }
-}
 
-@Composable
-fun CheeseTitle(title: String, content: @Composable BoxScope.() -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(CheeseTheme.paddings.medium + CheeseTheme.paddings.small),
-            text = title,
-            style = CheeseTheme.textStyles.largeTitle
-        )
-        content()
-    }
-}
+
+
+
+
+

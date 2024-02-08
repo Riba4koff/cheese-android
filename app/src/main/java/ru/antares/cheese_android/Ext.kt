@@ -22,8 +22,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.ParametersDefinition
-import org.koin.core.parameter.ParametersHolder
-import org.koin.core.parameter.parametersOf
 
 @Composable
 inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(
@@ -46,7 +44,7 @@ fun Modifier.onClick(onClick: () -> Unit) = Modifier.clickable(
 )
 
 @Composable
-fun <T> ObserveAsEvents(flow: Flow<T>, onEvent: (T) -> Unit) {
+fun <T> ObserveAsNavigationEvents(flow: Flow<T>, onEvent: (T) -> Unit) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(flow, lifecycleOwner.lifecycle) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

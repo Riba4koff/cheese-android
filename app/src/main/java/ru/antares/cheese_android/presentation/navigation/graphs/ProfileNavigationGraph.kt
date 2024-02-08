@@ -8,8 +8,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import ru.antares.cheese_android.presentation.navigation.util.Screen
-import ru.antares.cheese_android.presentation.view.main.profile.ProfileScreen
-import ru.antares.cheese_android.presentation.view.main.profile.ProfileViewModel
+import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataScreen
+import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataViewModel
+import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileScreen
+import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileViewModel
 import ru.antares.cheese_android.sharedViewModel
 
 fun NavGraphBuilder.profileNavigationGraph(
@@ -32,6 +34,18 @@ fun NavGraphBuilder.profileNavigationGraph(
                 onNavigationEvent = viewModel::onNavigationEvent,
                 globalNavController = globalNavController,
                 profileNavController = profileNavController
+            )
+        }
+        composable(route = Screen.ProfileNavigationGraph.PersonalData.route) { navBackStackEntry ->
+            val viewModel: PersonalDataViewModel =
+                navBackStackEntry.sharedViewModel(navController = profileNavController)
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            PersonalDataScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                onError = viewModel::onError,
+                navController = profileNavController
             )
         }
         composable(route = Screen.ProfileNavigationGraph.Addresses.route) { navBackStackEntry ->

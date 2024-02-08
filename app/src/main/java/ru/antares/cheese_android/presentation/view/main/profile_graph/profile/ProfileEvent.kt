@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.presentation.view.main.profile
+package ru.antares.cheese_android.presentation.view.main.profile_graph.profile
 
 import ru.antares.cheese_android.domain.errors.UIError
 

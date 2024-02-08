@@ -1,12 +1,12 @@
-package ru.antares.cheese_android.presentation.view.main.profile
+package ru.antares.cheese_android.presentation.view.main.profile_graph.profile
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,11 +37,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import ru.antares.cheese_android.ObserveAsEvents
+import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.presentation.CheeseTitle
-import ru.antares.cheese_android.presentation.LoadingScreen
+import ru.antares.cheese_android.presentation.components.CheeseAnimatedVisibility
+import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
+import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
+import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
@@ -50,7 +51,7 @@ import ru.antares.cheese_android.ui.theme.CheeseTheme
 fun ProfileScreenPreview() {
     CheeseTheme {
         ProfileScreen(
-            state = ProfileScreenState.LoadingState,
+            state = ProfileScreenState.AuthorizedState(),
             navigationEvents = emptyFlow(),
             onEvent = { _ ->
 
@@ -73,7 +74,7 @@ fun ProfileScreen(
     globalNavController: NavController,
     profileNavController: NavController
 ) {
-    ObserveAsEvents(flow = navigationEvents) { event ->
+    ObserveAsNavigationEvents(flow = navigationEvents) { event ->
         when (event) {
             ProfileNavigationEvent.Logout -> {
                 globalNavController.navigate(Screen.AuthNavigationGraph.route) {
@@ -96,7 +97,7 @@ fun ProfileScreen(
             }
 
             ProfileNavigationEvent.NavigateToPersonalData -> {
-
+                profileNavController.navigate(Screen.ProfileNavigationGraph.PersonalData.route)
             }
 
             ProfileNavigationEvent.NavigateToSavedAddresses -> {
@@ -108,31 +109,42 @@ fun ProfileScreen(
             }
         }
     }
-    CheeseTitle(stringResource(id = R.string.profile_title)) {
-        state.onLoadingState {
-            LoadingScreen(Modifier.align(Alignment.Center))
-        }.onErrorState { errorMessage ->
+
+    CheeseTitleWrapper(title = stringResource(id = R.string.profile_title)) {
+        CheeseAnimatedVisibility(visible = state is ProfileScreenState.LoadingState) {
+            LoadingScreen(modifier = Modifier.align(Alignment.Center))
+        }
+        CheeseAnimatedVisibility(visible = state is ProfileScreenState.ErrorState) {
             ErrorScreen(
                 modifier = Modifier.align(Alignment.Center),
-                error = errorMessage,
+                error = (state as ProfileScreenState.ErrorState).error,
                 retry = { uiError ->
                     onEvent(ProfileEvent.Retry(uiError))
                 }
             )
-        }.onAuthorizedState { uiState ->
+        }
+        CheeseAnimatedVisibility(visible = state is ProfileScreenState.AuthorizedState) {
             UserIsAuthorizedContent(
-                modifier = Modifier.align(Alignment.Center),
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = CheeseTheme.paddings.large),
                 onEvent = onEvent,
                 onNavigationEvent = onNavigationEvent,
-                state = uiState
+                state = state as ProfileScreenState.AuthorizedState
             )
-        }.onNonAuthorizedState {
+        }
+        CheeseAnimatedVisibility(visible = state is ProfileScreenState.NonAuthorizedState) {
             UserIsNotAuthorizedContent(
-                modifier = Modifier.align(Alignment.Center),
+                modifier = Modifier.padding(bottom = CheeseTheme.paddings.large + CheeseTheme.paddings.large),
                 onNavigationEvent = onNavigationEvent
             )
         }
     }
+}
+
+@Composable
+fun Animate(state: ProfileScreenState) {
+
 }
 
 @Composable
@@ -144,7 +156,7 @@ private fun UserIsAuthorizedContent(
 ) {
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -314,7 +326,8 @@ private fun ProfileFutureItem(
 
 @Composable
 private fun UserIsNotAuthorizedContent(
-    modifier: Modifier, onNavigationEvent: (ProfileNavigationEvent) -> Unit
+    modifier: Modifier,
+    onNavigationEvent: (ProfileNavigationEvent) -> Unit
 ) {
     val profilePlaceholderImageSize = 128.dp
     val buttonColors = ButtonDefaults.buttonColors(
@@ -323,8 +336,8 @@ private fun UserIsNotAuthorizedContent(
     val buttonShape = CheeseTheme.shapes.medium
 
     Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.large),
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -332,6 +345,7 @@ private fun UserIsNotAuthorizedContent(
             painter = painterResource(id = R.drawable.profile_placeholder),
             contentDescription = "Profile placeholder"
         )
+        Spacer(modifier = Modifier.height(CheeseTheme.paddings.large))
         Button(
             onClick = { onNavigationEvent(ProfileNavigationEvent.Authorize) },
             shape = buttonShape,
@@ -345,30 +359,6 @@ private fun UserIsNotAuthorizedContent(
                 text = stringResource(R.string.login),
                 style = CheeseTheme.textStyles.common18Medium
             )
-        }
-    }
-}
-
-@Composable
-fun ErrorScreen(
-    modifier: Modifier,
-    error: UIError,
-    retry: (UIError) -> Unit
-) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = error.message,
-                style = CheeseTheme.textStyles.common14Medium,
-                color = CheeseTheme.colors.gray
-            )
-            TextButton(onClick = { retry(error) }) {
-                Text(
-                    text = stringResource(R.string.retry),
-                    style = CheeseTheme.textStyles.common14Medium,
-                    color = CheeseTheme.colors.blue
-                )
-            }
         }
     }
 }

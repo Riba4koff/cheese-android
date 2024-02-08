@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.presentation.view.main.profile
+package ru.antares.cheese_android.presentation.view.main.profile_graph.profile
 
 sealed interface ProfileNavigationEvent {
     data object NavigateToPersonalData: ProfileNavigationEvent
