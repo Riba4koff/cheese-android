@@ -130,9 +130,8 @@ fun InputPhoneScreen(
                 onEvent(InputPhoneEvent.CloseAlertDialog)
             }
         )
-
         LoadingIndicator(
-            modifier = Modifier.align(Alignment.CenterStart),
+            modifier = Modifier.align(Alignment.Center),
             isLoading = state.isLoading
         )
     }
@@ -163,6 +162,7 @@ private fun InputPhoneScreenContent(
         )
     }
 }
+
 @Composable
 fun AuthorizationBackground(image: Int) {
     Image(

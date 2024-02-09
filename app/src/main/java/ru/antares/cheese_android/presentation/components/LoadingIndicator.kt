@@ -22,12 +22,13 @@ fun LoadingIndicator(modifier: Modifier = Modifier, isLoading: Boolean) {
     val indicatorSize = 24.dp
 
     AnimatedVisibility(
+        modifier = modifier,
         visible = isLoading,
         enter = fadeIn(),
         exit = fadeOut()
     ) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .background(
                     CheeseTheme.colors.gray.copy(0.7f),
                     CheeseTheme.shapes.small

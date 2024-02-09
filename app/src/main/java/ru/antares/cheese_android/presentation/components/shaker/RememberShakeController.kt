@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 
 @Composable
 fun rememberShakeController(): ShakeController {  
@@ -15,8 +16,10 @@ class ShakeController {
     var shakeConfig: ShakeConfig? by mutableStateOf(null)
         private set
   
-    fun shake(shakeConfig: ShakeConfig?) {
+    suspend fun shake(shakeConfig: ShakeConfig?) {
         this.shakeConfig = shakeConfig
+        delay(500)
+        this.shakeConfig = null
     }  
 }
 

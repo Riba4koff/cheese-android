@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
 import ru.antares.cheese_android.PhoneVisualTransformation
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.errors.UIError
@@ -134,6 +136,8 @@ private fun PersonalDataContent(
     state: PersonalDataViewState.Success,
     onEvent: (PersonalDataEvent) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
+
     val context = LocalContext.current
     val focus = LocalFocusManager.current
 
@@ -146,7 +150,9 @@ private fun PersonalDataContent(
     val confirm = {
         if (state.validation.allFieldsAreValid.not()) {
             vibrate(context)
-            shakeController.shake(shakeConfig)
+            scope.launch {
+                shakeController.shake(shakeConfig)
+            }
         } else {
             focus.clearFocus()
             // TODO: - make request to update user data
@@ -241,7 +247,7 @@ private fun PersonalDataContent(
                 .fillMaxWidth()
                 .height(64.dp),
             text = stringResource(R.string.save),
-            onClick = confirm
+            onClick = { confirm() }
         )
     }
 }

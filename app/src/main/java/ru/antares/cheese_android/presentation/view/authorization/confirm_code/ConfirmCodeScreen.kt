@@ -54,7 +54,7 @@ fun ConfirmCodePreview() {
         ConfirmCodeScreen(
             navController = rememberNavController(),
             state = ConfirmCodeState(
-                isLoading = false,
+                isLoading = true,
                 codeIsWrong = false,
                 timer = 0,
                 canMakeCallAgain = true
@@ -142,7 +142,10 @@ fun ConfirmCodeScreen(
             }
         )
 
-        LoadingIndicator(modifier = Modifier.align(Alignment.Center), isLoading = state.isLoading)
+        LoadingIndicator(
+            modifier = Modifier.align(Alignment.Center),
+            isLoading = state.isLoading
+        )
     }
 }
 
