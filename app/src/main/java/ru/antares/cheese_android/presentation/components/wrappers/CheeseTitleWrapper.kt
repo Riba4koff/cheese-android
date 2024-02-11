@@ -22,6 +22,7 @@ fun CheeseTitleWrapper(
     searchValue: String = "",
     onSearchChange: ((String) -> Unit)? = null,
     onSearch: ((String) -> Unit) = {},
+    enableClearButton: Boolean = false,
     content: @Composable BoxScope.() -> Unit
 ) {
     Column {
@@ -32,14 +33,15 @@ fun CheeseTitleWrapper(
         ) {
             Text(
                 text = title,
-                style = CheeseTheme.textStyles.largeTitle
+                style = CheeseTheme.typography.largeTitle
             )
             onSearchChange?.let {
                 CheeseSearchTextField(
                     modifier = Modifier.fillMaxWidth(),
                     search = onSearch,
                     value = searchValue,
-                    onValueChange = it
+                    onValueChange = it,
+                    enableClearButton = enableClearButton
                 )
             }
         }

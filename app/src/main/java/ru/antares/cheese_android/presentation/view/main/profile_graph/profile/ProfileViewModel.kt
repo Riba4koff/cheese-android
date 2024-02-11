@@ -65,7 +65,7 @@ class ProfileViewModel(
             launch {
                 events.receiveAsFlow().collectLatest { event ->
                     when (event) {
-                        is ProfileEvent.Retry -> retry(event.uiError)
+                        is ProfileEvent.Retry -> onError(event.uiError)
                         ProfileEvent.Logout -> logout()
                         ProfileEvent.DeleteAccount -> deleteAccount()
                     }
@@ -74,8 +74,8 @@ class ProfileViewModel(
         }
     }
 
-    private fun retry(uiError: UIError) = viewModelScope.launch {
-        when (uiError) {
+    private fun onError(uiError: UIError) = viewModelScope.launch {
+        when (uiError as ProfileUIError) {
             is ProfileUIError.LoadProfileError -> loadProfile()
             is ProfileUIError.LogoutError -> logout()
         }

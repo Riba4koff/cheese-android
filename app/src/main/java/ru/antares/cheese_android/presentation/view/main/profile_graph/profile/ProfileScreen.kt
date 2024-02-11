@@ -213,7 +213,7 @@ private fun ProfileHeader(
             contentDescription = null
         )
         Text(
-            text = "$surname $name $patronymic", style = CheeseTheme.textStyles.common20Light
+            text = "$surname $name $patronymic", style = CheeseTheme.typography.common20Light
         )
     }
 }
@@ -277,7 +277,7 @@ private fun ProfileBottom(onEvent: (ProfileEvent) -> Unit) {
         }, colors = logoutButtonColors, modifier = Modifier.height(32.dp)) {
             Text(
                 stringResource(R.string.logout),
-                style = CheeseTheme.textStyles.common14Medium
+                style = CheeseTheme.typography.common14Medium
             )
         }
         /*TextButton(onClick = {
@@ -336,7 +336,7 @@ private fun ProfileFutureItem(
                     contentDescription = null,
                     tint = CheeseTheme.colors.profileIconColor
                 )
-                Text(text = title, style = CheeseTheme.textStyles.common16Light)
+                Text(text = title, style = CheeseTheme.typography.common16Light)
             }
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -384,7 +384,7 @@ private fun UserIsNotAuthorizedContent(
                     vertical = CheeseTheme.paddings.smallest
                 ),
                 text = stringResource(R.string.login),
-                style = CheeseTheme.textStyles.common18Medium
+                style = CheeseTheme.typography.common18Medium
             )
         }
     }

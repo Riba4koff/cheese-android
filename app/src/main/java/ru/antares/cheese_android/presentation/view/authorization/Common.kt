@@ -23,9 +23,9 @@ fun AgreementText(modifier: Modifier = Modifier, onAgreementClick: () -> Unit, o
     val whiteColor = CheeseTheme.colors.white
 
     val clickableTextStyle =
-        CheeseTheme.textStyles.common12Light.copy(color = whiteColor)
+        CheeseTheme.typography.common12Light.copy(color = whiteColor)
     val unClickableTextStyle =
-        CheeseTheme.textStyles.common12Light.copy(color = grayColor)
+        CheeseTheme.typography.common12Light.copy(color = grayColor)
 
     val (pressedAgreement, onAgreementPressedChange) = remember {
         mutableStateOf(false)

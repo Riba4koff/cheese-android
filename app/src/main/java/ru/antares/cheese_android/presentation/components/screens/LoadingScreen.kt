@@ -10,7 +10,7 @@ import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Composable
-fun LoadingScreen(modifier: Modifier) {
+fun LoadingScreen(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         LoadingIndicator(isLoading = true)
     }

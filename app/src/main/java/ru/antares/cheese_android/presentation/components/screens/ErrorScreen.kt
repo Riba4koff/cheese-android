@@ -19,7 +19,7 @@ import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Composable
 fun ErrorScreen(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     error: UIError,
     retry: (UIError) -> Unit
 ) {
@@ -27,13 +27,13 @@ fun ErrorScreen(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = error.message,
-                style = CheeseTheme.textStyles.common12Light,
+                style = CheeseTheme.typography.common12Light,
                 color = CheeseTheme.colors.gray
             )
             TextButton(modifier = Modifier.height(32.dp), onClick = { retry(error) }) {
                 Text(
                     text = stringResource(R.string.retry),
-                    style = CheeseTheme.textStyles.common14Light,
+                    style = CheeseTheme.typography.common14Light,
                     color = CheeseTheme.colors.blue
                 )
             }

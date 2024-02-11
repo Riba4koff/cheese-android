@@ -62,7 +62,7 @@ fun CATopBarPreview() {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
                     text = stringResource(id = R.string.personal_data_title),
-                    style = CheeseTheme.textStyles.common16Medium
+                    style = CheeseTheme.typography.common16Medium
                 )
             }
         ) {

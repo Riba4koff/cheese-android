@@ -7,7 +7,6 @@ import org.koin.core.context.startKoin
 import org.koin.core.logger.Level.ERROR
 import org.koin.core.logger.Level.INFO
 import org.koin.core.logger.Level.WARNING
-import ru.antares.cheese_android.di.appModule
 import ru.antares.cheese_android.di.dataModule
 import ru.antares.cheese_android.di.netModule
 import ru.antares.cheese_android.di.useCaseModule
@@ -22,7 +21,10 @@ class App : Application() {
             androidLogger(INFO)
             androidLogger(WARNING)
             androidLogger(ERROR)
-            modules(appModule)
+            modules(netModule)
+            modules(dataModule)
+            modules(viewModelsModule)
+            modules(validatorsModule, useCaseModule)
         }
     }
 }

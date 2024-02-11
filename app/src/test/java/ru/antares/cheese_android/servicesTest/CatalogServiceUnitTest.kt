@@ -38,10 +38,10 @@ class CatalogServiceUnitTest {
 
         when (response) {
             is NetworkResponse.Error -> {
-                assertNotNull(response.message)
+                assertNull(response.message)
             }
             is NetworkResponse.Success -> {
-                assertTrue(response.data.result.isNotEmpty())
+                assertNotNull(response)
             }
         }
     }

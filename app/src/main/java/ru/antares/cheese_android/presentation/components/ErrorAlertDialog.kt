@@ -34,7 +34,7 @@ fun ErrorAlertDialog(
             ) {
                 Text(
                     text = stringResource(R.string.error_occured),
-                    style = CheeseTheme.textStyles.common18Bold
+                    style = CheeseTheme.typography.common18Bold
                 )
             }
             Spacer(modifier = Modifier.height(CheeseTheme.paddings.medium))
@@ -47,7 +47,7 @@ fun ErrorAlertDialog(
             ) {
                 Text(
                     text = errorMessage,
-                    style = CheeseTheme.textStyles.common14Light,
+                    style = CheeseTheme.typography.common14Light,
                     textAlign = TextAlign.Center
                 )
             }

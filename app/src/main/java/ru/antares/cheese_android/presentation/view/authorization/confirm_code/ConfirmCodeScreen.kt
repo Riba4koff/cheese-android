@@ -173,7 +173,7 @@ private fun PopBackButton(modifier: Modifier, onClick: () -> Unit) {
             }
             .scale(scale),
         text = stringResource(R.string.back),
-        style = CheeseTheme.textStyles.common14Medium,
+        style = CheeseTheme.typography.common14Medium,
         color = CheeseTheme.colors.white
     )
 
@@ -201,7 +201,7 @@ fun SkipAuthorizationButton(modifier: Modifier, onClick: () -> Unit) {
             }
             .scale(scale),
         text = stringResource(R.string.skip),
-        style = CheeseTheme.textStyles.common14Medium,
+        style = CheeseTheme.typography.common14Medium,
         color = CheeseTheme.colors.white
     )
 }
@@ -223,7 +223,7 @@ private fun ConfirmCodeScreenContent(
     ) {
         Text(
             text = stringResource(R.string.input_last_fourth_numbers_of_phone),
-            style = CheeseTheme.textStyles.common12Light,
+            style = CheeseTheme.typography.common12Light,
             color = CheeseTheme.colors.white
         )
         CodeField(
@@ -266,7 +266,7 @@ private fun MakeCallAgainText(onClick: () -> Unit) {
             }
             .scale(scale),
         text = stringResource(R.string.make_call_again),
-        style = CheeseTheme.textStyles.common12Light.copy(color = CheeseTheme.colors.white)
+        style = CheeseTheme.typography.common12Light.copy(color = CheeseTheme.colors.white)
     )
 }
 
@@ -276,7 +276,7 @@ private fun Timer(
 ) {
     Text(
         text = "Отправить код повторно через ${timer} секунд",
-        style = CheeseTheme.textStyles.common12Light,
+        style = CheeseTheme.typography.common12Light,
         color = CheeseTheme.colors.white
     )
 }
@@ -311,14 +311,14 @@ private fun CodeField(
         shape = CheeseTheme.shapes.small,
         isError = codeIsWrong,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        textStyle = CheeseTheme.textStyles.common16Medium
+        textStyle = CheeseTheme.typography.common16Medium
     )
 
     AnimatedVisibility(visible = codeIsWrong, enter = fadeIn(), exit = fadeOut()) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(
                 text = stringResource(R.string.wrong_confirm_code),
-                style = CheeseTheme.textStyles.common12Light.copy(color = CheeseTheme.colors.red)
+                style = CheeseTheme.typography.common12Light.copy(color = CheeseTheme.colors.red)
             )
         }
     }

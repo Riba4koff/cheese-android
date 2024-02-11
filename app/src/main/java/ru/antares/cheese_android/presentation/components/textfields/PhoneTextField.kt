@@ -34,7 +34,7 @@ fun PhoneTextField(
         validationTextFieldResult = validationTextFieldResult,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
         visualTransformation = PhoneVisualTransformation(mask, maskNumber),
-        textStyle = CheeseTheme.textStyles.common16Medium,
+        textStyle = CheeseTheme.typography.common16Medium,
         backgroundColor = CheeseTheme.colors.white
     )
 }

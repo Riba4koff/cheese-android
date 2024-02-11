@@ -42,7 +42,7 @@ fun CheeseTextField(
     leadingIcon: (@Composable () -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     shape: RoundedCornerShape = CheeseTheme.shapes.small,
-    textStyle: TextStyle = CheeseTheme.textStyles.common16Light
+    textStyle: TextStyle = CheeseTheme.typography.common16Light
 ) {
     val textFieldColors = TextFieldDefaults.colors(
         cursorColor = CheeseTheme.colors.accent,
@@ -85,7 +85,7 @@ fun CheeseTextField(
                             .padding(top = CheeseTheme.paddings.smallest)
                             .align(errorAlignment),
                         text = stringResource(id = validationTextFieldResult.text),
-                        style = CheeseTheme.textStyles.common12Light,
+                        style = CheeseTheme.typography.common12Light,
                         color = CheeseTheme.colors.red
                     )
                 }

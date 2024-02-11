@@ -15,7 +15,7 @@ fun CheeseButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     text: String,
-    textStyle: TextStyle = CheeseTheme.textStyles.common16Medium,
+    textStyle: TextStyle = CheeseTheme.typography.common16Medium,
     shape: RoundedCornerShape = CheeseTheme.shapes.medium,
     onClick: () -> Unit
 ) {

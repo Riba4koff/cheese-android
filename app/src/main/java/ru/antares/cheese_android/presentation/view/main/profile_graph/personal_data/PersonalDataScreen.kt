@@ -10,7 +10,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -132,7 +131,7 @@ fun PersonalDataScreen(
         Text(
             modifier = Modifier.align(Alignment.Center),
             text = stringResource(id = R.string.personal_data_title),
-            style = CheeseTheme.textStyles.common16Medium
+            style = CheeseTheme.typography.common16Medium
         )
     }) {
         AnimatedContent(
@@ -145,14 +144,13 @@ fun PersonalDataScreen(
         ) { uiState ->
             when (uiState) {
                 is PersonalDataViewState.Error -> ErrorScreen(
-                    modifier = Modifier,
                     error = uiState.error,
                     retry = { uiError ->
                         onError(uiError)
                     }
                 )
 
-                is PersonalDataViewState.Loading -> LoadingScreen(modifier = Modifier)
+                is PersonalDataViewState.Loading -> LoadingScreen()
 
                 is PersonalDataViewState.Success -> PersonalDataContent(
                     state = uiState,
@@ -304,7 +302,7 @@ private fun PersonalDataTextField(
     else Modifier.shake(shakeController)
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(text = title, style = CheeseTheme.textStyles.common12Light)
+        Text(text = title, style = CheeseTheme.typography.common12Light)
         CheeseTextField(
             modifier = modifier,
             value = value,
@@ -335,7 +333,7 @@ private fun Title(title: String) {
     Column {
         Text(
             text = title,
-            style = CheeseTheme.textStyles.common20Bold
+            style = CheeseTheme.typography.common20Bold
         )
     }
 }

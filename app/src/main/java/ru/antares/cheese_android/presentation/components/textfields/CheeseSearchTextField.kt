@@ -90,7 +90,7 @@ fun CheeseSearchTextField(
         placeholder = {
             Text(
                 text = placeholder,
-                style = CheeseTheme.textStyles.common14Light,
+                style = CheeseTheme.typography.common14Light,
                 color = CheeseTheme.colors.gray
             )
         },
@@ -130,6 +130,6 @@ fun CheeseSearchTextField(
         },
         shape = shape,
         colors = colors,
-        textStyle = CheeseTheme.textStyles.common14Light
+        textStyle = CheeseTheme.typography.common14Light
     )
 }

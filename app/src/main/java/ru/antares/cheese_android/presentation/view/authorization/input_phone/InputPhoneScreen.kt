@@ -9,17 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -27,12 +24,9 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
-import ru.antares.cheese_android.PhoneVisualTransformation
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.domain.validators.ValidationTextFieldResult
 import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
-import ru.antares.cheese_android.presentation.components.textfields.CheeseTextField
 import ru.antares.cheese_android.presentation.components.textfields.PhoneTextField
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.authorization.AgreementText
@@ -154,7 +148,7 @@ private fun InputPhoneScreenContent(
     ) {
         Text(
             text = stringResource(R.string.phone),
-            style = CheeseTheme.textStyles.common12Light,
+            style = CheeseTheme.typography.common12Light,
             color = CheeseTheme.colors.white
         )
         PhoneTextField(

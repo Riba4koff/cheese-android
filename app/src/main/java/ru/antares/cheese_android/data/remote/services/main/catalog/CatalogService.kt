@@ -7,6 +7,6 @@ import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.services.main.catalog.models.CategoryDTO
 
 interface CatalogService {
-    @GET
+    @GET("store/categories")
     suspend fun get(): Response<CheeseNetworkResponse<Pagination<CategoryDTO>>>
 }

@@ -12,14 +12,14 @@ interface CatalogDao {
     fun get(): Flow<CategoryEntity>
 
     @Query("SELECT * FROM categories WHERE categories.id = :id")
-    fun getByID(id: String)
+    suspend fun getByID(id: String): CategoryEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(value: CategoryEntity)
+    suspend fun insert(value: CategoryEntity): Unit
 
     @Query("DELETE FROM categories WHERE categories.id = :id")
-    fun remove(id: String)
+    suspend fun remove(id: String): Unit
 
     @Query("DELETE FROM categories")
-    fun clear()
+    suspend fun clear(): Unit
 }

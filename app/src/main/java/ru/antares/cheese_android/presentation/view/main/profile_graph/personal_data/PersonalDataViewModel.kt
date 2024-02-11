@@ -51,9 +51,14 @@ class PersonalDataViewModel(
     }
 
     fun onError(uiError: UIError) {
-        when (uiError) {
+        when (uiError as PersonalDataUIError) {
             is PersonalDataUIError.SomeError -> {
                 /* TODO: some handle of error */
+            }
+
+            is PersonalDataUIError.UpdateProfile -> {
+                /* TODO: handling profile update error */
+                initialize()
             }
         }
     }
@@ -64,6 +69,7 @@ class PersonalDataViewModel(
     private fun emitState(state: PersonalDataViewState) = viewModelScope.launch {
         _mutableStateFlow.tryEmit(state)
     }
+
     private suspend fun sendNavigationEvent(navigationEvent: PersonalDataNavigationEvent) {
         _navigationEvents.send(navigationEvent)
     }
