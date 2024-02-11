@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.data.local.datastore.ITokenService
+import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.services.auth.dto.DeviceDTO
 import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
@@ -145,7 +145,6 @@ class ConfirmCodeViewModel(
             }
 
             is NetworkResponse.Success -> {
-                tokenService.authorize(response.data.token)
                 _navigationEvents.send(ConfirmCodeNavigationEvent.NavigateToHomeScreen)
             }
         }
@@ -170,7 +169,7 @@ class ConfirmCodeViewModel(
     private fun mockSendCodeCall(): NetworkResponse<SendCodeResponse> {
         return if (stateFlow.value.code == "6428") NetworkResponse.Success(
             data = SendCodeResponse(
-                token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBdWRpZW5jZSIsImlzcyI6IkNoZWVzZU1vYmlsZSIsIlNFU1NJT05fSUQiOiI0NjJlOWZiYS1iOTJhLTQ4NjktYmIwMy1iOTZjNmNlN2Q2NzcifQ.xelhbKS7HsshMyw9S8Sz1UerPv47xiNHcyqzTN4eb0k",
+                token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBdWRpZW5jZSIsImlzcyI6IkNoZWVzZU1vYmlsZSIsIlNFU1NJT05fSUQiOiI4ZmUzN2Y1Zi04MjQzLTQxMjMtOGM1ZC04MjZiYmM0Njk5NmIifQ.4LmPnn3UI7cMPSZIFqS50zt1X0CluU1UwSFy6-BTnhs",
                 sessionModel = SessionModel(
                     authorizationType = "",
                     authorizedObject = "",

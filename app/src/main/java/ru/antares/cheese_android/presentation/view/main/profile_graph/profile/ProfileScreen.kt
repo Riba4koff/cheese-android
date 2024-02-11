@@ -1,6 +1,11 @@
 package ru.antares.cheese_android.presentation.view.main.profile_graph.profile
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +37,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -39,19 +46,29 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.presentation.components.CheeseAnimatedVisibility
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
+internal class ProfileScreenStateProvider : PreviewParameterProvider<ProfileScreenState> {
+    override val values: Sequence<ProfileScreenState> = sequenceOf(
+        ProfileScreenState.LoadingState,
+        ProfileScreenState.NonAuthorizedState,
+        ProfileScreenState.ErrorState(ProfileUIError.LoadProfileError("Произошла ошибка при загрузке профиля")),
+        ProfileScreenState.AuthorizedState("Рыбаков", "Павел")
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
-fun ProfileScreenPreview() {
+fun ProfileScreenPreview(
+    @PreviewParameter(ProfileScreenStateProvider::class) state: ProfileScreenState
+) {
     CheeseTheme {
         ProfileScreen(
-            state = ProfileScreenState.AuthorizedState(),
+            state = state,
             navigationEvents = emptyFlow(),
             onEvent = { _ ->
 
@@ -111,40 +128,49 @@ fun ProfileScreen(
     }
 
     CheeseTitleWrapper(title = stringResource(id = R.string.profile_title)) {
-        CheeseAnimatedVisibility(visible = state is ProfileScreenState.LoadingState) {
-            LoadingScreen(modifier = Modifier.align(Alignment.Center))
-        }
-        CheeseAnimatedVisibility(visible = state is ProfileScreenState.ErrorState) {
-            ErrorScreen(
-                modifier = Modifier.align(Alignment.Center),
-                error = (state as ProfileScreenState.ErrorState).error,
-                retry = { uiError ->
-                    onEvent(ProfileEvent.Retry(uiError))
+        AnimatedContent(
+            targetState = state,
+            label = "Profile animated content",
+            transitionSpec = {
+                fadeIn(tween(200)).togetherWith(fadeOut(tween(200)))
+            }
+        ) { uiState ->
+            when (uiState) {
+                is ProfileScreenState.AuthorizedState -> {
+                    UserIsAuthorizedContent(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = CheeseTheme.paddings.large),
+                        onEvent = onEvent,
+                        onNavigationEvent = onNavigationEvent,
+                        state = uiState
+                    )
                 }
-            )
-        }
-        CheeseAnimatedVisibility(visible = state is ProfileScreenState.AuthorizedState) {
-            UserIsAuthorizedContent(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = CheeseTheme.paddings.large),
-                onEvent = onEvent,
-                onNavigationEvent = onNavigationEvent,
-                state = state as ProfileScreenState.AuthorizedState
-            )
-        }
-        CheeseAnimatedVisibility(visible = state is ProfileScreenState.NonAuthorizedState) {
-            UserIsNotAuthorizedContent(
-                modifier = Modifier.padding(bottom = CheeseTheme.paddings.large + CheeseTheme.paddings.large),
-                onNavigationEvent = onNavigationEvent
-            )
+
+                is ProfileScreenState.ErrorState -> {
+                    ErrorScreen(
+                        modifier = Modifier.align(Alignment.Center),
+                        error = uiState.error,
+                        retry = { uiError ->
+                            onEvent(ProfileEvent.Retry(uiError))
+                        }
+                    )
+                }
+
+                ProfileScreenState.LoadingState -> {
+                    LoadingScreen(modifier = Modifier.align(Alignment.Center))
+                }
+
+                ProfileScreenState.NonAuthorizedState -> {
+                    UserIsNotAuthorizedContent(
+                        modifier = Modifier
+                            .padding(bottom = CheeseTheme.paddings.large + CheeseTheme.paddings.large),
+                        onNavigationEvent = onNavigationEvent
+                    )
+                }
+            }
         }
     }
-}
-
-@Composable
-fun Animate(state: ProfileScreenState) {
-
 }
 
 @Composable

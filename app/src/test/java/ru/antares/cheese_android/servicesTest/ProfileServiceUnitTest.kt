@@ -9,7 +9,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.antares.cheese_android.data.local.datastore.ITokenService
+import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.remote.models.CheeseNetworkResponse
 import ru.antares.cheese_android.data.remote.services.main.profile.ProfileService
 import ru.antares.cheese_android.data.remote.services.main.profile.request.UpdateProfileRequest

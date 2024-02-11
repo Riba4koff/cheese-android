@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.local.datastore
+package ru.antares.cheese_android.data.local.datastore.token
 
 import kotlinx.coroutines.flow.Flow
 

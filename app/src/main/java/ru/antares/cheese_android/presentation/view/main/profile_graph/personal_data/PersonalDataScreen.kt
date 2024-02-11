@@ -1,8 +1,17 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data
 
 import android.content.Context
 import android.os.VibrationEffect
 import android.os.Vibrator
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +42,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
@@ -42,7 +53,6 @@ import ru.antares.cheese_android.PhoneVisualTransformation
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.validators.ValidationTextFieldResult
-import ru.antares.cheese_android.presentation.components.CheeseAnimatedVisibility
 import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
@@ -54,20 +64,22 @@ import ru.antares.cheese_android.presentation.components.textfields.CheeseTextFi
 import ru.antares.cheese_android.presentation.components.wrappers.CATopBarWrapper
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
+internal class PersonalDataScreenPreviewProvider : PreviewParameterProvider<PersonalDataViewState> {
+    override val values: Sequence<PersonalDataViewState> = sequenceOf(
+        PersonalDataViewState.Loading,
+        PersonalDataViewState.Error(PersonalDataUIError.SomeError("Неизвестная ошибка")),
+        PersonalDataViewState.Success()
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
-fun PersonalDataPreview() {
+fun PersonalDataPreview(
+    @PreviewParameter(PersonalDataScreenPreviewProvider::class) state: PersonalDataViewState
+) {
     CheeseTheme {
-        val error = PersonalDataViewState.Error(
-            error = PersonalDataUIError.SomeError("ХЗ, ошибка")
-        )
-        val success = PersonalDataViewState.Success(
-            surname = "",
-            name = "",
-            patronymic = "",
-        )
         PersonalDataScreen(
-            state = success,
+            state = state,
             onEvent = {
 
             },
@@ -110,7 +122,31 @@ fun PersonalDataScreen(
             style = CheeseTheme.textStyles.common16Medium
         )
     }) {
-        CheeseAnimatedVisibility(visible = state is PersonalDataViewState.Loading) {
+        AnimatedContent(
+            targetState = state,
+            label = "Personal data animated content",
+            transitionSpec = {
+                fadeIn(tween(200)).togetherWith(fadeOut(tween(200)))
+            }
+        ) { uiState ->
+            when (uiState) {
+                is PersonalDataViewState.Error -> ErrorScreen(
+                    modifier = Modifier,
+                    error = uiState.error,
+                    retry = { uiError ->
+                        onError(uiError)
+                    }
+                )
+
+                PersonalDataViewState.Loading -> LoadingScreen(modifier = Modifier)
+
+                is PersonalDataViewState.Success -> PersonalDataContent(
+                    state = uiState,
+                    onEvent = onEvent
+                )
+            }
+        }
+        /*CheeseAnimatedVisibility(visible = state is PersonalDataViewState.Loading) {
             LoadingScreen(modifier = Modifier)
         }
         CheeseAnimatedVisibility(visible = state is PersonalDataViewState.Error) {
@@ -127,7 +163,7 @@ fun PersonalDataScreen(
                 state = state as PersonalDataViewState.Success,
                 onEvent = onEvent
             )
-        }
+        }*/
     }
 }
 

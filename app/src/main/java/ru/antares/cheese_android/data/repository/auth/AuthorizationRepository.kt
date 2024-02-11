@@ -1,8 +1,9 @@
 package ru.antares.cheese_android.data.repository.auth
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import ru.antares.cheese_android.data.local.datastore.ITokenService
+import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
 import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
@@ -29,6 +30,7 @@ class AuthorizationRepository(
         when (response) {
             is NetworkResponse.Error -> response
             is NetworkResponse.Success -> {
+                Log.d("token", response.data.token)
                 tokenService.authorize(response.data.token)
                 response
             }

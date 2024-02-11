@@ -33,28 +33,4 @@ sealed interface PersonalDataViewState {
     ) : PersonalDataViewState
 
     data class Error(val error: UIError) : PersonalDataViewState
-
-    @Composable
-    fun onLoading(content: @Composable () -> Unit): PersonalDataViewState {
-        return if (this is Loading) {
-            content()
-            this
-        } else this
-    }
-
-    @Composable
-    fun onSuccess(content: @Composable (data: Success) -> Unit): PersonalDataViewState {
-        return if (this is Success) {
-            content(this)
-            this
-        } else this
-    }
-
-    @Composable
-    fun onError(content: @Composable (error: UIError) -> Unit): PersonalDataViewState {
-        return if (this is Error) {
-            content(this.error)
-            this
-        } else this
-    }
 }

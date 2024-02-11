@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,9 +12,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.data.local.datastore.ITokenService
+import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
-import ru.antares.cheese_android.data.remote.services.auth.response.MakeCallResponse
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 
 class InputPhoneViewModel(
