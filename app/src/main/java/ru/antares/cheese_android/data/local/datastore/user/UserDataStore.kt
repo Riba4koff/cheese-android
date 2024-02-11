@@ -1,6 +1,7 @@
 package ru.antares.cheese_android.data.local.datastore.user
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,9 @@ data class User(
     val patronymic: String,
     val email: String,
     val phone: String,
-    val birthday: String
+    val birthday: String,
+    val verifiedEmail: Boolean,
+    val verifiedPhone: Boolean
 )
 
 interface IUserDataStore {
@@ -37,6 +40,8 @@ class UserDataStore(
         val birthday = stringPreferencesKey("BIRTHDAY_KEY")
         val phone = stringPreferencesKey("PHONE_KEY")
         val email = stringPreferencesKey("EMAIL_KEY")
+        val verifiedEmail = booleanPreferencesKey("VERIFIED_EMAIL_KEY")
+        val verifiedPhone = booleanPreferencesKey("VERIFIED_PHONE_KEY")
     }
 
     private val dataStore = context.appDataStore
@@ -48,6 +53,8 @@ class UserDataStore(
         val birthday = preferences[birthday] ?: ""
         val phone = preferences[phone] ?: ""
         val email = preferences[email] ?: ""
+        val verifiedEmail = preferences[verifiedEmail] ?: false
+        val verifiedPhone = preferences[verifiedPhone] ?: false
 
         User(
             surname = surname,
@@ -55,7 +62,9 @@ class UserDataStore(
             patronymic = patronymic,
             birthday = birthday,
             phone = phone,
-            email = email
+            email = email,
+            verifiedEmail = verifiedEmail,
+            verifiedPhone = verifiedPhone
         )
     }
 

@@ -7,25 +7,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState
 import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState.AUTHORIZED
 import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState.NOT_AUTHORIZED
 import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState.SKIPPED
 import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.local.datastore.user.IUserDataStore
 import ru.antares.cheese_android.data.local.datastore.user.User
-import ru.antares.cheese_android.data.local.datastore.user.UserDataStore
-import ru.antares.cheese_android.data.local.models.LocalResponse
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.services.main.profile.response.ProfileResponse
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
@@ -113,28 +106,24 @@ class ProfileViewModel(
 
             is NetworkResponse.Success -> {
 
-                Log.d("PROFILE_DEBUG", response.data.toString())
+                val emailAttachment = response.data.attachments.firstOrNull {
+                    it.typeName == "EMAIL"
+                }.takeIf { it != null }
 
-                val email = if (response.data.attachments.isNotEmpty()) {
-                    response.data.attachments.firstOrNull {
-                        it.typeName == "EMAIL"
-                    }.takeIf { it != null }?.typeName ?: ""
-                } else ""
-
-                val phone = if (response.data.attachments.isNotEmpty()) {
-                    response.data.attachments.firstOrNull {
-                        it.typeName == "PHONE"
-                    }.takeIf { it != null }?.value ?: ""
-                } else ""
+                val phoneAttachment = response.data.attachments.firstOrNull {
+                    it.typeName == "PHONE"
+                }.takeIf { it != null }
 
                 userDataStore.save(
                     user = User(
                         surname = response.data.surname,
                         name = response.data.firstname,
                         patronymic = response.data.patronymic,
-                        email = email,
-                        phone = phone,
-                        birthday = response.data.birthday
+                        email = emailAttachment?.value ?: "",
+                        phone = phoneAttachment?.value ?: "",
+                        birthday = response.data.birthday,
+                        verifiedPhone = phoneAttachment?.verified ?: false,
+                        verifiedEmail = phoneAttachment?.verified ?: false
                     )
                 ).onFailure { message ->
                     Log.d("SAVE_RROFILE", message)

@@ -5,7 +5,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import ru.antares.cheese_android.domain.validators.*
 
-val validators_module = module {
+val validatorsModule = module {
     factoryOf(::PhoneTextFieldValidator) { bind<TextFieldValidator>() }
     factoryOf(::CredentialsTextFieldValidator) { bind<TextFieldValidator>() }
     factoryOf(::EmailTextFieldValidator) { bind<TextFieldValidator>() }

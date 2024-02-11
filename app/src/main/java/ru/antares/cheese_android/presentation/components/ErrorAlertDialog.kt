@@ -21,6 +21,7 @@ import ru.antares.cheese_android.ui.theme.CheeseTheme
 @Composable
 fun ErrorAlertDialog(
     errorMessage: String,
+    confirmText: String = "OK",
     onDismissRequest: () -> Unit,
 ) {
     AlertDialog(onDismissRequest = {
@@ -66,7 +67,7 @@ fun ErrorAlertDialog(
                     shape = CheeseTheme.shapes.small,
                     colors = buttonColors
                 ) {
-                    Text(stringResource(R.string.continue_title))
+                    Text(confirmText)
                 }
             }
             Spacer(modifier = Modifier.height(CheeseTheme.paddings.small))

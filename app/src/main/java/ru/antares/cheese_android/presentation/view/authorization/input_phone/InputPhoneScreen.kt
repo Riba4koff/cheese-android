@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -84,6 +85,8 @@ fun InputPhoneScreen(
         }
     }
 
+    val uriHandler = LocalUriHandler.current
+
     Box(modifier = Modifier.fillMaxSize()) {
         AuthorizationBackground(image = R.drawable.auth_background)
 
@@ -112,10 +115,10 @@ fun InputPhoneScreen(
 
             AgreementText(
                 onPrivacyPolicyClick = {
-
+                    uriHandler.openUri("https://mrokfor.ru/policy/")
                 },
                 onAgreementClick = {
-
+                    uriHandler.openUri("https://mrokfor.ru/agreement/")
                 }
             )
         }

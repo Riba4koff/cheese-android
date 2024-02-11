@@ -48,7 +48,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.PhoneVisualTransformation
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.errors.UIError
@@ -66,7 +69,7 @@ import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 internal class PersonalDataScreenPreviewProvider : PreviewParameterProvider<PersonalDataViewState> {
     override val values: Sequence<PersonalDataViewState> = sequenceOf(
-        PersonalDataViewState.Loading,
+        PersonalDataViewState.Loading(),
         PersonalDataViewState.Error(PersonalDataUIError.SomeError("Неизвестная ошибка")),
         PersonalDataViewState.Success()
     )
@@ -86,7 +89,8 @@ fun PersonalDataPreview(
             onError = {
 
             },
-            navController = rememberNavController()
+            navController = rememberNavController(),
+            navigationEvents = emptyFlow()
         )
     }
 }
@@ -96,8 +100,17 @@ fun PersonalDataScreen(
     state: PersonalDataViewState,
     onEvent: (PersonalDataEvent) -> Unit,
     onError: (UIError) -> Unit,
-    navController: NavController
+    navController: NavController,
+    navigationEvents: Flow<PersonalDataNavigationEvent>
 ) {
+    ObserveAsNavigationEvents(flow = navigationEvents) { event ->
+        when (event) {
+            PersonalDataNavigationEvent.PopBackStack -> {
+                navController.popBackStack()
+            }
+        }
+    }
+
     val topBarBackButtonSize = 32.dp
 
     CATopBarWrapper(topBarContent = {
@@ -127,7 +140,8 @@ fun PersonalDataScreen(
             label = "Personal data animated content",
             transitionSpec = {
                 fadeIn(tween(200)).togetherWith(fadeOut(tween(200)))
-            }
+            },
+            contentKey = { it.key }
         ) { uiState ->
             when (uiState) {
                 is PersonalDataViewState.Error -> ErrorScreen(
@@ -138,7 +152,7 @@ fun PersonalDataScreen(
                     }
                 )
 
-                PersonalDataViewState.Loading -> LoadingScreen(modifier = Modifier)
+                is PersonalDataViewState.Loading -> LoadingScreen(modifier = Modifier)
 
                 is PersonalDataViewState.Success -> PersonalDataContent(
                     state = uiState,
@@ -146,24 +160,6 @@ fun PersonalDataScreen(
                 )
             }
         }
-        /*CheeseAnimatedVisibility(visible = state is PersonalDataViewState.Loading) {
-            LoadingScreen(modifier = Modifier)
-        }
-        CheeseAnimatedVisibility(visible = state is PersonalDataViewState.Error) {
-            ErrorScreen(
-                modifier = Modifier,
-                error = (state as PersonalDataViewState.Error).error,
-                retry = { uiError ->
-                    onError(uiError)
-                }
-            )
-        }
-        CheeseAnimatedVisibility(visible = state is PersonalDataViewState.Success) {
-            PersonalDataContent(
-                state = state as PersonalDataViewState.Success,
-                onEvent = onEvent
-            )
-        }*/
     }
 }
 
@@ -191,7 +187,7 @@ private fun PersonalDataContent(
             }
         } else {
             focus.clearFocus()
-            // TODO: - make request to update user data
+            onEvent(PersonalDataEvent.Confirm)
         }
     }
 

@@ -4,4 +4,5 @@ import ru.antares.cheese_android.domain.errors.UIError
 
 sealed interface PersonalDataUIError: UIError {
     data class SomeError(override val message: String): PersonalDataUIError
+    data class UpdateProfile(override val message: String): PersonalDataUIError
 }

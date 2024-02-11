@@ -3,25 +3,34 @@ package ru.antares.cheese_android.presentation.view.main.profile_graph.personal_
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import ru.antares.cheese_android.data.remote.services.main.profile.request.UpdateProfileRequest
+import ru.antares.cheese_android.data.remote.services.main.profile.response.Attachment
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.repository.IProfileRepository
+import ru.antares.cheese_android.domain.usecases.personal_data.GetUserFromDSInfoUseCase
 import ru.antares.cheese_android.domain.validators.CredentialsTextFieldValidator
 import ru.antares.cheese_android.domain.validators.EmailTextFieldValidator
 import ru.antares.cheese_android.domain.validators.PhoneTextFieldValidator
 
 class PersonalDataViewModel(
-    private val repository: IProfileRepository,
     private val credentialsTextFieldValidator: CredentialsTextFieldValidator,
     private val phoneTextFieldValidator: PhoneTextFieldValidator,
-    private val emailTextFieldValidator: EmailTextFieldValidator
+    private val emailTextFieldValidator: EmailTextFieldValidator,
+    private val repository: IProfileRepository,
+    private val getUserUseCase: GetUserFromDSInfoUseCase
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<PersonalDataViewState> =
-        MutableStateFlow(PersonalDataViewState.Loading)
+        MutableStateFlow(PersonalDataViewState.Loading())
     val state: StateFlow<PersonalDataViewState> =
         _mutableStateFlow.asStateFlow()
 
@@ -49,43 +58,35 @@ class PersonalDataViewModel(
         }
     }
 
+    private val _navigationEvents: Channel<PersonalDataNavigationEvent> = Channel()
+    val navigationEvents: Flow<PersonalDataNavigationEvent> = _navigationEvents.receiveAsFlow()
+
     private fun emitState(state: PersonalDataViewState) = viewModelScope.launch {
-        _mutableStateFlow.emit(state)
+        _mutableStateFlow.tryEmit(state)
+    }
+    private suspend fun sendNavigationEvent(navigationEvent: PersonalDataNavigationEvent) {
+        _navigationEvents.send(navigationEvent)
     }
 
     private fun initialize() = viewModelScope.launch {
-        delay(1000)
-        repository.get().onSuccess { response ->
-            val email = if (response.attachments.isNotEmpty()) {
-                response.attachments.firstOrNull {
-                    it.typeName == "EMAIL"
-                }.takeIf { it != null }?.typeName ?: ""
-            } else ""
+        val user = getUserUseCase.value.first()
 
-            val phone = if (response.attachments.isNotEmpty()) {
-                response.attachments.firstOrNull {
-                    it.typeName == "PHONE"
-                }.takeIf { it != null }?.value ?: ""
-            } else ""
-
-            emitState(
-                PersonalDataViewState.Success(
-                    surname = response.surname,
-                    name = response.firstname,
-                    patronymic = response.patronymic,
-                    birthday = response.birthday,
-                    email = email,
-                    phone = phone.substring(2, phone.length)
-                )
+        emitState(
+            PersonalDataViewState.Success(
+                surname = user.surname,
+                name = user.name,
+                patronymic = user.patronymic,
+                birthday = user.birthday,
+                email = user.email,
+                phone = user.phone.substring(2, user.phone.length),
+                verifiedEmail = user.verifiedEmail,
+                verifiedPhone = user.verifiedPhone
             )
-        }.onFailure { errorMessage ->
-            Log.d("INITIALIZE_PERSONAL_DATA", errorMessage)
-            emitState(PersonalDataViewState.Error(PersonalDataUIError.SomeError("Произошла ошибка")))
-        }
+        )
     }
 
     private fun onSurnameChange(value: String) {
-        val currentState = _mutableStateFlow.value as PersonalDataViewState.Success
+        val currentState = state.value as PersonalDataViewState.Success
         val surnameCredentialValidationResult = credentialsTextFieldValidator.validate(value)
         emitState(
             currentState.copy(
@@ -98,7 +99,7 @@ class PersonalDataViewModel(
     }
 
     private fun onNameChange(value: String) {
-        val currentState = _mutableStateFlow.value as PersonalDataViewState.Success
+        val currentState = state.value as PersonalDataViewState.Success
         val nameCredentialValidationResult = credentialsTextFieldValidator.validate(value)
         emitState(
             currentState.copy(
@@ -111,7 +112,7 @@ class PersonalDataViewModel(
     }
 
     private fun onPatronymicChange(value: String) {
-        val currentState = _mutableStateFlow.value as PersonalDataViewState.Success
+        val currentState = state.value as PersonalDataViewState.Success
         val patronymicCredentialValidationResult = credentialsTextFieldValidator.validate(value)
         emitState(
             currentState.copy(
@@ -124,12 +125,12 @@ class PersonalDataViewModel(
     }
 
     private fun onBirthdayChange(value: String) {
-        val currentState = _mutableStateFlow.value as PersonalDataViewState.Success
+        val currentState = state.value as PersonalDataViewState.Success
         emitState(currentState.copy(birthday = value))
     }
 
     private fun onEmailChange(value: String) {
-        val currentState = _mutableStateFlow.value as PersonalDataViewState.Success
+        val currentState = state.value as PersonalDataViewState.Success
         val emailValidationResult = emailTextFieldValidator.validate(value)
         emitState(
             currentState.copy(
@@ -141,7 +142,7 @@ class PersonalDataViewModel(
     }
 
     private fun onPhoneChange(value: String) {
-        val currentState = _mutableStateFlow.value as PersonalDataViewState.Success
+        val currentState = state.value as PersonalDataViewState.Success
         val phoneValidationResult = phoneTextFieldValidator.validate(value)
         emitState(
             currentState.copy(
@@ -152,7 +153,44 @@ class PersonalDataViewModel(
         )
     }
 
-    private fun confirm() {
-        // TODO: save new data
+    private fun confirm() = viewModelScope.launch(Dispatchers.IO) {
+        val successState = state.value as PersonalDataViewState.Success
+
+        withContext(Dispatchers.Main) { emitState(PersonalDataViewState.Loading()) }
+
+        repository.update(
+            request = UpdateProfileRequest(
+                attachments = listOf(
+                    Attachment.Phone(
+                        phone = successState.phone,
+                        verified = successState.verifiedPhone
+                    ),
+                    Attachment.Email(
+                        email = successState.email,
+                        verified = successState.verifiedEmail
+                    )
+                ),
+                birthday = successState.birthday,
+                firstname = successState.name,
+                surname = successState.surname,
+                patronymic = successState.patronymic
+            )
+        ).onSuccess { _ ->
+            withContext(Dispatchers.Main) {
+                sendNavigationEvent(PersonalDataNavigationEvent.PopBackStack)
+                emitState(successState)
+            }
+        }.onFailure { message ->
+            withContext(Dispatchers.Main) {
+                Log.d("UPDATE_PROFILE_UI_ERROR", message)
+                emitState(
+                    PersonalDataViewState.Error(
+                        error = PersonalDataUIError.UpdateProfile(
+                            "Не удалось обновить профиль"
+                        )
+                    )
+                )
+            }
+        }
     }
 }

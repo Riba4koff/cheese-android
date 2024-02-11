@@ -7,12 +7,14 @@ import org.koin.core.context.startKoin
 import org.koin.core.logger.Level.ERROR
 import org.koin.core.logger.Level.INFO
 import org.koin.core.logger.Level.WARNING
+import ru.antares.cheese_android.di.appModule
 import ru.antares.cheese_android.di.dataModule
 import ru.antares.cheese_android.di.netModule
-import ru.antares.cheese_android.di.validators_module
+import ru.antares.cheese_android.di.useCaseModule
+import ru.antares.cheese_android.di.validatorsModule
 import ru.antares.cheese_android.di.viewModelsModule
 
-class App: Application() {
+class App : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {
@@ -20,7 +22,7 @@ class App: Application() {
             androidLogger(INFO)
             androidLogger(WARNING)
             androidLogger(ERROR)
-            modules(netModule, dataModule, viewModelsModule, validators_module)
+            modules(appModule)
         }
     }
 }

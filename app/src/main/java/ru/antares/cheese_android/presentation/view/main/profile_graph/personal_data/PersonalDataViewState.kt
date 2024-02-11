@@ -20,8 +20,19 @@ data class TextFieldValidations(
                 emailValidationResult.success && birthdayValidationResult.success
 }
 
+enum class PersonalDataViewStateKey {
+    LOADING,
+    SUCCESS,
+    ERROR
+}
+
 sealed interface PersonalDataViewState {
-    data object Loading : PersonalDataViewState
+    val key: PersonalDataViewStateKey
+
+    data class Loading(
+        override val key: PersonalDataViewStateKey = PersonalDataViewStateKey.LOADING
+    ) : PersonalDataViewState
+
     data class Success(
         val surname: String = "",
         val name: String = "",
@@ -29,8 +40,14 @@ sealed interface PersonalDataViewState {
         val birthday: String = "",
         val email: String = "",
         val phone: String = "",
+        val verifiedPhone: Boolean = false,
+        val verifiedEmail: Boolean = false,
         val validation: TextFieldValidations = TextFieldValidations(),
+        override val key: PersonalDataViewStateKey = PersonalDataViewStateKey.SUCCESS,
     ) : PersonalDataViewState
 
-    data class Error(val error: UIError) : PersonalDataViewState
+    data class Error(
+        val error: UIError,
+        override val key: PersonalDataViewStateKey = PersonalDataViewStateKey.ERROR
+    ) : PersonalDataViewState
 }

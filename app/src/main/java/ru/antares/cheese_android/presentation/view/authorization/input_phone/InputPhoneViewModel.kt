@@ -81,7 +81,7 @@ class InputPhoneViewModel(
                     if (successMakingCall == true) {
                         _navigationEvents.send(InputPhoneNavigationEvent.NavigateToConfirmCode(stateFlow.value.phone))
                     } else _mutableStateFlow.update { state ->
-                        state.copy(error = ErrorState(isError = true, message = "Не удалось совершить звонок. Попробуйте позже"))
+                        state.copy(error = ErrorState(isError = true, message = "Вы превысили допустимое\nколичество звонков!\n\nПопробуйте позже"))
                     }
                 }
             }

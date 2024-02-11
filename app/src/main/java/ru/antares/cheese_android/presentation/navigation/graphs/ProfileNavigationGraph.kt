@@ -45,7 +45,8 @@ fun NavGraphBuilder.profileNavigationGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 onError = viewModel::onError,
-                navController = profileNavController
+                navController = profileNavController,
+                navigationEvents = viewModel.navigationEvents
             )
         }
         composable(route = Screen.ProfileNavigationGraph.Addresses.route) { navBackStackEntry ->
