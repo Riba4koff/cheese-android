@@ -50,10 +50,10 @@ class ProfileViewModel(
     init {
         viewModelScope.launch {
             launch {
-                loadProfile()
                 tokenService.authorizedState.collectLatest { authorized ->
                     when (authorized) {
                         AUTHORIZED -> {
+                            loadProfile()
                             userDataStore.user.collectLatest { user ->
                                 _mutableStateFlow.emit(
                                     ProfileScreenState.AuthorizedState(
