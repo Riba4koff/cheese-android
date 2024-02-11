@@ -33,9 +33,9 @@ class ProfileViewModel(
 ) : ViewModel() {
     private val events: Channel<ProfileEvent> = Channel()
 
-    private val _mutableStateFlow: MutableStateFlow<ProfileScreenState> =
-        MutableStateFlow(ProfileScreenState.LoadingState)
-    val state: StateFlow<ProfileScreenState> = _mutableStateFlow.asStateFlow()
+    private val _mutableStateFlow: MutableStateFlow<ProfileViewState> =
+        MutableStateFlow(ProfileViewState.LoadingState())
+    val state: StateFlow<ProfileViewState> = _mutableStateFlow.asStateFlow()
 
     private val _navigationEvents: Channel<ProfileNavigationEvent> = Channel()
     val navigationEvents: Flow<ProfileNavigationEvent> = _navigationEvents.receiveAsFlow()
@@ -49,7 +49,7 @@ class ProfileViewModel(
                             loadProfile()
                             userDataStore.user.collectLatest { user ->
                                 _mutableStateFlow.emit(
-                                    ProfileScreenState.AuthorizedState(
+                                    ProfileViewState.AuthorizedState(
                                         surname = user.surname,
                                         name = user.name,
                                         patronymic = user.patronymic
@@ -58,7 +58,7 @@ class ProfileViewModel(
                             }
                         }
 
-                        NOT_AUTHORIZED, SKIPPED -> _mutableStateFlow.emit(ProfileScreenState.NonAuthorizedState)
+                        NOT_AUTHORIZED, SKIPPED -> _mutableStateFlow.emit(ProfileViewState.NonAuthorizedState())
                     }
                 }
             }
@@ -90,8 +90,8 @@ class ProfileViewModel(
     }
 
     private suspend fun loadProfile() {
-        if (state.value !is ProfileScreenState.LoadingState) {
-            _mutableStateFlow.emit(ProfileScreenState.LoadingState)
+        if (state.value !is ProfileViewState.LoadingState) {
+            _mutableStateFlow.emit(ProfileViewState.LoadingState())
         }
 
         when (
@@ -101,7 +101,7 @@ class ProfileViewModel(
             is NetworkResponse.Error -> {
                 val uiError =
                     ProfileUIError.LoadProfileError(message = "Не удалось загрузить профиль")
-                ProfileScreenState.ErrorState(uiError)
+                ProfileViewState.ErrorState(uiError)
             }
 
             is NetworkResponse.Success -> {
@@ -133,12 +133,12 @@ class ProfileViewModel(
     }
 
     private suspend fun logout() {
-        _mutableStateFlow.emit(ProfileScreenState.LoadingState)
+        _mutableStateFlow.emit(ProfileViewState.LoadingState())
 
         when (authorizationRepository.logout()) {
             is NetworkResponse.Error -> {
                 val error = ProfileUIError.LogoutError(message = "Не удалось выйти из аккаунта")
-                _mutableStateFlow.emit(ProfileScreenState.ErrorState(error))
+                _mutableStateFlow.emit(ProfileViewState.ErrorState(error))
             }
 
             is NetworkResponse.Success -> {

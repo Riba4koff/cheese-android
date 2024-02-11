@@ -1,7 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+    //id("kotlin-kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -70,7 +71,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     // endregion
 
     // region - Country code picker
@@ -87,25 +88,30 @@ dependencies {
     // endregion
 
     // region - kotlinx.serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    val kotlinxSerializationVersion = "1.6.2"
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
     // endregion
 
     // region - Dependency Injection (Koin)
+    val diVersion = "3.5.0"
     implementation("io.insert-koin:koin-core:3.5.0")
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-androidx-compose:3.5.0")
     // endregion
 
     // region - OkHttp3
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    val okhttp3Version = "4.11.0"
+    implementation("com.squareup.okhttp3:okhttp:$okhttp3Version")
     // endregion
 
     // region - MockWebServer
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.9.0")
+    val mockWebServerVersion = "4.9.0"
+    testImplementation("com.squareup.okhttp3:mockwebserver:$mockWebServerVersion")
     // endregion
 
     // region - DataStore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    val dataStoreVersion = "1.0.0"
+    implementation("androidx.datastore:datastore-preferences:$dataStoreVersion")
     // endregion
 
     // region - Gson
@@ -117,12 +123,20 @@ dependencies {
     // endregion
 
     // region - navigation
-    val nav_version = "2.5.3"
+    val navVersion = "2.5.3"
     //noinspection GradleDependency
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation("androidx.navigation:navigation-compose:$navVersion")
     // endregion
 
     // region - Country Code Picker
-    implementation("com.github.jump-sdk:jetpack_compose_country_code_picker_emoji:2.2.6")
+    val ccPickerVersion = "2.2.6"
+    implementation("com.github.jump-sdk:jetpack_compose_country_code_picker_emoji:$ccPickerVersion")
     // end region
+    // region - Room data base
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+    //kapt("androidx.room:room-compiler:$roomVersion") /* deprecated */
+    // endregion
 }

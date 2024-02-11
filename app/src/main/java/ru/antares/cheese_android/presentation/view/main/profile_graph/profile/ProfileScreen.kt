@@ -52,19 +52,19 @@ import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
-internal class ProfileScreenStateProvider : PreviewParameterProvider<ProfileScreenState> {
-    override val values: Sequence<ProfileScreenState> = sequenceOf(
-        ProfileScreenState.LoadingState,
-        ProfileScreenState.NonAuthorizedState,
-        ProfileScreenState.ErrorState(ProfileUIError.LoadProfileError("Произошла ошибка при загрузке профиля")),
-        ProfileScreenState.AuthorizedState("Рыбаков", "Павел")
+internal class ProfileScreenStateProvider : PreviewParameterProvider<ProfileViewState> {
+    override val values: Sequence<ProfileViewState> = sequenceOf(
+        ProfileViewState.LoadingState(),
+        ProfileViewState.NonAuthorizedState(),
+        ProfileViewState.ErrorState(ProfileUIError.LoadProfileError("Произошла ошибка при загрузке профиля")),
+        ProfileViewState.AuthorizedState("Рыбаков", "Павел")
     )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview(
-    @PreviewParameter(ProfileScreenStateProvider::class) state: ProfileScreenState
+    @PreviewParameter(ProfileScreenStateProvider::class) state: ProfileViewState
 ) {
     CheeseTheme {
         ProfileScreen(
@@ -84,7 +84,7 @@ fun ProfileScreenPreview(
 
 @Composable
 fun ProfileScreen(
-    state: ProfileScreenState,
+    state: ProfileViewState,
     navigationEvents: Flow<ProfileNavigationEvent>,
     onEvent: (ProfileEvent) -> Unit,
     onNavigationEvent: (ProfileNavigationEvent) -> Unit,
@@ -133,10 +133,11 @@ fun ProfileScreen(
             label = "Profile animated content",
             transitionSpec = {
                 fadeIn(tween(200)).togetherWith(fadeOut(tween(200)))
-            }
+            },
+            contentKey = { it.key }
         ) { uiState ->
             when (uiState) {
-                is ProfileScreenState.AuthorizedState -> {
+                is ProfileViewState.AuthorizedState -> {
                     UserIsAuthorizedContent(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
@@ -147,7 +148,7 @@ fun ProfileScreen(
                     )
                 }
 
-                is ProfileScreenState.ErrorState -> {
+                is ProfileViewState.ErrorState -> {
                     ErrorScreen(
                         modifier = Modifier.align(Alignment.Center),
                         error = uiState.error,
@@ -157,11 +158,11 @@ fun ProfileScreen(
                     )
                 }
 
-                ProfileScreenState.LoadingState -> {
+                is ProfileViewState.LoadingState -> {
                     LoadingScreen(modifier = Modifier.align(Alignment.Center))
                 }
 
-                ProfileScreenState.NonAuthorizedState -> {
+                is ProfileViewState.NonAuthorizedState -> {
                     UserIsNotAuthorizedContent(
                         modifier = Modifier
                             .padding(bottom = CheeseTheme.paddings.large + CheeseTheme.paddings.large),
@@ -176,7 +177,7 @@ fun ProfileScreen(
 @Composable
 private fun UserIsAuthorizedContent(
     modifier: Modifier,
-    state: ProfileScreenState.AuthorizedState,
+    state: ProfileViewState.AuthorizedState,
     onEvent: (ProfileEvent) -> Unit,
     onNavigationEvent: (ProfileNavigationEvent) -> Unit
 ) {
