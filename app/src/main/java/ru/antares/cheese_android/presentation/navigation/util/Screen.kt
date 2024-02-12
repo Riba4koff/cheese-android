@@ -36,7 +36,13 @@ sealed class Screen(
     object CatalogNavigationGraph : NavigationGraph {
         override val route: String = "CATALOG_NAVIGATION_GRAPH"
 
-        data object Catalog : Screen(route = "CatalogScreen", "parentID")
+        data object Catalog : Screen(route = "CatalogScreen")
+
+        /** route: CatalogParentCategoryScreen/parentID/name*/
+        data object CatalogParentCategory: Screen(route = "CatalogParentCategoryScreen", "parentID", "name")
+
+        /** route: ProductsScreen/id/name*/
+        data object Products: Screen(route = "ProductsScreen", "id", "name")
         // Screens ...
     }
 

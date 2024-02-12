@@ -8,26 +8,15 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -37,27 +26,27 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import okhttp3.internal.filterList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
-import ru.antares.cheese_android.isFirstItemVisible
-import ru.antares.cheese_android.isLastItemVisible
-import ru.antares.cheese_android.isScrolledToTheEnd
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
-import ru.antares.cheese_android.rememberScrollContext
+import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 import java.util.UUID
 
@@ -108,14 +97,30 @@ fun CatalogScreenPreview(
 
         }, onEvent = {
 
-        })
+        }, navigationEvents = emptyFlow(), navController = rememberNavController())
     }
 }
 
 @Composable
 fun CatalogScreen(
-    state: CatalogViewState, onError: (UIError) -> Unit, onEvent: (CatalogEvent) -> Unit
+    navController: NavController,
+    state: CatalogViewState,
+    onError: (UIError) -> Unit,
+    onEvent: (CatalogEvent) -> Unit,
+    navigationEvents: Flow<CatalogNavigationEvent>
 ) {
+    ObserveAsNavigationEvents(flow = navigationEvents) { event ->
+        when (event) {
+            is CatalogNavigationEvent.NavigateToProducts -> {
+                navController.navigate("${Screen.CatalogNavigationGraph.Products.route}/${event.id}/${event.name}")
+            }
+
+            is CatalogNavigationEvent.OpenParentCategory -> {
+                navController.navigate("${Screen.CatalogNavigationGraph.CatalogParentCategory.route}/${event.parentID}/${event.name}")
+            }
+        }
+    }
+
     val (search, onSearchChange) = remember { mutableStateOf("") }
 
     CheeseTitleWrapper(title = stringResource(R.string.catalog_title),
@@ -152,6 +157,12 @@ private fun CatalogScreenContent(
             PairCategoryView(
                 parent = parent,
                 child = child,
+                onCategoryClick = {
+                    onEvent(CatalogEvent.NavigateToProducts(id = it.id, name = it.name))
+                },
+                openParentCategory = {
+                    onEvent(CatalogEvent.OpenParentCategory(parentID = parent.id, name = it.name))
+                }
             )
         }
         // TODO: - loading for pagination
@@ -168,6 +179,8 @@ private fun CatalogScreenContent(
 fun PairCategoryView(
     parent: CategoryUIModel,
     child: List<CategoryUIModel>,
+    onCategoryClick: (CategoryUIModel) -> Unit,
+    openParentCategory: (CategoryUIModel) -> Unit
 ) {
     Column {
         Row(
@@ -192,19 +205,16 @@ fun PairCategoryView(
                 if (indexCategory < 5) CategoryItemView(
                     category = category,
                     modifier = Modifier.weight(1f),
-                    onCategoryClick = {
-
-                    }) else if (indexCategory == 5 && child.size == 6) CategoryItemView(
+                    onCategoryClick = onCategoryClick
+                )
+                else if (indexCategory == 5 && child.size == 6) CategoryItemView(
                     category = category,
                     modifier = Modifier.weight(1f),
-                    onCategoryClick = {
-
-                    }) else if (indexCategory == 5 && child.size + 5 > 6) MoreCategoryItemView(
+                    onCategoryClick = onCategoryClick
+                ) else if (indexCategory == 5 && child.size + 5 > 6) MoreCategoryItemView(
                     category = category,
                     modifier = Modifier.weight(1f),
-                    onClick = {
-
-                    }
+                    onClick = openParentCategory
                 )
             }
         }
@@ -212,7 +222,7 @@ fun PairCategoryView(
 }
 
 @Composable
-private fun CategoryItemView(
+fun CategoryItemView(
     modifier: Modifier = Modifier,
     category: CategoryUIModel,
     onCategoryClick: (CategoryUIModel) -> Unit

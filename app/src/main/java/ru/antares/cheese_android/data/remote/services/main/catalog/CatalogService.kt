@@ -14,8 +14,8 @@ interface CatalogService {
         @Query("position") position: Int? = null,
         @Query("parentID") parentID: String? = null,
         @Query("hasParent") hasParent: Boolean? = null,
-        @Query("page") page: Int = 0,
-        @Query("pageSize") pageSize: Int = 10,
+        @Query("page") page: Int? = 0,
+        @Query("pageSize") pageSize: Int? = 10,
         @Query("sortDirection") sortDirection: String? = null,
         @Query("sortByColumn") sortByColumn: String? = null
     ): Response<CheeseNetworkResponse<Pagination<CategoryDTO>>>

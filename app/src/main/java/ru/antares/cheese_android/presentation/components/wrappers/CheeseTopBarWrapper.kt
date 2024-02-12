@@ -22,7 +22,7 @@ import ru.antares.cheese_android.R
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Composable
-fun CATopBarWrapper(
+fun CheeseTopBarWrapper(
     topBarContent: @Composable BoxScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ) {
@@ -49,7 +49,7 @@ fun CATopBarWrapper(
 @Composable
 fun CATopBarPreview() {
     CheeseTheme {
-        CATopBarWrapper(
+        CheeseTopBarWrapper(
             topBarContent = {
                 IconButton(
                     modifier = Modifier.align(Alignment.CenterStart),

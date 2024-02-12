@@ -63,7 +63,7 @@ import ru.antares.cheese_android.presentation.components.shaker.ShakeController
 import ru.antares.cheese_android.presentation.components.shaker.rememberShakeController
 import ru.antares.cheese_android.presentation.components.shaker.shake
 import ru.antares.cheese_android.presentation.components.textfields.CheeseTextField
-import ru.antares.cheese_android.presentation.components.wrappers.CATopBarWrapper
+import ru.antares.cheese_android.presentation.components.wrappers.CheeseTopBarWrapper
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 internal class PersonalDataScreenPreviewProvider : PreviewParameterProvider<PersonalDataViewState> {
@@ -112,7 +112,7 @@ fun PersonalDataScreen(
 
     val topBarBackButtonSize = 32.dp
 
-    CATopBarWrapper(topBarContent = {
+    CheeseTopBarWrapper(topBarContent = {
         IconButton(
             modifier = Modifier
                 .padding(start = CheeseTheme.paddings.smallest)

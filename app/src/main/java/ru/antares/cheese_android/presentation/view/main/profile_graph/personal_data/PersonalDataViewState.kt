@@ -5,26 +5,9 @@ import androidx.compose.runtime.Immutable
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.validators.ValidationTextFieldResult
 
-@Immutable
-data class TextFieldValidations(
-    val nameValidationResult: ValidationTextFieldResult = ValidationTextFieldResult(),
-    val surnameValidationResult: ValidationTextFieldResult = ValidationTextFieldResult(),
-    val patronymicValidationResult: ValidationTextFieldResult = ValidationTextFieldResult(),
-    val phoneValidationResult: ValidationTextFieldResult = ValidationTextFieldResult(),
-    val emailValidationResult: ValidationTextFieldResult = ValidationTextFieldResult(),
-    val birthdayValidationResult: ValidationTextFieldResult = ValidationTextFieldResult(),
-) {
-    val allFieldsAreValid: Boolean =
-        surnameValidationResult.success && nameValidationResult.success &&
-                patronymicValidationResult.success && phoneValidationResult.success &&
-                emailValidationResult.success && birthdayValidationResult.success
-}
 
-enum class PersonalDataViewStateKey {
-    LOADING,
-    SUCCESS,
-    ERROR
-}
+
+
 
 sealed interface PersonalDataViewState {
     val key: PersonalDataViewStateKey
@@ -47,7 +30,7 @@ sealed interface PersonalDataViewState {
     ) : PersonalDataViewState
 
     data class Error(
-        val error: UIError,
+        val error: PersonalDataUIError,
         override val key: PersonalDataViewStateKey = PersonalDataViewStateKey.ERROR
     ) : PersonalDataViewState
 }

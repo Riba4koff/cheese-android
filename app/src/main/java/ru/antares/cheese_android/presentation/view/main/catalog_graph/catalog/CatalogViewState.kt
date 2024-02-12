@@ -12,7 +12,7 @@ sealed interface CatalogViewState {
 
     data class Error(
         override val key: CatalogViewStateKey = CatalogViewStateKey.Error,
-        val error: UIError
+        val error: CatalogUIError
     ) : CatalogViewState
 
     data class Success(
