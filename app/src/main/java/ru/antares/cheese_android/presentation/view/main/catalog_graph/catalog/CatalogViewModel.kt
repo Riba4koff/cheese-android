@@ -15,7 +15,7 @@ import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
 import java.util.UUID
 
 class CatalogViewModel(
-
+    private val parentID: String
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<CatalogViewState> =
         MutableStateFlow(CatalogViewState.Loading())
@@ -23,19 +23,7 @@ class CatalogViewModel(
         _mutableStateFlow.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            delay(1000)
-
-            emitState(
-                CatalogViewState.Success(
-                    categories = (1..10).map {
-                        CategoryUIModel(
-                            id = UUID.randomUUID().toString(), name = "Категория $it"
-                        )
-                    }
-                )
-            )
-        }
+        load(parentID)
     }
 
     private val _navigationEvents: Channel<CatalogNavigationEvent> = Channel()
@@ -43,6 +31,11 @@ class CatalogViewModel(
 
     fun onEvent(event: CatalogEvent) {
         /* TODO: handle events */
+        when (event) {
+            is CatalogEvent.LoadNextPage -> {
+
+            }
+        }
     }
 
     fun onError(error: UIError) {
@@ -59,5 +52,19 @@ class CatalogViewModel(
 
     private suspend fun emitState(state: CatalogViewState) {
         _mutableStateFlow.emit(state)
+    }
+
+    private fun load(parentID: String?) = viewModelScope.launch {
+        delay(1000)
+
+        emitState(
+            CatalogViewState.Success(
+                categories = (1..10).map {
+                    CategoryUIModel(
+                        id = UUID.randomUUID().toString(), name = "Категория $it"
+                    )
+                }
+            )
+        )
     }
 }

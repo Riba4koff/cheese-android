@@ -238,13 +238,6 @@ private fun CategoryItemView(
         1.0f to Color.Black.copy(1f)
     )
 
-    val (pressed, onPressedChange) = remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(
-        targetValue = if (pressed) 0.95f else 1f,
-        label = "Category scale animation"
-    )
-
-
     Card(
         modifier = modifier
             .height(270.dp)
