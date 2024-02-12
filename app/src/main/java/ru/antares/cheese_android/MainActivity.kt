@@ -21,17 +21,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             CheeseTheme {
-                val catalogService by inject<CatalogService>()
-                val scope = rememberCoroutineScope()
-
-                scope.launch {
-                    safeNetworkCallWithPagination { catalogService.get() }.onFailure {
-                        Log.d("RESPONSE_ERROR", it)
-                    }.onSuccess { data ->
-                        Log.d("RESPONSE_SUCCESS", data.toString())
-                    }
-                }
-
                 val navController = rememberNavController()
                 CheeseApp(globalNavController = navController)
             }

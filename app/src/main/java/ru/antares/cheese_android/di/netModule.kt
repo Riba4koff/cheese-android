@@ -19,8 +19,10 @@ import ru.antares.cheese_android.data.remote.services.main.profile.ProfileServic
 import ru.antares.cheese_android.data.remote.services.main.profile.response.Attachment
 import ru.antares.cheese_android.data.remote.services.main.profile.response.AttachmentAdapter
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
+import ru.antares.cheese_android.data.repository.main.catalog.CatalogRepository
 import ru.antares.cheese_android.data.repository.main.profile.ProfileRepository
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
+import ru.antares.cheese_android.domain.repository.ICatalogRepository
 import ru.antares.cheese_android.domain.repository.IProfileRepository
 import java.util.concurrent.TimeUnit
 
@@ -45,6 +47,7 @@ private val okHttpModule = module {
 private val repositoryModule = module {
     singleOf(::AuthorizationRepository) { bind<IAuthorizationRepository>() }
     singleOf(::ProfileRepository) { bind<IProfileRepository>() }
+    singleOf(::CatalogRepository) { bind<ICatalogRepository>() }
 }
 
 private val servicesModule = module {

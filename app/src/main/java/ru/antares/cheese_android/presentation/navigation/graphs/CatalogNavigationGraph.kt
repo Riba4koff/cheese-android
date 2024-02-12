@@ -15,14 +15,17 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.Ca
 import ru.antares.cheese_android.sharedViewModel
 
 fun NavGraphBuilder.catalogNavigationGraph(catalogNavController: NavController) {
-    navigation(startDestination = Screen.CatalogNavigationGraph.Catalog.url, route = Screen.CatalogNavigationGraph.route) {
+    navigation(
+        startDestination = Screen.CatalogNavigationGraph.Catalog.url,
+        route = Screen.CatalogNavigationGraph.route
+    ) {
         composable(
             route = Screen.CatalogNavigationGraph.Catalog.url,
             arguments = listOf(
                 navArgument("parentID") { type = NavType.StringType }
             )
         ) { navBackStackEntry ->
-            val parentID = navBackStackEntry.arguments?.getString("parentID")
+            val parentID = navBackStackEntry.arguments?.getString("parentID") ?: ""
 
             val viewModel: CatalogViewModel = navBackStackEntry.sharedViewModel(
                 navController = catalogNavController,

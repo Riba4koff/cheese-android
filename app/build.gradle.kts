@@ -139,4 +139,9 @@ dependencies {
     ksp("androidx.room:room-compiler:$roomVersion")
     //kapt("androidx.room:room-compiler:$roomVersion") /* deprecated */
     // endregion
+
+    // region - Coil Async Image
+    val coilVersion = "2.5.0"
+    implementation("io.coil-kt:coil-compose:$coilVersion")
+    // endregion
 }

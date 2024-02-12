@@ -18,11 +18,12 @@ sealed interface CatalogViewState {
     data class Success(
         override val key: CatalogViewStateKey = CatalogViewStateKey.Success,
         val categories: List<CategoryUIModel> = emptyList(),
+        val listOfCategoryPairs: List<Pair<CategoryUIModel, List<CategoryUIModel>>> = listOf(),
         val sizeResult: Int = 0,
         val page: Int = 0,
         val amountOfPages: Int = 0,
         val amountOfAll: Int = 0,
-        val isLoadingNextPage: Boolean = false
+        val isLoadingNextPage: Boolean = true
         /* state here ... */
     ) : CatalogViewState
 }

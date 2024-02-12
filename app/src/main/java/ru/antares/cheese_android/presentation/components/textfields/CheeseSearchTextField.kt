@@ -96,11 +96,7 @@ fun CheeseSearchTextField(
         },
         trailingIcon = {
             Box {
-                AnimatedVisibility(
-                    visible = enableClearButton && value.isNotBlank(),
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
+                if(enableClearButton && value.isNotBlank()) {
                     IconButton(
                         onClick = {
                             onValueChange("")
@@ -113,12 +109,7 @@ fun CheeseSearchTextField(
                             tint = CheeseTheme.colors.gray
                         )
                     }
-                }
-                AnimatedVisibility(
-                    visible = value.isEmpty(),
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
+                } else {
                     Icon(
                         modifier = Modifier.size(20.dp),
                         imageVector = Icons.Rounded.Search,

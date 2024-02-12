@@ -2,20 +2,23 @@
 
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -23,16 +26,17 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.*
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,13 +44,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import okhttp3.internal.filterList
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
+import ru.antares.cheese_android.isFirstItemVisible
+import ru.antares.cheese_android.isLastItemVisible
+import ru.antares.cheese_android.isScrolledToTheEnd
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
+import ru.antares.cheese_android.rememberScrollContext
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 import java.util.UUID
 
@@ -60,8 +71,17 @@ internal class CatalogScreenPreviewProvider : PreviewParameterProvider<CatalogVi
                     name = "Название категории $id",
                     position = id
                 )
-            },
-            isLoadingNextPage = true
+            }, isLoadingNextPage = true, listOfCategoryPairs = listOf(
+                Pair(
+                    CategoryUIModel(name = "Название категории"), listOf(
+                        CategoryUIModel(name = "Название категории"),
+                        CategoryUIModel(name = "Название категории"),
+                        CategoryUIModel(name = "Название категории"),
+                        CategoryUIModel(name = "Название категории"),
+                        CategoryUIModel(name = "Название категории"),
+                    )
+                )
+            )
         ),
         CatalogViewState.Error(error = CatalogUIError.Loading("Не удалось загрузить каталог")),
     )
@@ -71,12 +91,10 @@ internal class CatalogScreenPreviewProvider : PreviewParameterProvider<CatalogVi
 @Composable
 fun CategoryItemPreview() {
     CheeseTheme {
-        CategoryItemView(
-            category = CategoryUIModel(name = "Сырная тарелка с кусочками винограда"),
+        CategoryItemView(category = CategoryUIModel(name = "Сырная тарелка с кусочками винограда"),
             onCategoryClick = {
 
-            }
-        )
+            })
     }
 }
 
@@ -86,48 +104,36 @@ fun CatalogScreenPreview(
     @PreviewParameter(CatalogScreenPreviewProvider::class) state: CatalogViewState
 ) {
     CheeseTheme {
-        CatalogScreen(
-            state = state,
-            onError = {
+        CatalogScreen(state = state, onError = {
 
-            },
-            onEvent = {
+        }, onEvent = {
 
-            }
-        )
+        })
     }
 }
 
 @Composable
 fun CatalogScreen(
-    state: CatalogViewState,
-    onError: (UIError) -> Unit,
-    onEvent: (CatalogEvent) -> Unit
+    state: CatalogViewState, onError: (UIError) -> Unit, onEvent: (CatalogEvent) -> Unit
 ) {
     val (search, onSearchChange) = remember { mutableStateOf("") }
 
-    CheeseTitleWrapper(
-        title = stringResource(R.string.catalog_title),
+    CheeseTitleWrapper(title = stringResource(R.string.catalog_title),
         searchValue = search,
         onSearchChange = onSearchChange,
         enableClearButton = true,
         onSearch = { searchValue ->
 
-        }
-    ) {
-        AnimatedContent(
-            targetState = state,
+        }) {
+        AnimatedContent(targetState = state,
             label = "Catalog screen animated content",
             transitionSpec = { fadeIn(tween(200)).togetherWith(fadeOut(tween(200))) },
-            contentKey = { it.key }
-        ) { uiState ->
+            contentKey = { it.key }) { uiState ->
             when (uiState) {
                 is CatalogViewState.Error -> ErrorScreen(error = uiState.error, retry = onError)
                 is CatalogViewState.Loading -> LoadingScreen(modifier = Modifier)
                 is CatalogViewState.Success -> CatalogScreenContent(
-                    state = uiState,
-                    onEvent = onEvent,
-                    search = search
+                    state = uiState, onEvent = onEvent, search = search
                 )
             }
         }
@@ -136,92 +142,72 @@ fun CatalogScreen(
 
 @Composable
 private fun CatalogScreenContent(
-    state: CatalogViewState.Success,
-    onEvent: (CatalogEvent) -> Unit,
-    search: String
+    state: CatalogViewState.Success, onEvent: (CatalogEvent) -> Unit, search: String
 ) {
-    val lazyGridState = rememberLazyGridState()
-
-    val categoryUIModelListHashMap: HashMap<CategoryUIModel, List<CategoryUIModel>> = hashMapOf(
-        Pair(
-            CategoryUIModel(name = "Сыры"),
-            listOf(
-                CategoryUIModel(name = "Мягкие"),
-                CategoryUIModel(name = "Твердые"),
-                CategoryUIModel(name = "С плесенью")
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        items(state.listOfCategoryPairs) { (parent, child) ->
+            PairCategoryView(
+                parent = parent,
+                child = child,
             )
-        )
-    )
-
-    Column {
-        /*Column(Modifier.verticalScroll(rememberScrollState())) {
-            for ((parent, childCategories) in categoryUIModelListHashMap) {
-                Row(Modifier.fillMaxWidth().padding(14.dp, 0.dp)) {
-                    if (childCategories.isNotEmpty()) {
-                        Text(
-                            text = parent.name, style = CheeseTheme.typography.common24Medium
-                        )
-                    }
-                }
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth().padding(14.dp, 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    childCategories.forEachIndexed { indexCategory, category ->
-                        if (indexCategory < 5) CategoryItemView(
-                            category = category,
-                            modifier = Modifier.weight(1f),
-                            onCategoryClick = {}
-                        ) else if (indexCategory == 5 && childCategories.size == 6) CategoryItemView(
-                            category = category,
-                            modifier = Modifier.weight(1f),
-                            onCategoryClick = {}
-                        ) else if (indexCategory == 5 && childCategories.size + 5 > 6) CategoryItemView(
-                            category = category,
-                            modifier = Modifier.weight(1f),
-                            onCategoryClick = {}
-                        )
-                    }
-                }
-            }
+        }
+        // TODO: - loading for pagination
+        /*item {
+            LoadingIndicator(
+                isLoading = state.isLoadingNextPage,
+                showBackground = false
+            )
         }*/
-        LazyVerticalGrid(
-            state = lazyGridState,
-            horizontalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.smallest),
-            verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.smallest),
-            columns = GridCells.Adaptive(162.dp),
-            contentPadding = PaddingValues(horizontal = CheeseTheme.paddings.medium),
-            content = {
-                items(state.categories) { category ->
-                    CategoryItemView(
-                        category = category,
-                        modifier = Modifier.weight(1f),
-                        onCategoryClick = { cat ->
-                             /*TODO: handle click to category*/
-                        }
-                    )
-                }
-                item {
-                    LoadingCategoryItemView(isLoading = state.isLoadingNextPage)
-                }
-            }
-        )
-        /*FlowRow(
+    }
+}
+
+@Composable
+fun PairCategoryView(
+    parent: CategoryUIModel,
+    child: List<CategoryUIModel>,
+) {
+    Column {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 16.dp, vertical = 8.dp
+                )
+        ) {
+            if (child.isNotEmpty()) Text(
+                text = parent.name, style = CheeseTheme.typography.common24Medium
+            )
+        }
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(14.dp, 8.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            state.categories.forEach { category ->
-                CategoryItemView(
+            child.forEachIndexed { indexCategory, category ->
+                if (indexCategory < 5) CategoryItemView(
                     category = category,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onCategoryClick = {
+
+                    }) else if (indexCategory == 5 && child.size == 6) CategoryItemView(
+                    category = category,
+                    modifier = Modifier.weight(1f),
+                    onCategoryClick = {
+
+                    }) else if (indexCategory == 5 && child.size + 5 > 6) MoreCategoryItemView(
+                    category = category,
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+
+                    }
                 )
             }
-            LoadingCategoryItemView(state.isLoadingNextPage)
-        }*/
+        }
     }
 }
 
@@ -238,25 +224,22 @@ private fun CategoryItemView(
         1.0f to Color.Black.copy(1f)
     )
 
-    Card(
-        modifier = modifier
-            .height(270.dp)
-            .width(160.dp)
-            .padding(2.dp),
+    Card(modifier = modifier
+        .height(270.dp)
+        .width(160.dp)
+        .padding(2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         onClick = {
             onCategoryClick(category)
-        }
-    ) {
+        }) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
-            // TODO: - change to async image
-            Image(
+            AsyncImage(
                 modifier = Modifier.fillMaxSize(),
-                painter = painterResource(id = R.drawable.category_placeholder),
-                contentDescription = null,
+                model = ImageRequest.Builder(LocalContext.current).data(category.imageLink)
+                    .crossfade(true).build(),
+                contentDescription = "Category image",
                 contentScale = ContentScale.Crop
             )
             Box(
@@ -280,7 +263,30 @@ private fun CategoryItemView(
 }
 
 @Composable
-private fun LoadingCategoryItemView(isLoading: Boolean) {
+private fun LoadingCategoryItemView(modifier: Modifier = Modifier, isLoading: Boolean) {
+    if (isLoading) {
+        Card(
+            modifier = modifier
+                .height(250.dp)
+                .width(162.dp)
+                .padding(2.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+        ) {
+            Box(
+                modifier = Modifier, contentAlignment = Alignment.Center
+            ) {
+                LoadingIndicator(isLoading = true)
+            }
+        }
+    }
+}
+
+@Composable
+fun MoreCategoryItemView(
+    modifier: Modifier = Modifier,
+    category: CategoryUIModel,
+    onClick: (CategoryUIModel) -> Unit
+) {
     val gradientColor = arrayOf(
         0.0f to Color.Transparent,
         0.5f to Color.Black.copy(0.2f),
@@ -288,18 +294,40 @@ private fun LoadingCategoryItemView(isLoading: Boolean) {
         1.0f to Color.Black.copy(1f)
     )
 
-    if (isLoading) {
-        Card(
-            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-        ) {
+    Card(modifier = modifier
+        .height(270.dp)
+        .width(160.dp)
+        .padding(2.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        onClick = {
+            onClick(category)
+        }) {
+        Box(modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
-                    .height(250.dp)
-                    .width(162.dp)
-                    .padding(2.dp), contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .blur(8.dp)
             ) {
-                LoadingIndicator(isLoading = true)
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = ImageRequest.Builder(LocalContext.current).data(category.imageLink)
+                        .crossfade(true).build(),
+                    contentDescription = "Category image",
+                    contentScale = ContentScale.Crop
+                )
+                // Vertical black gradient
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Brush.verticalGradient(colorStops = gradientColor))
+                )
             }
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = stringResource(R.string.more_categories),
+                style = CheeseTheme.typography.common18Bold,
+                color = CheeseTheme.colors.white
+            )
         }
     }
 }

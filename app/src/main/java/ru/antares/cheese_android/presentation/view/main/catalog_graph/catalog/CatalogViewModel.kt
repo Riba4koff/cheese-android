@@ -8,14 +8,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
+import ru.antares.cheese_android.domain.repository.ICatalogRepository
+import ru.antares.cheese_android.domain.usecases.catalog.GetCategoriesUseCase
 import java.util.UUID
 
 class CatalogViewModel(
-    private val parentID: String
+    private val parentID: String,
+    private val repository: ICatalogRepository,
+    private val getCategoriesUseCase: GetCategoriesUseCase
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<CatalogViewState> =
         MutableStateFlow(CatalogViewState.Loading())
@@ -23,7 +28,8 @@ class CatalogViewModel(
         _mutableStateFlow.asStateFlow()
 
     init {
-        load(parentID)
+        //load(parentID)
+        initialize()
     }
 
     private val _navigationEvents: Channel<CatalogNavigationEvent> = Channel()
@@ -52,6 +58,27 @@ class CatalogViewModel(
 
     private suspend fun emitState(state: CatalogViewState) {
         _mutableStateFlow.emit(state)
+    }
+
+    private fun initialize() = viewModelScope.launch {
+        launch {
+            val listOfCategoryPairs = repository.get()
+
+            listOfCategoryPairs.onSuccess { data ->
+                getCategoriesUseCase.emit(data)
+            }.onFailure { message ->
+                emitState(CatalogViewState.Error(error = CatalogUIError.Loading(message)))
+            }
+        }
+        launch {
+            getCategoriesUseCase.value.collectLatest { hashMap ->
+                if (hashMap.isNotEmpty()) emitState(
+                    CatalogViewState.Success(
+                        listOfCategoryPairs = hashMap
+                    )
+                )
+            }
+        }
     }
 
     private fun load(parentID: String?) = viewModelScope.launch {

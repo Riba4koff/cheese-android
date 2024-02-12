@@ -194,6 +194,7 @@ fun CheeseTheme(
         common26Bold = TextStyle(fontSize = 26.sp, fontWeight = FontWeight.Bold),
         common28Bold = TextStyle(fontSize = 28.sp, fontWeight = FontWeight.Bold),
         common30Bold = TextStyle(fontSize = 30.sp, fontWeight = FontWeight.Bold),
+        largeTitle = TextStyle(fontSize = 34.sp, fontWeight = FontWeight.Bold)
     )
 
     val view = LocalView.current

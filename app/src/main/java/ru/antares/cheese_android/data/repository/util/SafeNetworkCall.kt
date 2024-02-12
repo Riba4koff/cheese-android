@@ -45,6 +45,6 @@ suspend fun <T> safeNetworkCallWithPagination(
         else -> NetworkResponse.Error("Неизвестная ошибка")
     }
 } catch (e: Exception) {
-    NetworkResponse.Error("Неизвестная ошибка")
+    NetworkResponse.Error(e.message.toString())
 }
 

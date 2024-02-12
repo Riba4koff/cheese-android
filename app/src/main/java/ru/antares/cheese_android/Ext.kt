@@ -4,9 +4,12 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -80,3 +83,29 @@ fun PerformLifecycleOwner(
         }
     }
 }
+
+val LazyListState.isLastItemVisible: Boolean
+    get() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
+
+val LazyListState.isFirstItemVisible: Boolean
+    get() = firstVisibleItemIndex == 0
+
+data class ScrollContext(
+    val isTop: Boolean,
+    val isBottom: Boolean,
+)
+
+@Composable
+fun rememberScrollContext(listState: LazyListState): ScrollContext {
+    val scrollContext by remember {
+        derivedStateOf {
+            ScrollContext(
+                isTop = listState.isFirstItemVisible,
+                isBottom = listState.isLastItemVisible
+            )
+        }
+    }
+    return scrollContext
+}
+
+fun LazyListState.isScrolledToTheEnd() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1

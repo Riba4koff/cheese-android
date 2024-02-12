@@ -9,7 +9,7 @@ import ru.antares.cheese_android.data.remote.models.CheeseNetworkResponse
 import ru.antares.cheese_android.data.remote.services.main.profile.request.UpdateProfileRequest
 import ru.antares.cheese_android.data.remote.services.main.profile.response.ProfileResponse
 
-interface   ProfileService {
+interface ProfileService {
     @GET("auth/profile")
     suspend fun get(): Response<CheeseNetworkResponse<ProfileResponse>>
 

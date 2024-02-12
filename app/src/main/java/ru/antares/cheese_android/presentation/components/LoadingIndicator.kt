@@ -12,13 +12,18 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.antares.cheese_android.onClick
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Composable
-fun LoadingIndicator(modifier: Modifier = Modifier, isLoading: Boolean) {
+fun LoadingIndicator(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean,
+    showBackground: Boolean = true
+) {
     val indicatorSize = 24.dp
 
     AnimatedVisibility(
@@ -30,7 +35,7 @@ fun LoadingIndicator(modifier: Modifier = Modifier, isLoading: Boolean) {
         Box(
             modifier = Modifier
                 .background(
-                    CheeseTheme.colors.gray.copy(0.7f),
+                    if (showBackground) CheeseTheme.colors.gray.copy(0.7f) else Color.Transparent,
                     CheeseTheme.shapes.small
                 )
                 .padding(CheeseTheme.paddings.medium)

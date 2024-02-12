@@ -17,4 +17,9 @@ sealed class NetworkResponse<T> {
             this
         } else this
     }
+
+    fun getOrNull(): T? {
+        return if (this is Success) this.data
+        else null
+    }
 }
