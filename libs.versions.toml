@@ -1,0 +1,113 @@
+[versions]
+
+core_ktx = "1.12.0"  # Версия AndroidX Core KTX
+lifecycle_runtime_ktx = "2.7.0"  # Версия AndroidX Lifecycle Runtime KTX
+activity_compose = "1.8.2"  # Версия AndroidX Activity Compose
+compose_bom = "2024.02.00"  # Версия AndroidX Compose BOM (Bill of Materials)
+compose_ui = "1.6.1"  # Версия AndroidX Compose UI
+compose_ui_graphics = "1.6.1"  # Версия AndroidX Compose UI Graphics
+compose_ui_tooling_preview = "1.6.1"  # Версия AndroidX Compose UI Tooling Preview
+compose_material3 = "1.2.0"  # Версия AndroidX Compose Material3
+
+# JUnit
+junit = "4.13.2"
+
+# AndroidX Test
+test_core = "1.5.0"
+test_ext_junit = "1.1.5"
+
+# Espresso
+espresso_core = "3.5.1"
+
+# AndroidX Lifecycle Compose
+lifecycle_runtime_compose = "2.7.0"
+
+# Material
+material = "1.6.1"
+
+# Jump SDK - Jetpack Compose Country Code Picker Emoji
+jetpack_compose_country_code_picker_emoji = "2.2.6"
+
+# Retrofit2
+retrofit2_kotlinx_serialization_converter = "0.8.0"
+converter_gson = "2.9.0"
+logging_interceptor = "4.11.0"
+
+# Kotlinx Serialization
+kotlinx_serialization = "1.6.2"
+
+# Koin
+koin_core = "3.5.0"
+koin_android = "3.5.0"
+koin_androidx_compose = "3.5.0"
+
+# OkHttp3
+okhttp = "4.12.0"
+
+# MockWebServer
+mockwebserver = "4.9.0"
+
+# DataStore
+datastore_preferences = "1.0.0"
+
+# Gson
+gson = "2.10"
+gson_converter = "2.9.0"
+
+kotlin-android-plugin = "1.9.20"
+android-application = "8.2.2"
+kotlin-plugin-serialization = "1.9.0"
+devtools-ksp = "1.9.20-1.0.14"
+
+# Navigation
+navigation_compose = "2.5.3"
+
+# Room
+room_runtime = "2.6.1"
+room_ktx = "2.6.1"
+room_compiler = "2.6.1"
+
+# Coil
+coil_compose = "2.5.0"
+
+[libraries]
+androidx_core_ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core_ktx" }  # AndroidX Core KTX
+lifecycle_runtime_ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle_runtime_ktx" }  # AndroidX Lifecycle Runtime KTX
+activity_compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity_compose" }  # AndroidX Activity Compose
+compose_bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose_bom" }  # AndroidX Compose BOM (Bill of Materials)
+compose_ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose_ui" }  # AndroidX Compose UI
+compose_ui_graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "compose_ui_graphics" }  # AndroidX Compose UI Graphics
+compose_ui_tooling_preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose_ui_tooling_preview" }  # AndroidX Compose UI Tooling Preview
+compose_material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "compose_material3" }  # AndroidX Compose Material3
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }  # JUnit
+test_core = { group = "androidx.test", name = "core", version.ref = "test_core" }  # AndroidX Test
+test_ext_junit = { group = "androidx.test.ext", name = "junit", version.ref = "test_ext_junit" }  # AndroidX Test Extension for JUnit
+espresso_core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso_core" }  # Espresso Core
+lifecycle_runtime_compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle_runtime_compose" }  # AndroidX Lifecycle Compose
+material = { group = "androidx.compose.material", name = "material", version.ref = "material" }  # Material
+jetpack_compose_country_code_picker_emoji = { group = "com.github.jump-sdk", name = "jetpack_compose_country_code_picker_emoji", version.ref = "jetpack_compose_country_code_picker_emoji" }  # Jump SDK - Jetpack Compose Country Code Picker Emoji
+retrofit2_kotlinx_serialization_converter = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2_kotlinx_serialization_converter" }  # Retrofit2 Kotlinx Serialization Converter
+converter_gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converter_gson" }  # Retrofit2 Converter Gson
+logging_interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "logging_interceptor" }  # OkHttp3 Logging Interceptor
+kotlinx_serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx_serialization" }  # Kotlinx Serialization
+koin_core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin_core" }  # Koin Core
+koin_android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin_android" }  # Koin Android
+koin_androidx_compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin_androidx_compose" }  # Koin AndroidX Compose
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }  # OkHttp3
+mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "mockwebserver" }  # MockWebServer
+datastore_preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore_preferences" }  # DataStore Preferences
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }  # Gson
+gson_converter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "gson_converter" }  # Gson Converter
+navigation_compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation_compose" }  # Navigation Compose
+room_runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room_runtime" }  # Room Runtime
+room_ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room_ktx" }  # Room KTX
+room_compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room_compiler" }  # Room Compiler
+coil_compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil_compose" }  # Coil Compose
+
+
+[plugins]
+android_application_plugin = { id = "com.android.application", version.ref = "android-application" }
+kotlin_android_plugin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-android-plugin" }
+serialization_plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-plugin-serialization" }
+ksp_plugin = { id = "com.google.devtools.ksp", version.ref = "devtools-ksp" }

@@ -38,7 +38,7 @@ import ru.antares.cheese_android.ui.theme.CheeseTheme
 @Preview(showBackground = true)
 @Composable
 fun PreviewBottomBar() {
-    AndroidCheeseTheme {
+    CheeseTheme {
         BottomBar(navController = rememberNavController(), countInCart = 1)
     }
 }
@@ -144,7 +144,7 @@ private fun BottomBarButtonBadgedBox(
             modifier = Modifier.size(13.dp),
             badge = {
                 if (destination.route == Screen.CartNavigationGraph.route && countInCart > 0) Badge(
-                    modifier = Modifier.offset((24).dp, 12.dp)
+                    modifier = Modifier.offset((26).dp, 0.dp)
                 ) {
                     Text("$countInCart", fontSize = 9.sp)
                 }

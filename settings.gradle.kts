@@ -12,6 +12,12 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://jitpack.io")
     }
+    defaultLibrariesExtensionName = "projectLibs"
+    versionCatalogs {
+        create("libs") {
+            from(files("libs.versions.toml"))
+        }
+    }
 }
 
 rootProject.name = "cheese-android"
