@@ -1,45 +1,29 @@
 package ru.antares.cheese_android
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import ru.antares.cheese_android.ui.theme.CheeseandroidTheme
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService
+import ru.antares.cheese_android.data.repository.util.safeNetworkCall
+import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
+import ru.antares.cheese_android.presentation.navigation.CheeseApp
+import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CheeseandroidTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+            CheeseTheme {
+                val navController = rememberNavController()
+                CheeseApp(globalNavController = navController)
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CheeseandroidTheme {
-        Greeting("Android")
     }
 }
