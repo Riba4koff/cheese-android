@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.flow
 import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.local.datastore.user.IUserDataStore
 import ru.antares.cheese_android.data.local.datastore.user.User
-import ru.antares.cheese_android.data.remote.models.CheeseNetworkResponse
+import ru.antares.cheese_android.data.local.models.LocalResponse
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.services.main.profile.ProfileService
 import ru.antares.cheese_android.data.remote.services.main.profile.request.UpdateProfileRequest
@@ -14,6 +14,7 @@ import ru.antares.cheese_android.data.remote.services.main.profile.response.Prof
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.repository.IProfileRepository
+import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataUIError
 import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileUIError
 
 class ProfileRepository(
@@ -21,11 +22,7 @@ class ProfileRepository(
     private val userDS: IUserDataStore,
     private val tokenService: ITokenService
 ) : IProfileRepository {
-    override suspend fun get(): NetworkResponse<ProfileResponse> = safeNetworkCall {
-        profileService.get()
-    }
-
-    override fun getV2(): Flow<ResourceState<ProfileResponse>> = flow {
+    override fun get(): Flow<ResourceState<ProfileResponse>> = flow {
         emit(ResourceState.Loading(isLoading = true))
 
         val response = profileService.get()
@@ -53,10 +50,56 @@ class ProfileRepository(
     }
 
     override suspend fun update(request: UpdateProfileRequest): NetworkResponse<ProfileResponse> {
-        return safeNetworkCall {
+        return when (val networkProfileUpdateResponse = safeNetworkCall {
             Log.d("UPDATE_PROFILE_REQUEST", request.toString())
             profileService.update(request)
-        }.onSuccess { response ->
+        }) {
+            is NetworkResponse.Success -> {
+                val emailAttachment = networkProfileUpdateResponse.data.attachments.firstOrNull {
+                    it.typeName == "EMAIL"
+                }.takeIf { it != null }
+
+                val phoneAttachment = networkProfileUpdateResponse.data.attachments.firstOrNull {
+                    it.typeName == "PHONE"
+                }.takeIf { it != null }
+
+                val localUpdateProfileResult = userDS.save(
+                    user = User(
+                        surname = networkProfileUpdateResponse.data.surname,
+                        name = networkProfileUpdateResponse.data.firstname,
+                        patronymic = networkProfileUpdateResponse.data.patronymic,
+                        email = emailAttachment?.value ?: "",
+                        phone = phoneAttachment?.value ?: "",
+                        birthday = networkProfileUpdateResponse.data.birthday,
+                        verifiedPhone = phoneAttachment?.verified ?: false,
+                        verifiedEmail = emailAttachment?.verified ?: false
+                    )
+                )
+
+                if (localUpdateProfileResult is LocalResponse.Success) {
+                    NetworkResponse.Success(networkProfileUpdateResponse.data)
+                } else {
+                    Log.d("UPDATE_PROFILE", "local updating profile error")
+                    NetworkResponse.Error("Не удалось обновить профиль")
+                }
+            }
+
+            is NetworkResponse.Error -> {
+                Log.d("UPDATE_PROFILE", "network updating profile error")
+                NetworkResponse.Error("")
+            }
+        }
+    }
+
+    override suspend fun updateV2(request: UpdateProfileRequest): Flow<ResourceState<Unit>> = flow {
+        emit(ResourceState.Loading(isLoading = true))
+
+        val networkProfileUpdateResponse = safeNetworkCall {
+            Log.d("UPDATE_PROFILE_REQUEST", request.toString())
+            profileService.update(request)
+        }
+
+        networkProfileUpdateResponse.onSuccess { response ->
             val emailAttachment = response.attachments.firstOrNull {
                 it.typeName == "EMAIL"
             }.takeIf { it != null }
@@ -65,7 +108,7 @@ class ProfileRepository(
                 it.typeName == "PHONE"
             }.takeIf { it != null }
 
-            userDS.save(
+            val localUpdateProfileResult = userDS.save(
                 user = User(
                     surname = response.surname,
                     name = response.firstname,
@@ -77,6 +120,16 @@ class ProfileRepository(
                     verifiedEmail = emailAttachment?.verified ?: false
                 )
             )
+
+            localUpdateProfileResult.onFailure { errorMessage ->
+                Log.d("UPDATE_PROFILE_ERROR", errorMessage)
+                emit(ResourceState.Error(PersonalDataUIError.UpdateProfile("Не удалось обновить профиль")))
+            }.onSuccess {
+                emit(ResourceState.Success(Unit))
+            }
+        }.onFailure { errorMessage ->
+            Log.d("UPDATE_PROFILE_ERROR", errorMessage)
+            emit(ResourceState.Error(PersonalDataUIError.UpdateProfile("Не удалось обновить профиль")))
         }
     }
 

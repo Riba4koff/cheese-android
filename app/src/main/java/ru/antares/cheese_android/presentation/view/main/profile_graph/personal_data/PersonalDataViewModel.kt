@@ -3,14 +3,17 @@ package ru.antares.cheese_android.presentation.view.main.profile_graph.personal_
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.optics.copy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.remote.services.main.profile.request.UpdateProfileRequest
@@ -29,10 +32,9 @@ class PersonalDataViewModel(
     private val repository: IProfileRepository,
     private val getUserUseCase: GetUserFromDSInfoUseCase
 ) : ViewModel() {
-    private val _mutableStateFlow: MutableStateFlow<PersonalDataViewState> =
-        MutableStateFlow(PersonalDataViewState.Loading())
-    val state: StateFlow<PersonalDataViewState> =
-        _mutableStateFlow.asStateFlow()
+    private val _mutableStateFlow: MutableStateFlow<PersonalDataState> =
+        MutableStateFlow(PersonalDataState())
+    val state: StateFlow<PersonalDataState> = _mutableStateFlow.asStateFlow()
 
     init {
         initialize()
@@ -66,136 +68,139 @@ class PersonalDataViewModel(
     private val _navigationEvents: Channel<PersonalDataNavigationEvent> = Channel()
     val navigationEvents: Flow<PersonalDataNavigationEvent> = _navigationEvents.receiveAsFlow()
 
-    private fun emitState(state: PersonalDataViewState) = viewModelScope.launch {
-        _mutableStateFlow.tryEmit(state)
-    }
-
     private suspend fun sendNavigationEvent(navigationEvent: PersonalDataNavigationEvent) {
         _navigationEvents.send(navigationEvent)
     }
 
     private fun initialize() = viewModelScope.launch {
-        val user = getUserUseCase.value.first()
+        Log.d("PD_VM", "initializing")
 
-        emitState(
-            PersonalDataViewState.Success(
-                surname = user.surname,
-                name = user.name,
-                patronymic = user.patronymic,
-                birthday = user.birthday,
-                email = user.email,
-                phone = user.phone.substring(2, user.phone.length),
-                verifiedEmail = user.verifiedEmail,
-                verifiedPhone = user.verifiedPhone
-            )
-        )
+        val user = withContext(Dispatchers.IO) { getUserUseCase.value.first() }
+
+        Log.d("USER", user.toString())
+        Log.d("USER", user.email.isEmpty().toString())
+
+        _mutableStateFlow.update { state ->
+            state.copy {
+                PersonalDataState.surname set user.surname
+                PersonalDataState.name set user.name
+                PersonalDataState.patronymic set user.patronymic
+                PersonalDataState.birthday set user.birthday
+                PersonalDataState.email set user.email
+                PersonalDataState.phone set user.phone.substring(2, user.phone.length)
+                PersonalDataState.verifiedEmail set user.verifiedEmail
+                PersonalDataState.verifiedPhone set user.verifiedPhone
+                PersonalDataState.uiState set PersonalDataLoadingState.SUCCESS
+                PersonalDataState.enabledBirthday set user.birthday.isEmpty()
+            }
+        }
     }
 
     private fun onSurnameChange(value: String) {
-        val currentState = state.value as PersonalDataViewState.Success
-        val surnameCredentialValidationResult = credentialsTextFieldValidator.validate(value)
-        emitState(
-            currentState.copy(
-                surname = value,
-                validation = currentState.validation.copy(
-                    surnameValidationResult = surnameCredentialValidationResult
-                )
-            )
-        )
+        _mutableStateFlow.update { state ->
+            state.copy {
+                PersonalDataState.surname set value
+                PersonalDataState.validation set state.validation.copy {
+                    TextFieldValidations.surnameValidationResult set
+                            credentialsTextFieldValidator.validate(value)
+                }
+            }
+        }
     }
 
     private fun onNameChange(value: String) {
-        val currentState = state.value as PersonalDataViewState.Success
-        val nameCredentialValidationResult = credentialsTextFieldValidator.validate(value)
-        emitState(
-            currentState.copy(
-                name = value,
-                validation = currentState.validation.copy(
-                    nameValidationResult = nameCredentialValidationResult
-                )
-            )
-        )
+        _mutableStateFlow.update { state ->
+            state.copy {
+                PersonalDataState.name set value
+                PersonalDataState.validation set state.validation.copy {
+                    TextFieldValidations.nameValidationResult set
+                            credentialsTextFieldValidator.validate(value)
+                }
+            }
+        }
     }
 
     private fun onPatronymicChange(value: String) {
-        val currentState = state.value as PersonalDataViewState.Success
-        val patronymicCredentialValidationResult = credentialsTextFieldValidator.validate(value)
-        emitState(
-            currentState.copy(
-                patronymic = value,
-                validation = currentState.validation.copy(
-                    patronymicValidationResult = patronymicCredentialValidationResult
-                )
-            )
-        )
+        _mutableStateFlow.update { state ->
+            state.copy {
+                PersonalDataState.patronymic set value
+                PersonalDataState.validation set state.validation.copy {
+                    TextFieldValidations.patronymicValidationResult set
+                            credentialsTextFieldValidator.validate(value)
+                }
+            }
+        }
     }
 
     private fun onBirthdayChange(value: String) {
-        val currentState = state.value as PersonalDataViewState.Success
-        emitState(currentState.copy(birthday = value))
+        _mutableStateFlow.update { state ->
+            state.copy {
+                PersonalDataState.birthday set value
+            }
+        }
     }
 
     private fun onEmailChange(value: String) {
-        val currentState = state.value as PersonalDataViewState.Success
-        val emailValidationResult = emailTextFieldValidator.validate(value)
-        emitState(
-            currentState.copy(
-                email = value, validation = currentState.validation.copy(
-                    emailValidationResult = emailValidationResult
-                )
-            )
-        )
+        _mutableStateFlow.update { state ->
+            state.copy {
+                PersonalDataState.email set value
+                PersonalDataState.validation set state.validation.copy {
+                    TextFieldValidations.emailValidationResult set
+                            emailTextFieldValidator.validate(value)
+                }
+            }
+        }
     }
 
     private fun onPhoneChange(value: String) {
-        val currentState = state.value as PersonalDataViewState.Success
-        val phoneValidationResult = phoneTextFieldValidator.validate(value)
-        emitState(
-            currentState.copy(
-                phone = value, validation = currentState.validation.copy(
-                    phoneValidationResult = phoneValidationResult
-                )
-            )
-        )
+        _mutableStateFlow.update { state ->
+            state.copy {
+                PersonalDataState.phone set value
+                PersonalDataState.validation set state.validation.copy {
+                    TextFieldValidations.phoneValidationResult set phoneTextFieldValidator.validate(
+                        value
+                    )
+                }
+            }
+        }
     }
 
-    private fun confirm() = viewModelScope.launch(Dispatchers.IO) {
-        val successState = state.value as PersonalDataViewState.Success
-
-        withContext(Dispatchers.Main) { emitState(PersonalDataViewState.Loading()) }
-
-        repository.update(
+    private fun confirm() = viewModelScope.launch {
+        repository.updateV2(
             request = UpdateProfileRequest(
                 attachments = listOf(
                     Attachment.Phone(
-                        phone = successState.phone,
-                        verified = successState.verifiedPhone
+                        phone = state.value.phone,
+                        verified = state.value.verifiedPhone
                     ),
                     Attachment.Email(
-                        email = successState.email,
-                        verified = successState.verifiedEmail
+                        email = state.value.email,
+                        verified = state.value.verifiedEmail
                     )
                 ),
-                birthday = successState.birthday,
-                firstname = successState.name,
-                surname = successState.surname,
-                patronymic = successState.patronymic
+                birthday = state.value.birthday,
+                firstname = state.value.name,
+                surname = state.value.surname,
+                patronymic = state.value.patronymic
             )
-        ).onSuccess { _ ->
-            withContext(Dispatchers.Main) {
-                sendNavigationEvent(PersonalDataNavigationEvent.PopBackStack)
-                emitState(successState)
-            }
-        }.onFailure { message ->
-            withContext(Dispatchers.Main) {
-                Log.d("UPDATE_PROFILE_UI_ERROR", message)
-                emitState(
-                    PersonalDataViewState.Error(
-                        error = PersonalDataUIError.UpdateProfile(
-                            "Не удалось обновить профиль"
-                        )
-                    )
-                )
+        ).collectLatest { resourceState ->
+            resourceState.onLoading { isLoading ->
+                if (isLoading) _mutableStateFlow.update { state ->
+                    state.copy {
+                        PersonalDataState.uiState set PersonalDataLoadingState.LOADING
+                    }
+                }
+            }.onError { error ->
+                _mutableStateFlow.update { state ->
+                    state.copy {
+                        PersonalDataState.error set error
+                        PersonalDataState.uiState set PersonalDataLoadingState.ERROR
+                    }
+                }
+            }.onSuccess {
+                withContext(Dispatchers.Main) {
+                    sendNavigationEvent(PersonalDataNavigationEvent.PopBackStack)
+                }
             }
         }
     }

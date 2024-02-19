@@ -1,7 +1,10 @@
 plugins {
-    id("com.android.application")
+    /*id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
+    id("com.google.devtools.ksp")*/
+    alias(libs.plugins.ksp.plugin)
+    alias(libs.plugins.android.application.plugin)
+    alias(libs.plugins.kotlin.android.plugin)
 }
 
 android {
@@ -124,10 +127,16 @@ dependencies {
     // region - Room data base
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    debugImplementation(libs.ui.tooling)
     ksp(libs.room.compiler)
     // endregion
 
     // region - Coil Async Image
     implementation(libs.coil.compose)
     // endregion
+
+    // region - Arrow
+    implementation(libs.arrow.core)
+    implementation(libs.arrow.optics)
+    ksp(libs.arrow.optics.ksp.plugin)
 }

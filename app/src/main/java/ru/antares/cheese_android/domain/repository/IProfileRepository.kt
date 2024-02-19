@@ -7,8 +7,8 @@ import ru.antares.cheese_android.data.remote.services.main.profile.response.Prof
 import ru.antares.cheese_android.domain.ResourceState
 
 interface IProfileRepository {
-    suspend fun get(): NetworkResponse<ProfileResponse>
-    fun getV2(): Flow<ResourceState<ProfileResponse>>
+    fun get(): Flow<ResourceState<ProfileResponse>>
     suspend fun update(request: UpdateProfileRequest): NetworkResponse<ProfileResponse>
+    suspend fun updateV2(request: UpdateProfileRequest): Flow<ResourceState<Unit>>
     suspend fun delete(): NetworkResponse<Boolean?>
 }

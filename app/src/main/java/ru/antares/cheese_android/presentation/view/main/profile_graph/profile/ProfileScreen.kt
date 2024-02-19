@@ -57,20 +57,9 @@ import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
-internal class ProfileScreenStateProvider : PreviewParameterProvider<ProfileViewState> {
-    override val values: Sequence<ProfileViewState> = sequenceOf(
-        ProfileViewState.LoadingState(),
-        ProfileViewState.NonAuthorizedState(),
-        ProfileViewState.ErrorState(ProfileUIError.LoadProfileError("Произошла ошибка при загрузке профиля")),
-        ProfileViewState.AuthorizedState("Рыбаков", "Павел")
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
-fun ProfileScreenPreview(
-    @PreviewParameter(ProfileScreenStateProvider::class) state: ProfileViewState
-) {
+fun ProfileScreenPreview() {
     CheeseTheme {
         ProfileScreen(
             state = ProfileState(),

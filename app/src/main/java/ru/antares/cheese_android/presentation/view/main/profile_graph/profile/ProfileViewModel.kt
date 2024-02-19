@@ -3,6 +3,7 @@ package ru.antares.cheese_android.presentation.view.main.profile_graph.profile
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.optics.copy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -21,16 +22,6 @@ import ru.antares.cheese_android.data.local.datastore.user.User
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
 import ru.antares.cheese_android.data.repository.main.profile.ProfileRepository
 import ru.antares.cheese_android.domain.errors.UIError
-
-data class ProfileState(
-    val surname: String = "",
-    val name: String = "",
-    val patronymic: String = "",
-    val isLoading: Boolean = true,
-    val profileLoaded: Boolean = false,
-    val isAuthorized: Boolean = false,
-    val error: UIError? = null
-)
 
 
 class ProfileViewModel(
@@ -51,20 +42,20 @@ class ProfileViewModel(
             launch {
                 userDataStore.user.collectLatest { user ->
                     _mutableStateFlow.update { state ->
-                        state.copy(
-                            surname = user.surname,
-                            name = user.name,
-                            patronymic = user.patronymic
-                        )
+                        state.copy {
+                            ProfileState.surname set user.surname
+                            ProfileState.name set user.name
+                            ProfileState.patronymic set user.patronymic
+                        }
                     }
                 }
             }
             launch {
                 tokenService.authorizedState.collectLatest { authState ->
                     _mutableStateFlow.update { state ->
-                        state.copy(
-                            isAuthorized = authState == AUTHORIZED
-                        )
+                        state.copy {
+                            ProfileState.isAuthorized set (authState == AUTHORIZED)
+                        }
                     }
                 }
             }
@@ -85,6 +76,7 @@ class ProfileViewModel(
             ProfileEvent.DeleteAccount -> {
                 /* TODO: delete account logic */
             }
+
             ProfileEvent.LoadProfile -> loadProfileV2()
         }
     }
@@ -96,7 +88,7 @@ class ProfileViewModel(
     private suspend fun loadProfileV2() {
         if (state.value.isAuthorized && state.value.profileLoaded.not()) {
             Log.d("LOADING_PROFILE_VM", "loading")
-            profileRepository.getV2().collect { resource ->
+            profileRepository.get().collect { resource ->
                 resource.onSuccess { response ->
                     val emailAttachment = response.attachments.firstOrNull {
                         it.typeName == "EMAIL"
@@ -123,40 +115,47 @@ class ProfileViewModel(
 
                     withContext(Dispatchers.Main.immediate) {
                         _mutableStateFlow.update { state ->
-                            state.copy(
-                                error = null,
-                                profileLoaded = true
-                            )
+                            state.copy {
+                                ProfileState.profileLoaded set true
+                            }
                         }
                     }
                 }.onError { error ->
                     withContext(Dispatchers.Main.immediate) {
                         _mutableStateFlow.update { state ->
-                            state.copy(
-                                error = error,
-                                isLoading = false
-                            )
+                            state.copy {
+                                ProfileState.error set error
+                                ProfileState.isLoading set false
+                            }
                         }
                     }
                 }.onLoading { isLoading ->
                     withContext(Dispatchers.Main.immediate) {
-                        _mutableStateFlow.update { state -> state.copy(isLoading = isLoading) }
+                        _mutableStateFlow.update { state ->
+                            state.copy {
+                                ProfileState.isLoading set isLoading
+                            }
+                        }
                     }
                 }
             }
         } else {
             withContext(Dispatchers.Main.immediate) {
                 _mutableStateFlow.update { state ->
-                    state.copy(
-                        isLoading = false
-                    )
+                    state.copy {
+                        ProfileState.isLoading set false
+                    }
                 }
             }
         }
     }
 
     private suspend fun logout() {
-        _mutableStateFlow.update { state -> state.copy(isLoading = true) }
+        _mutableStateFlow.update { state ->
+            state.copy {
+                ProfileState.isLoading set true
+            }
+        }
 
         authorizationRepository.logout().onSuccess { successNetworkLogout ->
             if (successNetworkLogout == true) {
@@ -166,7 +165,13 @@ class ProfileViewModel(
             Log.d("LOGOUT_TAG", message)
 
             val error = ProfileUIError.LogoutError(message = "Не удалось выйти из аккаунта")
-            _mutableStateFlow.update { state -> state.copy(error = error) }
+
+            _mutableStateFlow.update { state ->
+                state.copy {
+                    ProfileState.error set error
+                    ProfileState.isLoading set false
+                }
+            }
         }
     }
 }

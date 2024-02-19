@@ -14,7 +14,6 @@ import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogUIError
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogViewState
-import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileViewState
 
 /*
 * Получить категории
