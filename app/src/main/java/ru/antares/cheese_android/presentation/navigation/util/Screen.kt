@@ -37,6 +37,12 @@ sealed class Screen(
         override val route: String = "CATALOG_NAVIGATION_GRAPH"
 
         data object Catalog : Screen(route = "CatalogScreen")
+
+        /** route: CatalogParentCategoryScreen/parentID/name*/
+        data object CatalogParentCategory: Screen(route = "CatalogParentCategoryScreen", "parentID", "name")
+
+        /** route: ProductsScreen/id/name*/
+        data object Products: Screen(route = "ProductsScreen", "id", "name")
         // Screens ...
     }
 
@@ -58,6 +64,11 @@ sealed class Screen(
         override val route: String = "PROFILE_NAVIGATION_GRAPH"
 
         data object Profile : Screen(route = "ProfileScreen")
+        data object PersonalData: Screen(route = "PersonalDataScreen")
+        data object Addresses: Screen(route = "AddressesScreen")
+        data object Orders: Screen(route = "OrdersScreen")
+        data object AboutApp: Screen(route = "PaymentMethodsScreen")
+        data object Tickets: Screen(route = "TicketsScreen")
         // Screens ...
     }
 }

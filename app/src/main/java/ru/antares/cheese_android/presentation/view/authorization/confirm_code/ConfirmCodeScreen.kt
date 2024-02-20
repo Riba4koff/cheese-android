@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -38,10 +39,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import ru.antares.cheese_android.ObserveAsEvents
+import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.presentation.ErrorAlertDialog
-import ru.antares.cheese_android.presentation.LoadingIndicator
+import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
+import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.authorization.AgreementText
 import ru.antares.cheese_android.presentation.view.authorization.input_phone.AuthorizationBackground
@@ -54,7 +55,7 @@ fun ConfirmCodePreview() {
         ConfirmCodeScreen(
             navController = rememberNavController(),
             state = ConfirmCodeState(
-                isLoading = false,
+                isLoading = true,
                 codeIsWrong = false,
                 timer = 0,
                 canMakeCallAgain = true
@@ -62,9 +63,8 @@ fun ConfirmCodePreview() {
             onEvent = {
 
             },
-            navigationEvents = emptyFlow(),
-
-            )
+            navigationEvents = emptyFlow()
+        )
     }
 }
 
@@ -72,20 +72,23 @@ fun ConfirmCodePreview() {
 fun ConfirmCodeScreen(
     navController: NavController,
     state: ConfirmCodeState,
-    onEvent: (Event) -> Unit,
-    navigationEvents: Flow<NavigationEvent>,
+    onEvent: (ConfirmCodeEvent) -> Unit,
+    navigationEvents: Flow<ConfirmCodeNavigationEvent>,
 ) {
-    ObserveAsEvents(flow = navigationEvents) { event ->
+    ObserveAsNavigationEvents(flow = navigationEvents) { event ->
         when (event) {
-            NavigationEvent.NavigateToHomeScreen -> {
+            ConfirmCodeNavigationEvent.NavigateToHomeScreen -> {
                 navController.navigate(Screen.HomeNavigationGraph.route) {
                     popUpTo(Screen.AuthNavigationGraph.route) {
                         inclusive = true
                     }
+                    launchSingleTop = true
                 }
             }
         }
     }
+
+    val uriHandler = LocalUriHandler.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         AuthorizationBackground(image = R.drawable.auth_background)
@@ -106,11 +109,11 @@ fun ConfirmCodeScreen(
             ConfirmCodeScreenContent(
                 code = state.code,
                 onCodeChange = { code ->
-                    onEvent(Event.OnCodeChange(code))
+                    onEvent(ConfirmCodeEvent.OnCodeChange(code))
                 }, codeIsWrong = state.codeIsWrong,
                 canMakeCallAgain = state.canMakeCallAgain,
                 makeCallAgain = {
-                    onEvent(Event.MakeCallAgain)
+                    onEvent(ConfirmCodeEvent.MakeCallAgain)
                 }, timer = state.timer
             )
 
@@ -118,10 +121,10 @@ fun ConfirmCodeScreen(
 
             AgreementText(
                 onPrivacyPolicyClick = {
-
+                    uriHandler.openUri("https://mrokfor.ru/policy/")
                 },
                 onAgreementClick = {
-
+                    uriHandler.openUri("https://mrokfor.ru/agreement/")
                 }
             )
         }
@@ -131,17 +134,20 @@ fun ConfirmCodeScreen(
         }
 
         SkipAuthorizationButton(modifier = Modifier.align(Alignment.TopEnd)) {
-            onEvent(Event.SkipAuthorization)
+            onEvent(ConfirmCodeEvent.SkipAuthorization)
         }
 
         if (state.error.isError) ErrorAlertDialog(
             errorMessage = state.error.message,
             onDismissRequest = {
-                onEvent(Event.CloseAlertDialog)
+                onEvent(ConfirmCodeEvent.CloseAlertDialog)
             }
         )
 
-        LoadingIndicator(isLoading = state.isLoading)
+        LoadingIndicator(
+            modifier = Modifier.align(Alignment.Center),
+            isLoading = state.isLoading
+        )
     }
 }
 
@@ -167,7 +173,7 @@ private fun PopBackButton(modifier: Modifier, onClick: () -> Unit) {
             }
             .scale(scale),
         text = stringResource(R.string.back),
-        style = CheeseTheme.textStyles.common14Medium,
+        style = CheeseTheme.typography.common14Medium,
         color = CheeseTheme.colors.white
     )
 
@@ -195,7 +201,7 @@ fun SkipAuthorizationButton(modifier: Modifier, onClick: () -> Unit) {
             }
             .scale(scale),
         text = stringResource(R.string.skip),
-        style = CheeseTheme.textStyles.common14Medium,
+        style = CheeseTheme.typography.common14Medium,
         color = CheeseTheme.colors.white
     )
 }
@@ -217,7 +223,7 @@ private fun ConfirmCodeScreenContent(
     ) {
         Text(
             text = stringResource(R.string.input_last_fourth_numbers_of_phone),
-            style = CheeseTheme.textStyles.common12Light,
+            style = CheeseTheme.typography.common12Light,
             color = CheeseTheme.colors.white
         )
         CodeField(
@@ -260,7 +266,7 @@ private fun MakeCallAgainText(onClick: () -> Unit) {
             }
             .scale(scale),
         text = stringResource(R.string.make_call_again),
-        style = CheeseTheme.textStyles.common12Light.copy(color = CheeseTheme.colors.white)
+        style = CheeseTheme.typography.common12Light.copy(color = CheeseTheme.colors.white)
     )
 }
 
@@ -270,7 +276,7 @@ private fun Timer(
 ) {
     Text(
         text = "Отправить код повторно через ${timer} секунд",
-        style = CheeseTheme.textStyles.common12Light,
+        style = CheeseTheme.typography.common12Light,
         color = CheeseTheme.colors.white
     )
 }
@@ -305,14 +311,14 @@ private fun CodeField(
         shape = CheeseTheme.shapes.small,
         isError = codeIsWrong,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        textStyle = CheeseTheme.textStyles.common16Medium
+        textStyle = CheeseTheme.typography.common16Medium
     )
 
     AnimatedVisibility(visible = codeIsWrong, enter = fadeIn(), exit = fadeOut()) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(
                 text = stringResource(R.string.wrong_confirm_code),
-                style = CheeseTheme.textStyles.common12Light.copy(color = CheeseTheme.colors.red)
+                style = CheeseTheme.typography.common12Light.copy(color = CheeseTheme.colors.red)
             )
         }
     }

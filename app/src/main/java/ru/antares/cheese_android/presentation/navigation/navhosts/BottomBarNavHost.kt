@@ -32,7 +32,7 @@ fun BottomBarNavHost(globalNavController: NavHostController) {
                 CartNavHost(paddings = paddings)
             }
             composable(route = Screen.ProfileNavigationGraph.route) { _ ->
-                ProfileNavHost(paddings = paddings)
+                ProfileNavHost(paddings = paddings, globalNavController = globalNavController)
             }
         }
     }

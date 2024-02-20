@@ -4,9 +4,12 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -22,8 +25,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.ParametersDefinition
-import org.koin.core.parameter.ParametersHolder
-import org.koin.core.parameter.parametersOf
 
 @Composable
 inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(
@@ -46,7 +47,7 @@ fun Modifier.onClick(onClick: () -> Unit) = Modifier.clickable(
 )
 
 @Composable
-fun <T> ObserveAsEvents(flow: Flow<T>, onEvent: (T) -> Unit) {
+fun <T> ObserveAsNavigationEvents(flow: Flow<T>, onEvent: (T) -> Unit) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(flow, lifecycleOwner.lifecycle) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -82,3 +83,29 @@ fun PerformLifecycleOwner(
         }
     }
 }
+
+val LazyListState.isLastItemVisible: Boolean
+    get() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
+
+val LazyListState.isFirstItemVisible: Boolean
+    get() = firstVisibleItemIndex == 0
+
+data class ScrollContext(
+    val isTop: Boolean,
+    val isBottom: Boolean,
+)
+
+@Composable
+fun rememberScrollContext(listState: LazyListState): ScrollContext {
+    val scrollContext by remember {
+        derivedStateOf {
+            ScrollContext(
+                isTop = listState.isFirstItemVisible,
+                isBottom = listState.isLastItemVisible
+            )
+        }
+    }
+    return scrollContext
+}
+
+fun LazyListState.isScrolledToTheEnd() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1

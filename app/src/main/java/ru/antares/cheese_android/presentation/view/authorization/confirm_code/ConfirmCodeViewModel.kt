@@ -13,8 +13,10 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.data.local.datastore.SecurityTokenService
+import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
+import ru.antares.cheese_android.data.remote.services.auth.dto.DeviceDTO
+import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
 import ru.antares.cheese_android.data.remote.services.auth.response.MakeCallResponse
 import ru.antares.cheese_android.data.repository.auth.models.DeviceModel
 import ru.antares.cheese_android.data.repository.auth.models.SessionModel
@@ -25,17 +27,17 @@ import ru.antares.cheese_android.presentation.view.authorization.input_phone.Err
 class ConfirmCodeViewModel(
     private val phone: String,
     private val repository: IAuthorizationRepository,
-    private val tokenService: SecurityTokenService
+    private val tokenService: ITokenService
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<ConfirmCodeState> =
         MutableStateFlow(ConfirmCodeState())
     val stateFlow: StateFlow<ConfirmCodeState> =
         _mutableStateFlow.asStateFlow()
 
-    private val events: Channel<Event> = Channel()
+    private val events: Channel<ConfirmCodeEvent> = Channel()
 
-    private val _navigationEvents: Channel<NavigationEvent> = Channel()
-    val navigationEvents: Flow<NavigationEvent> = _navigationEvents.receiveAsFlow()
+    private val _navigationEvents: Channel<ConfirmCodeNavigationEvent> = Channel()
+    val navigationEvents: Flow<ConfirmCodeNavigationEvent> = _navigationEvents.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -43,11 +45,11 @@ class ConfirmCodeViewModel(
             launch {
                 events.receiveAsFlow().collectLatest { event ->
                     when (event) {
-                        Event.CloseAlertDialog -> _mutableStateFlow.update { state ->
+                        ConfirmCodeEvent.CloseAlertDialog -> _mutableStateFlow.update { state ->
                             state.copy(error = ErrorState())
                         }
 
-                        is Event.OnCodeChange -> {
+                        is ConfirmCodeEvent.OnCodeChange -> {
                             _mutableStateFlow.update { state ->
                                 state.copy(
                                     code = Regex("[^0-9]").replace(event.value, ""),
@@ -57,13 +59,13 @@ class ConfirmCodeViewModel(
                             if (event.value.length == 4) sendCode()
                         }
 
-                        Event.MakeCallAgain -> {
+                        ConfirmCodeEvent.MakeCallAgain -> {
                             makeCallAgain()
                         }
 
-                        Event.SkipAuthorization -> {
+                        ConfirmCodeEvent.SkipAuthorization -> {
                             tokenService.skipAuthorization()
-                            _navigationEvents.send(NavigationEvent.NavigateToHomeScreen)
+                            _navigationEvents.send(ConfirmCodeNavigationEvent.NavigateToHomeScreen)
                         }
                     }
                 }
@@ -71,7 +73,7 @@ class ConfirmCodeViewModel(
         }
     }
 
-    fun onEvent(event: Event) = viewModelScope.launch {
+    fun onEvent(event: ConfirmCodeEvent) = viewModelScope.launch {
         events.send(event)
     }
 
@@ -118,7 +120,18 @@ class ConfirmCodeViewModel(
 
         delay(1000L)
 
-        when (val response = mockSendCodeCall()) {
+        when (val response = repository.sendCode(
+            phone = phone,
+            request = SendCodeRequest(
+                code = stateFlow.value.code.toInt(),
+                device = DeviceDTO(
+                    firmware = "",
+                    firebaseToken = "",
+                    id = null,
+                    version = ""
+                )
+            )
+        )) {
             is NetworkResponse.Error -> {
                 _mutableStateFlow.update { state ->
                     state.copy(
@@ -132,8 +145,7 @@ class ConfirmCodeViewModel(
             }
 
             is NetworkResponse.Success -> {
-                tokenService.authorize(response.data.token)
-                _navigationEvents.send(NavigationEvent.NavigateToHomeScreen)
+                _navigationEvents.send(ConfirmCodeNavigationEvent.NavigateToHomeScreen)
             }
         }
 
@@ -157,7 +169,7 @@ class ConfirmCodeViewModel(
     private fun mockSendCodeCall(): NetworkResponse<SendCodeResponse> {
         return if (stateFlow.value.code == "6428") NetworkResponse.Success(
             data = SendCodeResponse(
-                token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBdWRpZW5jZSIsImlzcyI6IkNoZWVzZU1vYmlsZSIsIlNFU1NJT05fSUQiOiI0NjJlOWZiYS1iOTJhLTQ4NjktYmIwMy1iOTZjNmNlN2Q2NzcifQ.xelhbKS7HsshMyw9S8Sz1UerPv47xiNHcyqzTN4eb0k",
+                token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBdWRpZW5jZSIsImlzcyI6IkNoZWVzZU1vYmlsZSIsIlNFU1NJT05fSUQiOiI4ZmUzN2Y1Zi04MjQzLTQxMjMtOGM1ZC04MjZiYmM0Njk5NmIifQ.4LmPnn3UI7cMPSZIFqS50zt1X0CluU1UwSFy6-BTnhs",
                 sessionModel = SessionModel(
                     authorizationType = "",
                     authorizedObject = "",
