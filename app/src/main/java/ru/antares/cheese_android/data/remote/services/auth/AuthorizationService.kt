@@ -10,6 +10,10 @@ import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeReque
 import ru.antares.cheese_android.data.remote.services.auth.response.MakeCallResponse
 import ru.antares.cheese_android.data.repository.auth.responses.SendCodeResponse
 
+/**
+ * @author Pavel Rybakov
+ * */
+
 interface AuthorizationService {
     @GET("auth/phone/{phone}/call")
     suspend fun makeCall(

@@ -6,12 +6,12 @@ import kotlinx.coroutines.flow.flow
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService
-import ru.antares.cheese_android.data.remote.services.main.catalog.models.CategoryDTO
-import ru.antares.cheese_android.data.remote.services.main.catalog.models.toCategoryUIModel
-import ru.antares.cheese_android.data.remote.services.main.catalog.models.toCategoryUIModels
+import ru.antares.cheese_android.data.remote.dto.CategoryDTO
+import ru.antares.cheese_android.data.remote.dto.toCategoryUIModel
+import ru.antares.cheese_android.data.remote.dto.toCategoryUIModels
 import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
 import ru.antares.cheese_android.domain.ResourceState
-import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
+import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogUIError
 
@@ -28,6 +28,9 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.Ca
 * вернуть список полученных данных
 * */
 
+/**
+ * @author Pavel Rybakov
+ * */
 
 class CatalogRepository(
     private val service: CatalogService

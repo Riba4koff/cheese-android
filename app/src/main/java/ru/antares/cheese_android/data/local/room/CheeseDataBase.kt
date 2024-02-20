@@ -5,6 +5,10 @@ import androidx.room.RoomDatabase
 import ru.antares.cheese_android.data.local.room.dao.catalog.CatalogDao
 import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
 
+/**
+ * @author Pavel Rybakov
+ * */
+
 @Database(
     entities = [
         CategoryEntity::class

@@ -1,9 +1,8 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog
 
 import arrow.optics.optics
-import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
-import javax.annotation.concurrent.Immutable
+import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
+import androidx.compose.runtime.Immutable
 
 sealed interface CatalogViewState {
     val key: CatalogViewStateKey

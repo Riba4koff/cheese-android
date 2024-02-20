@@ -2,7 +2,6 @@
 
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -29,8 +28,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -41,14 +38,13 @@ import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
+import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
-import java.util.UUID
 
 @Preview
 @Composable

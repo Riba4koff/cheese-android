@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.domain.models.uiModels.catalog
+package ru.antares.cheese_android.domain.models.uiModels
 
 import androidx.compose.runtime.Immutable
 import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity

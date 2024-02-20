@@ -1,6 +1,6 @@
-package ru.antares.cheese_android.data.remote.services.main.catalog.models
+package ru.antares.cheese_android.data.remote.dto
 
-import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
+import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
 
 data class CategoryDTO(
     val id: String,
@@ -10,7 +10,10 @@ data class CategoryDTO(
 )
 
 fun CategoryDTO.toCategoryUIModel() = CategoryUIModel(
-    id = id, name = name, position = position, parentID = parentID
+    id = id,
+    name = name,
+    position = position,
+    parentID = parentID
 )
 
 fun List<CategoryDTO>.toCategoryUIModels() = this.map { it.toCategoryUIModel() }

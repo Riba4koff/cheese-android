@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.repository.main.profile
+package ru.antares.cheese_android.data.repository.main
 
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +16,10 @@ import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.repository.IProfileRepository
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataUIError
 import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileUIError
+
+/**
+ * @author Pavel Rybakov
+ * */
 
 class ProfileRepository(
     private val profileService: ProfileService,

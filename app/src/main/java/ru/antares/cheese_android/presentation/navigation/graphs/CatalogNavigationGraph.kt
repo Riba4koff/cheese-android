@@ -8,6 +8,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogScreen
@@ -15,6 +17,7 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.Ca
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_detail_category.CatalogParentCategoryScreen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_detail_category.CatalogParentCategoryViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsScreen
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsViewModel
 import ru.antares.cheese_android.sharedViewModel
 
 fun NavGraphBuilder.catalogNavigationGraph(catalogNavController: NavController) {
@@ -72,7 +75,20 @@ fun NavGraphBuilder.catalogNavigationGraph(catalogNavController: NavController) 
             val id = navBackStackEntry.arguments?.getString("id") ?: ""
             val name = navBackStackEntry.arguments?.getString("name") ?: ""
 
-            ProductsScreen(name = name, navController = catalogNavController)
+            val viewModel: ProductsViewModel = koinViewModel(
+                parameters = {
+                    parametersOf(id)
+                }
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            ProductsScreen(
+                name = name,
+                navController = catalogNavController,
+                state = state,
+                onError = viewModel::onError,
+                onEvent = viewModel::onEvent
+            )
         }
     }
 }

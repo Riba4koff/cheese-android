@@ -3,7 +3,7 @@ package ru.antares.cheese_android.data.local.room.dao.catalog
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
+import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
 
 @Entity("categories")
 data class CategoryEntity(

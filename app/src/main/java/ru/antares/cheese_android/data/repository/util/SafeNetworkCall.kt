@@ -1,12 +1,14 @@
 package ru.antares.cheese_android.data.repository.util
 
-import android.util.Log
 import retrofit2.Response
 import ru.antares.cheese_android.data.remote.models.CheeseNetworkResponse
 import ru.antares.cheese_android.data.remote.models.NetworkError
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.models.Pagination
-import ru.antares.cheese_android.data.remote.services.main.catalog.models.CategoryDTO
+
+/**
+ * @author Pavel Rybakov
+ * */
 
 suspend fun <T> safeNetworkCall(block: suspend () -> Response<CheeseNetworkResponse<T>>): NetworkResponse<T> =
     try {
@@ -35,6 +37,7 @@ suspend fun <T> safeNetworkCall(block: suspend () -> Response<CheeseNetworkRespo
     } catch (e: Exception) {
         NetworkResponse.Error(error = NetworkError("Неизвестная ошибка"))
     }
+
 
 suspend fun <T> safeNetworkCallWithPagination(
     block: suspend () -> Response<CheeseNetworkResponse<Pagination<T>>>

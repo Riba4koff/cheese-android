@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_detail_category
 
-import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
+import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
 
 sealed interface CatalogParentCategoryViewState {
     val key: CatalogParentCategoryViewStateKey

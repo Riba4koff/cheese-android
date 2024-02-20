@@ -20,7 +20,7 @@ import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.local.datastore.user.IUserDataStore
 import ru.antares.cheese_android.data.local.datastore.user.User
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
-import ru.antares.cheese_android.data.repository.main.profile.ProfileRepository
+import ru.antares.cheese_android.data.repository.main.ProfileRepository
 import ru.antares.cheese_android.domain.errors.UIError
 
 

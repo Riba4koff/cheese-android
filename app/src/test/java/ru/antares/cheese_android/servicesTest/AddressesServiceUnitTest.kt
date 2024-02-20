@@ -12,7 +12,6 @@ import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.antares.cheese_android.data.remote.services.addresses.AddressesService
-import ru.antares.cheese_android.data.remote.services.addresses.dto.AddressDTO
 import ru.antares.cheese_android.data.remote.services.addresses.request.CreateAddressRequest
 import ru.antares.cheese_android.data.remote.services.addresses.request.UpdateAddressRequest
 

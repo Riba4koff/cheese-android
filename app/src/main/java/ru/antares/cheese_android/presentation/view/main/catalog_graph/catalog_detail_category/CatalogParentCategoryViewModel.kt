@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.data.remote.services.main.catalog.models.toCategoryUIModels
+import ru.antares.cheese_android.data.remote.dto.toCategoryUIModels
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 

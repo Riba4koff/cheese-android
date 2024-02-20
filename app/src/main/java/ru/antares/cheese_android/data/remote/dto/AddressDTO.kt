@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.remote.services.addresses.dto
+package ru.antares.cheese_android.data.remote.dto
 
 data class AddressDTO(
     val id: String,
