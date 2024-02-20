@@ -46,6 +46,6 @@ fun ErrorScreen(
 fun ErrorScreenPreview() {
     CheeseTheme {
         ErrorScreen(modifier = Modifier,
-            error = PersonalDataUIError.SomeError("Хз"), retry = {})
+            error = PersonalDataUIError.UnknownError("Хз"), retry = {})
     }
 }

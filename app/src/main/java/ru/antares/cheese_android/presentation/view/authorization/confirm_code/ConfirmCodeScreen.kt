@@ -21,6 +21,8 @@ import androidx.compose.material.Text
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +43,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
+import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.navigation.util.Screen
@@ -63,7 +66,10 @@ fun ConfirmCodePreview() {
             onEvent = {
 
             },
-            navigationEvents = emptyFlow()
+            navigationEvents = emptyFlow(),
+            onError = {
+
+            }
         )
     }
 }
@@ -73,6 +79,7 @@ fun ConfirmCodeScreen(
     navController: NavController,
     state: ConfirmCodeState,
     onEvent: (ConfirmCodeEvent) -> Unit,
+    onError: (UIError) -> Unit,
     navigationEvents: Flow<ConfirmCodeNavigationEvent>,
 ) {
     ObserveAsNavigationEvents(flow = navigationEvents) { event ->
@@ -86,6 +93,12 @@ fun ConfirmCodeScreen(
                 }
             }
         }
+    }
+
+    val error: MutableState<UIError?> = remember { mutableStateOf(null) }
+
+    LaunchedEffect(state.error) {
+        error.value = state.error
     }
 
     val uriHandler = LocalUriHandler.current
@@ -137,16 +150,19 @@ fun ConfirmCodeScreen(
             onEvent(ConfirmCodeEvent.SkipAuthorization)
         }
 
-        if (state.error.isError) ErrorAlertDialog(
-            errorMessage = state.error.message,
-            onDismissRequest = {
-                onEvent(ConfirmCodeEvent.CloseAlertDialog)
-            }
-        )
-
         LoadingIndicator(
             modifier = Modifier.align(Alignment.Center),
             isLoading = state.isLoading
+        )
+    }
+
+    error.value?.let { uiError ->
+        ErrorAlertDialog(
+            error = uiError,
+            onDismissRequest = {
+                error.value = null
+                onError(uiError)
+            }
         )
     }
 }

@@ -54,7 +54,7 @@ class PersonalDataViewModel(
 
     fun onError(uiError: UIError) {
         when (uiError as PersonalDataUIError) {
-            is PersonalDataUIError.SomeError -> {
+            is PersonalDataUIError.UnknownError -> {
                 /* TODO: some handle of error */
             }
 

@@ -6,5 +6,4 @@ sealed interface ProfileEvent {
     data object Logout: ProfileEvent
     data object DeleteAccount: ProfileEvent
     data object LoadProfile: ProfileEvent
-    data class Retry(val uiError: UIError): ProfileEvent
 }

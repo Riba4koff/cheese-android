@@ -40,8 +40,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -52,7 +50,6 @@ import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
-import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
@@ -71,7 +68,10 @@ fun ProfileScreenPreview() {
 
             },
             globalNavController = rememberNavController(),
-            profileNavController = rememberNavController()
+            profileNavController = rememberNavController(),
+            onError = {
+
+            }
         )
     }
 }
@@ -80,6 +80,7 @@ fun ProfileScreen(
     state: ProfileState,
     navigationEvents: Flow<ProfileNavigationEvent>,
     onEvent: (ProfileEvent) -> Unit,
+    onError: (UIError) -> Unit,
     onNavigationEvent: (ProfileNavigationEvent) -> Unit,
     globalNavController: NavController,
     profileNavController: NavController
@@ -161,44 +162,13 @@ fun ProfileScreen(
                         )
                     }
                 }
-                /*is ProfileViewState.AuthorizedState -> {
-                    UserIsAuthorizedContent(
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .padding(top = CheeseTheme.paddings.large),
-                        onEvent = onEvent,
-                        onNavigationEvent = onNavigationEvent,
-                        state = uiState
-                    )
-                }
-
-                is ProfileViewState.ErrorState -> {
-                    ErrorScreen(
-                        modifier = Modifier.align(Alignment.Center),
-                        error = uiState.error,
-                        retry = { uiError ->
-                            onEvent(ProfileEvent.Retry(uiError))
-                        }
-                    )
-                }
-
-                is ProfileViewState.LoadingState -> {
-                    LoadingScreen(modifier = Modifier.align(Alignment.Center))
-                }
-
-                is ProfileViewState.NonAuthorizedState -> {
-                    UserIsNotAuthorizedContent(
-                        modifier = Modifier
-                            .padding(bottom = CheeseTheme.paddings.large + CheeseTheme.paddings.large),
-                        onNavigationEvent = onNavigationEvent
-                    )
-                }*/
             }
         }
     }
 
-    error.value?.message?.let { errorMessage ->
-        ErrorAlertDialog(errorMessage = errorMessage) {
+    error.value?.let { uiError ->
+        ErrorAlertDialog(error = uiError) {
+            onError(uiError)
             error.value = null
         }
     }

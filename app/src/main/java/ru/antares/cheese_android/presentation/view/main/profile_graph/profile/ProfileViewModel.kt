@@ -25,10 +25,10 @@ import ru.antares.cheese_android.domain.errors.UIError
 
 
 class ProfileViewModel(
-    tokenService: ITokenService,
+    private val tokenService: ITokenService,
     private val authorizationRepository: AuthorizationRepository,
     private val profileRepository: ProfileRepository,
-    private val userDataStore: IUserDataStore
+    private val userDataStore: IUserDataStore,
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<ProfileState> =
         MutableStateFlow(ProfileState())
@@ -62,22 +62,23 @@ class ProfileViewModel(
         }
     }
 
-    private fun onError(uiError: UIError) = viewModelScope.launch {
-        when (uiError as ProfileUIError) {
-            is ProfileUIError.LoadProfileError -> loadProfileV2()
-            is ProfileUIError.LogoutError -> logout()
-        }
-    }
 
     fun onEvent(event: ProfileEvent) = viewModelScope.launch {
         when (event) {
-            is ProfileEvent.Retry -> onError(event.uiError)
             ProfileEvent.Logout -> logout()
             ProfileEvent.DeleteAccount -> {
                 /* TODO: delete account logic */
             }
 
             ProfileEvent.LoadProfile -> loadProfileV2()
+        }
+    }
+
+    fun onError(uiError: UIError) = viewModelScope.launch {
+        when (uiError as ProfileUIError) {
+            is ProfileUIError.LoadProfileError -> loadProfileV2()
+            is ProfileUIError.LogoutError -> logout()
+            is ProfileUIError.UnauthorizedError -> { tokenService.logout() }
         }
     }
 
@@ -161,14 +162,14 @@ class ProfileViewModel(
             if (successNetworkLogout == true) {
                 _navigationEvents.send(ProfileNavigationEvent.Logout)
             }
-        }.onFailure { message ->
-            Log.d("LOGOUT_TAG", message)
+        }.onFailure { error ->
+            Log.d("LOGOUT_TAG", error.message)
 
-            val error = ProfileUIError.LogoutError(message = "Не удалось выйти из аккаунта")
+            val uiError = ProfileUIError.LogoutError()
 
             _mutableStateFlow.update { state ->
                 state.copy {
-                    ProfileState.error set error
+                    ProfileState.error set uiError
                     ProfileState.isLoading set false
                 }
             }

@@ -28,65 +28,22 @@ class ProfileRepository(
         val response = profileService.get()
 
         if (response.isSuccessful) {
-            if (response.code() == 401) {
-                tokenService.logout()
-                emit(ResourceState.Loading(isLoading = false))
+            val data = response.body()?.data
+
+            if (data == null) {
+                emit(ResourceState.Error(error = ProfileUIError.LoadProfileError()))
                 return@flow
             } else {
-                val data = response.body()?.data
-
-                if (data == null) {
-                    emit(ResourceState.Error(error = ProfileUIError.LoadProfileError("Не удалось загрузить профиль")))
-                    return@flow
-                } else {
-                    emit(ResourceState.Success(data = data))
-                    emit(ResourceState.Loading(isLoading = false))
-                }
+                emit(ResourceState.Success(data = data))
+                emit(ResourceState.Loading(isLoading = false))
             }
         } else {
-            emit(ResourceState.Error(error = ProfileUIError.LoadProfileError("Не удалось загрузить профиль")))
-            return@flow
-        }
-    }
-
-    override suspend fun update(request: UpdateProfileRequest): NetworkResponse<ProfileResponse> {
-        return when (val networkProfileUpdateResponse = safeNetworkCall {
-            Log.d("UPDATE_PROFILE_REQUEST", request.toString())
-            profileService.update(request)
-        }) {
-            is NetworkResponse.Success -> {
-                val emailAttachment = networkProfileUpdateResponse.data.attachments.firstOrNull {
-                    it.typeName == "EMAIL"
-                }.takeIf { it != null }
-
-                val phoneAttachment = networkProfileUpdateResponse.data.attachments.firstOrNull {
-                    it.typeName == "PHONE"
-                }.takeIf { it != null }
-
-                val localUpdateProfileResult = userDS.save(
-                    user = User(
-                        surname = networkProfileUpdateResponse.data.surname,
-                        name = networkProfileUpdateResponse.data.firstname,
-                        patronymic = networkProfileUpdateResponse.data.patronymic,
-                        email = emailAttachment?.value ?: "",
-                        phone = phoneAttachment?.value ?: "",
-                        birthday = networkProfileUpdateResponse.data.birthday,
-                        verifiedPhone = phoneAttachment?.verified ?: false,
-                        verifiedEmail = emailAttachment?.verified ?: false
-                    )
-                )
-
-                if (localUpdateProfileResult is LocalResponse.Success) {
-                    NetworkResponse.Success(networkProfileUpdateResponse.data)
-                } else {
-                    Log.d("UPDATE_PROFILE", "local updating profile error")
-                    NetworkResponse.Error("Не удалось обновить профиль")
-                }
-            }
-
-            is NetworkResponse.Error -> {
-                Log.d("UPDATE_PROFILE", "network updating profile error")
-                NetworkResponse.Error("")
+            if (response.code() == 401) {
+                emit(ResourceState.Error(ProfileUIError.UnauthorizedError()))
+                return@flow
+            } else {
+                emit(ResourceState.Error(error = ProfileUIError.LoadProfileError()))
+                return@flow
             }
         }
     }
@@ -123,13 +80,13 @@ class ProfileRepository(
 
             localUpdateProfileResult.onFailure { errorMessage ->
                 Log.d("UPDATE_PROFILE_ERROR", errorMessage)
-                emit(ResourceState.Error(PersonalDataUIError.UpdateProfile("Не удалось обновить профиль")))
+                emit(ResourceState.Error(PersonalDataUIError.UpdateProfile()))
             }.onSuccess {
                 emit(ResourceState.Success(Unit))
             }
-        }.onFailure { errorMessage ->
-            Log.d("UPDATE_PROFILE_ERROR", errorMessage)
-            emit(ResourceState.Error(PersonalDataUIError.UpdateProfile("Не удалось обновить профиль")))
+        }.onFailure { error ->
+            Log.d("UPDATE_PROFILE_ERROR", error.message)
+            emit(ResourceState.Error(PersonalDataUIError.UnknownError()))
         }
     }
 

@@ -72,15 +72,15 @@ class CatalogRepository(
         pageSize: Int?
     ): NetworkResponse<Pagination<CategoryDTO>> = safeNetworkCallWithPagination {
         service.get(parentID = parentID, hasParent = true, page = page, pageSize = pageSize)
-    }.onFailure { message -> Log.d("LOAD_CATEGORIES_BY_PARENT_ID", message) }
+    }.onFailure { error -> Log.d("LOAD_CATEGORIES_BY_PARENT_ID", error.message) }
 
     private suspend fun loadParentCategories(
         page: Int?, pageSize: Int?
     ): NetworkResponse<Pagination<CategoryDTO>> {
         return safeNetworkCallWithPagination {
             service.get(hasParent = false, page = page, pageSize = pageSize)
-        }.onFailure { message ->
-            Log.d("LOAD_PARENT_CATEGORIES", message)
+        }.onFailure { error ->
+            Log.d("LOAD_PARENT_CATEGORIES", error.message)
         }
     }
 
@@ -91,8 +91,8 @@ class CatalogRepository(
                 hasParent = true,
                 pageSize = 6
             )
-        }.onFailure { message ->
-            Log.d("LOAD_PARENT_CATEGORIES", message)
+        }.onFailure { error ->
+            Log.d("LOAD_PARENT_CATEGORIES", error.message)
         }
     }
 }

@@ -32,7 +32,8 @@ fun NavGraphBuilder.authNavigationGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 navigationEvents = viewModel.navigationEvents,
-                navController = globalNavController
+                navController = globalNavController,
+                onError = viewModel::onError
             )
         }
         composable(
@@ -52,7 +53,8 @@ fun NavGraphBuilder.authNavigationGraph(
                 navController = globalNavController,
                 state = state,
                 onEvent = viewModel::onEvent,
-                navigationEvents = viewModel.navigationEvents
+                navigationEvents = viewModel.navigationEvents,
+                onError = viewModel::onError
             )
         }
     }

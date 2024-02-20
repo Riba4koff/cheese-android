@@ -16,7 +16,8 @@ fun PhoneTextField(
     mask: String = "+7 (000) 000-00-00",
     maskNumber: Char = '0',
     onPhoneChange: (String) -> Unit,
-    validationTextFieldResult: ValidationTextFieldResult = ValidationTextFieldResult()
+    validationTextFieldResult: ValidationTextFieldResult = ValidationTextFieldResult(),
+    enabled: Boolean = true
 ) {
     val focus = LocalFocusManager.current
 
@@ -35,6 +36,7 @@ fun PhoneTextField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
         visualTransformation = PhoneVisualTransformation(mask, maskNumber),
         textStyle = CheeseTheme.typography.common16Medium,
-        backgroundColor = CheeseTheme.colors.white
+        backgroundColor = CheeseTheme.colors.white,
+        enabled = enabled
     )
 }

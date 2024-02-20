@@ -34,7 +34,8 @@ fun NavGraphBuilder.profileNavigationGraph(
                 onEvent = viewModel::onEvent,
                 onNavigationEvent = viewModel::onNavigationEvent,
                 globalNavController = globalNavController,
-                profileNavController = profileNavController
+                profileNavController = profileNavController,
+                onError = viewModel::onError
             )
         }
         composable(route = Screen.ProfileNavigationGraph.PersonalData.route) { _ ->
