@@ -88,7 +88,6 @@ class ProfileViewModel(
 
     private suspend fun loadProfileV2() {
         if (state.value.isAuthorized && state.value.profileLoaded.not()) {
-            Log.d("LOADING_PROFILE_VM", "loading")
             profileRepository.get().collect { resource ->
                 resource.onSuccess { response ->
                     val emailAttachment = response.attachments.firstOrNull {

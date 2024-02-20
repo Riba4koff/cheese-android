@@ -122,7 +122,6 @@ fun ProfileScreen(
     }
 
     LaunchedEffect(!state.profileLoaded) {
-        Log.d("LOADING_PROFILE", "loading")
         onEvent(ProfileEvent.LoadProfile)
     }
 
