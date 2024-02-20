@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -21,10 +25,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import arrow.core.right
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
+import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.textfields.PhoneTextField
@@ -40,16 +46,16 @@ fun InputPhoneScreenPreview() {
         InputPhoneScreen(
             state = InputPhoneState(
                 isLoading = true,
-                error = ErrorState(
-                    isError = false,
-                    message = "Сервер не отвечает"
-                )
+                error = InputPhoneUIError.UnknownError()
             ),
             onEvent = {
 
             },
             navController = rememberNavController(),
-            navigationEvents = emptyFlow()
+            navigationEvents = emptyFlow(),
+            onError = {
+
+            }
         )
     }
 }
@@ -60,6 +66,7 @@ fun InputPhoneScreen(
     state: InputPhoneState,
     onEvent: (InputPhoneEvent) -> Unit,
     navigationEvents: Flow<InputPhoneNavigationEvent>,
+    onError: (UIError) -> Unit
 ) {
     ObserveAsNavigationEvents(flow = navigationEvents) { event ->
         when (event) {
@@ -121,16 +128,16 @@ fun InputPhoneScreen(
             onEvent(InputPhoneEvent.SkipAuthorization)
         }
 
-        if (state.error.isError) ErrorAlertDialog(
-            errorMessage = state.error.message,
-            onDismissRequest = {
-                onEvent(InputPhoneEvent.CloseAlertDialog)
-            }
-        )
         LoadingIndicator(
             modifier = Modifier.align(Alignment.Center),
             isLoading = state.isLoading
         )
+    }
+
+    state.error?.let { uiError ->
+        ErrorAlertDialog(error = uiError) {
+            onError(uiError)
+        }
     }
 }
 
@@ -156,6 +163,7 @@ private fun InputPhoneScreenContent(
             maskNumber = '0',
             onPhoneChange = { onPhoneChange(it) },
             phone = phone,
+            enabled = true
         )
     }
 }

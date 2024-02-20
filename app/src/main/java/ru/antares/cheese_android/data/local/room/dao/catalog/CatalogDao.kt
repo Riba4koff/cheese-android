@@ -9,10 +9,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CatalogDao {
     @Query("SELECT * FROM categories")
-    fun get(): Flow<CategoryEntity>
+    fun categoryEntityFlow(): Flow<CategoryEntity>
 
     @Query("SELECT * FROM categories WHERE categories.id = :id")
     suspend fun getByID(id: String): CategoryEntity
+
+    @Query("SELECT * FROM categories WHERE categories.parentID = :parentID")
+    suspend fun getByParentID(parentID: String): CategoryEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(value: CategoryEntity): Unit

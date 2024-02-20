@@ -10,11 +10,10 @@ import ru.antares.cheese_android.data.remote.services.main.catalog.models.Catego
 import ru.antares.cheese_android.data.remote.services.main.catalog.models.toCategoryUIModel
 import ru.antares.cheese_android.data.remote.services.main.catalog.models.toCategoryUIModels
 import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
+import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogUIError
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogViewState
-import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileViewState
 
 /*
 * Получить категории
@@ -43,28 +42,38 @@ class CatalogRepository(
     override suspend fun getListOfCategoryPairs(
         page: Int?,
         pageSize: Int?
-    ): Flow<CatalogViewState> = flow {
-        emit(CatalogViewState.Loading())
+    ): Flow<ResourceState<List<Pair<CategoryUIModel, List<CategoryUIModel>>>>> = flow {
+        emit(ResourceState.Loading(isLoading = true))
 
-        val parentCategories = loadParentCategories(page = page, pageSize = pageSize).getOrNull()
+        val parentCategories = parentCategories(
+            page = page,
+            pageSize = pageSize
+        ).getOrNull()
 
         val pairsOfCategory = parentCategories?.result?.map { categoryDTO ->
             val childCategories =
-                loadChildCategories(categoryDTO.id).getOrNull()?.result?.toCategoryUIModels()
+                childCategories(categoryDTO.id)
+                    .getOrNull()
+                    ?.result
+                    ?.toCategoryUIModels()
                     ?: emptyList()
 
-            if (childCategories.isNotEmpty()) categoryDTO.toCategoryUIModel() to childCategories
-            else null
+            if (childCategories.isNotEmpty()) {
+                categoryDTO.toCategoryUIModel() to childCategories
+            } else {
+                null
+            }
         }
 
-        if (pairsOfCategory == null) emit(
-            CatalogViewState.Error(
-                error = CatalogUIError.Loading(
-                    message = CANNOT_LOAD_CATEGORIES
+        if (pairsOfCategory == null) {
+            emit(
+                ResourceState.Error(
+                    error = CatalogUIError.Loading(message = CANNOT_LOAD_CATEGORIES)
                 )
             )
-        )
-        else emit(CatalogViewState.Success(listOfCategoryPairs = pairsOfCategory.filterNotNull()))
+        } else {
+            emit(ResourceState.Success(data = pairsOfCategory.filterNotNull()))
+        }
     }
 
     override suspend fun getCategoriesByParentID(
@@ -73,27 +82,27 @@ class CatalogRepository(
         pageSize: Int?
     ): NetworkResponse<Pagination<CategoryDTO>> = safeNetworkCallWithPagination {
         service.get(parentID = parentID, hasParent = true, page = page, pageSize = pageSize)
-    }.onFailure { message -> Log.d("LOAD_CATEGORIES_BY_PARENT_ID", message) }
+    }.onFailure { error -> Log.d("LOAD_CATEGORIES_BY_PARENT_ID", error.message) }
 
-    private suspend fun loadParentCategories(
+    private suspend fun parentCategories(
         page: Int?, pageSize: Int?
     ): NetworkResponse<Pagination<CategoryDTO>> {
         return safeNetworkCallWithPagination {
             service.get(hasParent = false, page = page, pageSize = pageSize)
-        }.onFailure { message ->
-            Log.d("LOAD_PARENT_CATEGORIES", message)
+        }.onFailure { error ->
+            Log.d("LOAD_PARENT_CATEGORIES", error.message)
         }
     }
 
-    private suspend fun loadChildCategories(parentID: String): NetworkResponse<Pagination<CategoryDTO>> {
+    private suspend fun childCategories(parentID: String): NetworkResponse<Pagination<CategoryDTO>> {
         return safeNetworkCallWithPagination {
             service.get(
                 parentID = parentID,
                 hasParent = true,
                 pageSize = 6
             )
-        }.onFailure { message ->
-            Log.d("LOAD_PARENT_CATEGORIES", message)
+        }.onFailure { error ->
+            Log.d("LOAD_PARENT_CATEGORIES", error.message)
         }
     }
 }

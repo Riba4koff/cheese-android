@@ -42,7 +42,8 @@ fun CheeseTextField(
     leadingIcon: (@Composable () -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     shape: RoundedCornerShape = CheeseTheme.shapes.small,
-    textStyle: TextStyle = CheeseTheme.typography.common16Light
+    textStyle: TextStyle = CheeseTheme.typography.common16Light,
+    enabled: Boolean = false
 ) {
     val textFieldColors = TextFieldDefaults.colors(
         cursorColor = CheeseTheme.colors.accent,
@@ -53,7 +54,9 @@ fun CheeseTextField(
         selectionColors = TextSelectionColors(
             handleColor = CheeseTheme.colors.accent,
             backgroundColor = CheeseTheme.colors.gray.copy(0.2f)
-        )
+        ),
+        disabledContainerColor = backgroundColor,
+        disabledPlaceholderColor = CheeseTheme.colors.gray
     )
 
     Column(modifier) {
@@ -71,7 +74,8 @@ fun CheeseTextField(
             visualTransformation = visualTransformation,
             leadingIcon = leadingIcon,
             shape = shape,
-            textStyle = textStyle
+            textStyle = textStyle,
+            enabled = enabled
         )
         AnimatedVisibility(
             visible = validationTextFieldResult.success.not(),
@@ -148,7 +152,7 @@ fun CheeseErrorTextFieldWithoutTextPreview() {
  * */
 @Preview(showBackground = true)
 @Composable
-fun CheeseErrorTextFieldWithTextErrorLeftALignPreview() {
+fun CheeseErrorTextFieldWithTextErrorLeftAlignPreview() {
     CheeseTheme {
         CheeseTextField(
             modifier = Modifier.padding(4.dp),

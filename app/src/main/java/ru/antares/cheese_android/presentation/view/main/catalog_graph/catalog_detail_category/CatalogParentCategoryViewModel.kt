@@ -57,11 +57,11 @@ class CatalogParentCategoryViewModel(
     }
 
     private fun load(parentID: String) = viewModelScope.launch {
-        repository.getCategoriesByParentID(parentID, null, null).onFailure { message ->
+        repository.getCategoriesByParentID(parentID, null, null).onFailure { error ->
             emitState(
                 CatalogParentCategoryViewState.Error(
                     error = CatalogParentCategoryUIError.Loading(
-                        message
+                        error.message
                     )
                 )
             )

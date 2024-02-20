@@ -1,5 +1,6 @@
 package ru.antares.cheese_android.presentation.view.main.profile_graph.profile
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -26,6 +27,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,8 +40,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -46,29 +47,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
+import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
-import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
-internal class ProfileScreenStateProvider : PreviewParameterProvider<ProfileViewState> {
-    override val values: Sequence<ProfileViewState> = sequenceOf(
-        ProfileViewState.LoadingState(),
-        ProfileViewState.NonAuthorizedState(),
-        ProfileViewState.ErrorState(ProfileUIError.LoadProfileError("Произошла ошибка при загрузке профиля")),
-        ProfileViewState.AuthorizedState("Рыбаков", "Павел")
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
-fun ProfileScreenPreview(
-    @PreviewParameter(ProfileScreenStateProvider::class) state: ProfileViewState
-) {
+fun ProfileScreenPreview() {
     CheeseTheme {
         ProfileScreen(
-            state = state,
+            state = ProfileState(),
             navigationEvents = emptyFlow(),
             onEvent = { _ ->
 
@@ -77,16 +68,19 @@ fun ProfileScreenPreview(
 
             },
             globalNavController = rememberNavController(),
-            profileNavController = rememberNavController()
+            profileNavController = rememberNavController(),
+            onError = {
+
+            }
         )
     }
 }
-
 @Composable
 fun ProfileScreen(
-    state: ProfileViewState,
+    state: ProfileState,
     navigationEvents: Flow<ProfileNavigationEvent>,
     onEvent: (ProfileEvent) -> Unit,
+    onError: (UIError) -> Unit,
     onNavigationEvent: (ProfileNavigationEvent) -> Unit,
     globalNavController: NavController,
     profileNavController: NavController
@@ -127,49 +121,54 @@ fun ProfileScreen(
         }
     }
 
+    LaunchedEffect(!state.profileLoaded) {
+        onEvent(ProfileEvent.LoadProfile)
+    }
+
+    val error: MutableState<UIError?> = remember { mutableStateOf(null) }
+
+    LaunchedEffect(state.error) {
+        error.value = state.error
+    }
+
     CheeseTitleWrapper(title = stringResource(id = R.string.profile_title)) {
         AnimatedContent(
-            targetState = state,
+            targetState = state.isLoading,
             label = "Profile animated content",
             transitionSpec = {
                 fadeIn(tween(200)).togetherWith(fadeOut(tween(200)))
             },
-            contentKey = { it.key }
         ) { uiState ->
             when (uiState) {
-                is ProfileViewState.AuthorizedState -> {
-                    UserIsAuthorizedContent(
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .padding(top = CheeseTheme.paddings.large),
-                        onEvent = onEvent,
-                        onNavigationEvent = onNavigationEvent,
-                        state = uiState
-                    )
-                }
-
-                is ProfileViewState.ErrorState -> {
-                    ErrorScreen(
-                        modifier = Modifier.align(Alignment.Center),
-                        error = uiState.error,
-                        retry = { uiError ->
-                            onEvent(ProfileEvent.Retry(uiError))
-                        }
-                    )
-                }
-
-                is ProfileViewState.LoadingState -> {
+                true -> {
                     LoadingScreen(modifier = Modifier.align(Alignment.Center))
                 }
-
-                is ProfileViewState.NonAuthorizedState -> {
-                    UserIsNotAuthorizedContent(
-                        modifier = Modifier
-                            .padding(bottom = CheeseTheme.paddings.large + CheeseTheme.paddings.large),
-                        onNavigationEvent = onNavigationEvent
-                    )
+                false -> {
+                    if (state.isAuthorized) {
+                        UserIsAuthorizedContent(
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = CheeseTheme.paddings.large),
+                            onEvent = onEvent,
+                            onNavigationEvent = onNavigationEvent,
+                            state = state
+                        )
+                    } else {
+                        UserIsNotAuthorizedContent(
+                            modifier = Modifier
+                                .padding(bottom = CheeseTheme.paddings.large + CheeseTheme.paddings.large),
+                            onNavigationEvent = onNavigationEvent
+                        )
+                    }
                 }
             }
+        }
+    }
+
+    error.value?.let { uiError ->
+        ErrorAlertDialog(error = uiError) {
+            onError(uiError)
+            error.value = null
         }
     }
 }
@@ -177,7 +176,7 @@ fun ProfileScreen(
 @Composable
 private fun UserIsAuthorizedContent(
     modifier: Modifier,
-    state: ProfileViewState.AuthorizedState,
+    state: ProfileState,
     onEvent: (ProfileEvent) -> Unit,
     onNavigationEvent: (ProfileNavigationEvent) -> Unit
 ) {

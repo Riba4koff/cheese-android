@@ -50,32 +50,6 @@ import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 import java.util.UUID
 
-internal class CatalogScreenPreviewProvider : PreviewParameterProvider<CatalogViewState> {
-    override val values: Sequence<CatalogViewState> = sequenceOf(
-        CatalogViewState.Loading(),
-        CatalogViewState.Success(
-            categories = (0..4).map { id ->
-                CategoryUIModel(
-                    id = UUID.randomUUID().toString(),
-                    name = "Название категории $id",
-                    position = id
-                )
-            }, isLoadingNextPage = true, listOfCategoryPairs = listOf(
-                Pair(
-                    CategoryUIModel(name = "Название категории"), listOf(
-                        CategoryUIModel(name = "Название категории"),
-                        CategoryUIModel(name = "Название категории"),
-                        CategoryUIModel(name = "Название категории"),
-                        CategoryUIModel(name = "Название категории"),
-                        CategoryUIModel(name = "Название категории"),
-                    )
-                )
-            )
-        ),
-        CatalogViewState.Error(error = CatalogUIError.Loading("Не удалось загрузить каталог")),
-    )
-}
-
 @Preview
 @Composable
 fun CategoryItemPreview() {
@@ -89,11 +63,9 @@ fun CategoryItemPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun CatalogScreenPreview(
-    @PreviewParameter(CatalogScreenPreviewProvider::class) state: CatalogViewState
-) {
+fun CatalogScreenPreview() {
     CheeseTheme {
-        CatalogScreen(state = state, onError = {
+        CatalogScreen(state = CatalogState(), onError = {
 
         }, onEvent = {
 
@@ -104,7 +76,7 @@ fun CatalogScreenPreview(
 @Composable
 fun CatalogScreen(
     navController: NavController,
-    state: CatalogViewState,
+    state: CatalogState,
     onError: (UIError) -> Unit,
     onEvent: (CatalogEvent) -> Unit,
     navigationEvents: Flow<CatalogNavigationEvent>
@@ -123,22 +95,31 @@ fun CatalogScreen(
 
     val (search, onSearchChange) = remember { mutableStateOf("") }
 
-    CheeseTitleWrapper(title = stringResource(R.string.catalog_title),
+    CheeseTitleWrapper(
+        title = stringResource(R.string.catalog_title),
         searchValue = search,
         onSearchChange = onSearchChange,
         enableClearButton = true,
         onSearch = { searchValue ->
-
-        }) {
-        AnimatedContent(targetState = state,
+            /*TODO: logic of search*/
+        }
+    ) {
+        AnimatedContent(
+            targetState = state.uiState,
             label = "Catalog screen animated content",
             transitionSpec = { fadeIn(tween(200)).togetherWith(fadeOut(tween(200))) },
-            contentKey = { it.key }) { uiState ->
+        ) { uiState ->
             when (uiState) {
-                is CatalogViewState.Error -> ErrorScreen(error = uiState.error, retry = onError)
-                is CatalogViewState.Loading -> LoadingScreen(modifier = Modifier)
-                is CatalogViewState.Success -> CatalogScreenContent(
-                    state = uiState, onEvent = onEvent, search = search
+                CatalogUIState.ERROR -> state.error?.let { catalogUIError ->
+                    ErrorScreen(
+                        error = catalogUIError,
+                        retry = onError
+                    )
+                }
+
+                CatalogUIState.LOADING -> LoadingScreen(modifier = Modifier)
+                CatalogUIState.SUCCESS -> CatalogScreenContent(
+                    state = state, onEvent = onEvent, search = search
                 )
             }
         }
@@ -147,7 +128,7 @@ fun CatalogScreen(
 
 @Composable
 private fun CatalogScreenContent(
-    state: CatalogViewState.Success, onEvent: (CatalogEvent) -> Unit, search: String
+    state: CatalogState, onEvent: (CatalogEvent) -> Unit, search: String
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),

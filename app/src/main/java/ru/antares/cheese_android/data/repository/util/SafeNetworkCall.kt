@@ -3,6 +3,7 @@ package ru.antares.cheese_android.data.repository.util
 import android.util.Log
 import retrofit2.Response
 import ru.antares.cheese_android.data.remote.models.CheeseNetworkResponse
+import ru.antares.cheese_android.data.remote.models.NetworkError
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.services.main.catalog.models.CategoryDTO
@@ -15,16 +16,24 @@ suspend fun <T> safeNetworkCall(block: suspend () -> Response<CheeseNetworkRespo
             in 200..299 -> {
                 val data = response.body()?.data
 
-                if (data == null) NetworkResponse.Error("Не удалось получить данные")
+                if (data == null) NetworkResponse.Error(
+                    error = NetworkError(
+                        message = "Не удалось загрузить данные",
+                        code = response.code()
+                    )
+                )
                 else NetworkResponse.Success(data)
             }
 
-            in 400..499 -> NetworkResponse.Error("Неверный запрос")
-            in 500..599 -> NetworkResponse.Error("Ошибка сервера")
-            else -> NetworkResponse.Error("Неизвестная ошибка")
+            else -> NetworkResponse.Error(
+                error = NetworkError(
+                    message = response.message(),
+                    code = response.code()
+                )
+            )
         }
     } catch (e: Exception) {
-        NetworkResponse.Error("Неизвестная ошибка")
+        NetworkResponse.Error(error = NetworkError("Неизвестная ошибка"))
     }
 
 suspend fun <T> safeNetworkCallWithPagination(
@@ -36,15 +45,23 @@ suspend fun <T> safeNetworkCallWithPagination(
         in 200..299 -> {
             val data = response.body()?.data
 
-            if (data == null) NetworkResponse.Error("Не удалось получить данные")
+            if (data == null) NetworkResponse.Error(
+                error = NetworkError(
+                    message = "Не удалось загрузить данные",
+                    code = response.code()
+                )
+            )
             else NetworkResponse.Success(data)
         }
 
-        in 400..499 -> NetworkResponse.Error("Неверный запрос")
-        in 500..599 -> NetworkResponse.Error("Ошибка сервера")
-        else -> NetworkResponse.Error("Неизвестная ошибка")
+        else -> NetworkResponse.Error(
+            error = NetworkError(
+                message = response.message(),
+                code = response.code()
+            )
+        )
     }
 } catch (e: Exception) {
-    NetworkResponse.Error(e.message.toString())
+    NetworkResponse.Error(error = NetworkError("Неизвестная ошибка"))
 }
 

@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import org.koin.androidx.compose.getViewModel
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataScreen
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataViewModel
@@ -33,12 +34,13 @@ fun NavGraphBuilder.profileNavigationGraph(
                 onEvent = viewModel::onEvent,
                 onNavigationEvent = viewModel::onNavigationEvent,
                 globalNavController = globalNavController,
-                profileNavController = profileNavController
+                profileNavController = profileNavController,
+                onError = viewModel::onError
             )
         }
-        composable(route = Screen.ProfileNavigationGraph.PersonalData.route) { navBackStackEntry ->
-            val viewModel: PersonalDataViewModel =
-                navBackStackEntry.sharedViewModel(navController = profileNavController)
+        composable(route = Screen.ProfileNavigationGraph.PersonalData.route) { _ ->
+            val viewModel: PersonalDataViewModel = getViewModel()
+                /*navBackStackEntry.sharedViewModel(navController = profileNavController)*/
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             PersonalDataScreen(
