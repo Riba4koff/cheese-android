@@ -133,8 +133,7 @@ class ConfirmCodeViewModel(
                         state.copy(error = ConfirmCodeUIError.UnknownError())
                     }
                 }
-            }.onSuccess { response ->
-                tokenService.authorize(response.token)
+            }.onSuccess { _ ->
                 _navigationEvents.send(ConfirmCodeNavigationEvent.NavigateToHomeScreen)
             }
         }

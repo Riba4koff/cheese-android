@@ -1,5 +1,11 @@
 package ru.antares.cheese_android.presentation.navigation.graphs
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,7 +29,15 @@ fun NavGraphBuilder.profileNavigationGraph(
         route = Screen.ProfileNavigationGraph.route,
         startDestination = Screen.ProfileNavigationGraph.Profile.route
     ) {
-        composable(route = Screen.ProfileNavigationGraph.Profile.route) { navBackStackEntry ->
+        composable(
+            enterTransition = {
+                slideInHorizontally(tween(300)) { -it }
+            },
+            exitTransition = {
+                slideOutHorizontally(tween(300)) { -it }
+            },
+            route = Screen.ProfileNavigationGraph.Profile.route,
+        ) { navBackStackEntry ->
             val viewModel: ProfileViewModel =
                 navBackStackEntry.sharedViewModel(navController = profileNavController)
             val state by viewModel.state.collectAsStateWithLifecycle()
@@ -38,9 +52,17 @@ fun NavGraphBuilder.profileNavigationGraph(
                 onError = viewModel::onError
             )
         }
-        composable(route = Screen.ProfileNavigationGraph.PersonalData.route) { _ ->
+        composable(
+            enterTransition = {
+                slideInHorizontally(tween(300)) { it }
+            },
+            exitTransition = {
+                slideOutHorizontally(tween(300)) { it }
+            },
+            route = Screen.ProfileNavigationGraph.PersonalData.route
+        ) { _ ->
             val viewModel: PersonalDataViewModel = getViewModel()
-                /*navBackStackEntry.sharedViewModel(navController = profileNavController)*/
+            /*navBackStackEntry.sharedViewModel(navController = profileNavController)*/
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             PersonalDataScreen(

@@ -9,6 +9,6 @@ import ru.antares.cheese_android.domain.ResourceState
 
 interface IAuthorizationRepository {
     suspend fun makeCallV2(phone: String): Flow<ResourceState<Boolean?>>
-    suspend fun sendCodeV2(phone: String, request: SendCodeRequest): Flow<ResourceState<SendCodeResponse>>
+    suspend fun sendCodeV2(phone: String, request: SendCodeRequest): Flow<ResourceState<Unit>>
     suspend fun logout(): NetworkResponse<Boolean?>
 }
