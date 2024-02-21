@@ -170,6 +170,10 @@ private fun PersonalDataContent(
     val context = LocalContext.current
     val focus = LocalFocusManager.current
 
+    val phoneFieldIsEnabled = false
+    val emailFieldIsEnabled = false
+    val birthdayFieldIsEnabled = state.enabledBirthday
+
     val shakeController = rememberShakeController()
     val shakeConfig = ShakeConfig(
         iterations = 8,
@@ -228,7 +232,15 @@ private fun PersonalDataContent(
                 onEvent(PersonalDataEvent.OnPatronymicChange(patronymic))
             },
             focus = focus,
-            shakeController = shakeController
+            shakeController = shakeController,
+            keyboardActions = KeyboardActions(onDone = {
+                focus.clearFocus()
+            }, onNext = {
+                focus.moveFocus(FocusDirection.Down)
+            }),
+            keyboardOptions = KeyboardOptions(
+                imeAction = if (birthdayFieldIsEnabled) ImeAction.Next else ImeAction.Done
+            )
         )
         PersonalDataTextField(
             title = stringResource(R.string.birthday),
@@ -238,8 +250,11 @@ private fun PersonalDataContent(
             },
             focus = focus,
             shakeController = shakeController,
-            enabled = state.enabledBirthday,
-            bottomText = stringResource(R.string.date_of_birth_can_only_be_changed_once)
+            enabled = birthdayFieldIsEnabled,
+            bottomText = stringResource(R.string.date_of_birth_can_only_be_changed_once),
+            keyboardOptions = KeyboardOptions(
+                imeAction = if (emailFieldIsEnabled) ImeAction.Next else ImeAction.Done
+            )
         )
         PersonalDataTextField(
             title = stringResource(R.string.email),
@@ -250,7 +265,11 @@ private fun PersonalDataContent(
             validationTextFieldResult = state.validation.emailValidationResult,
             focus = focus,
             shakeController = shakeController,
-            enabled = false
+            keyboardOptions = KeyboardOptions(
+                imeAction = if (phoneFieldIsEnabled) ImeAction.Next else ImeAction.Done,
+                keyboardType = KeyboardType.Email
+            ),
+            enabled = emailFieldIsEnabled
         )
         PersonalDataTextField(
             title = stringResource(id = R.string.phone),
@@ -272,7 +291,7 @@ private fun PersonalDataContent(
             ),
             visualTransformation = PhoneVisualTransformation("+7 (000) 000-00-00", '0'),
             shakeController = shakeController,
-            enabled = false
+            enabled = phoneFieldIsEnabled
         )
 
         CheeseButton(
@@ -294,13 +313,17 @@ private fun PersonalDataTextField(
     placeholder: String = "",
     validationTextFieldResult: ValidationTextFieldResult = ValidationTextFieldResult(),
     focus: FocusManager,
-    keyboardActions: KeyboardActions = KeyboardActions(onDone = {
-        focus.moveFocus(FocusDirection.Down)
+    enabled: Boolean = true,
+    keyboardActions: KeyboardActions = KeyboardActions(onNext = {
+        focus.moveFocus(FocusDirection.Next)
+    }, onDone = {
+        focus.clearFocus()
     }),
-    keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+    keyboardOptions: KeyboardOptions = KeyboardOptions(
+        imeAction = ImeAction.Next
+    ),
     visualTransformation: VisualTransformation = VisualTransformation.None,
     shakeController: ShakeController,
-    enabled: Boolean = true,
     bottomText: String? = null
 ) {
     val modifier = if (validationTextFieldResult.success) Modifier

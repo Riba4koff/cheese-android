@@ -141,12 +141,16 @@ private fun BottomBarButtonBadgedBox(
             .height(44.dp)
     ) {
         BadgedBox(
-            modifier = Modifier.size(13.dp),
+            modifier = Modifier.size(15.dp),
             badge = {
-                if (destination.route == Screen.CartNavigationGraph.route && countInCart > 0) Badge(
-                    modifier = Modifier.offset((26).dp, 0.dp)
-                ) {
-                    Text("$countInCart", fontSize = 9.sp)
+                if (destination.route == Screen.CartNavigationGraph.route && countInCart > 0) {
+                    Badge(
+                        modifier = Modifier
+                            .offset((26).dp, 0.dp)
+                            .align(Alignment.Center)
+                    ) {
+                        Text("$countInCart", fontSize = 10.sp)
+                    }
                 }
             }
         ) { /* NOTHING*/ }

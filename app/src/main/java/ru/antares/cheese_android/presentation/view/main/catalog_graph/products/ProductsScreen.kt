@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.onClick
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTopBarWrapper
@@ -50,6 +51,7 @@ fun ProductsScreen(
     navController: NavController,
     state: ProductsState,
     onEvent: (ProductsEvent) -> Unit,
+    onNavigationEvent: (ProductsNavigationEvent) -> Unit,
     onError: (UIError) -> Unit
 ) {
     CheeseTopBarWrapper(topBarContent = {
@@ -110,6 +112,9 @@ fun ProductsScreen(
                                 Box(
                                     modifier = Modifier
                                         .animateItemPlacement(animationSpec = tween(200))
+                                        .onClick {
+                                            onNavigationEvent(ProductsNavigationEvent.NavigateToProductDetailInfo(product))
+                                        }
                                         .fillMaxWidth()
                                         .aspectRatio(2f / 1f)
                                         .background(Color.Red.copy(0.1f), CheeseTheme.shapes.small),

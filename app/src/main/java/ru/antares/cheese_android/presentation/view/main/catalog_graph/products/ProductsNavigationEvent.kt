@@ -10,5 +10,5 @@ import ru.antares.cheese_android.domain.models.uiModels.ProductUIModel
  */
 
 sealed interface ProductsNavigationEvent {
-    data class NavigateToDetailInfo(val product: ProductUIModel): ProductsNavigationEvent
+    data class NavigateToProductDetailInfo(val product: ProductUIModel): ProductsNavigationEvent
 }

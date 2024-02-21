@@ -1,17 +1,18 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.products
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.optics.copy
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.repository.IProductsRepository
 
@@ -33,6 +34,9 @@ class ProductsViewModel(
         MutableStateFlow(ProductsState())
     val state: StateFlow<ProductsState> = _mutableStateFlow.asStateFlow()
 
+    private val _navigationEvents: Channel<ProductsNavigationEvent> = Channel()
+    val navigationEvents: Flow<ProductsNavigationEvent> = _navigationEvents.receiveAsFlow()
+
     init {
         onEvent(ProductsEvent.LoadNextPage(0, PAGE_SIZE))
     }
@@ -53,6 +57,10 @@ class ProductsViewModel(
 
             is ProductsEvent.LoadNextPage -> loadNextPage(event.page, event.size)
         }
+    }
+
+    fun onNavigationEvent(event: ProductsNavigationEvent) = viewModelScope.launch {
+        _navigationEvents.send(event)
     }
 
     private fun loadNextPage(page: Int, pageSize: Int) = viewModelScope.launch(Dispatchers.IO) {
