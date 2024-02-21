@@ -17,7 +17,15 @@ fun NavGraphBuilder.homeNavigationGraph(
         route = Screen.HomeNavigationGraph.route,
         startDestination = Screen.HomeNavigationGraph.Home.route
     ) {
-        composable(route = Screen.HomeNavigationGraph.Home.route) { navBackStackEntry ->
+        composable(
+            enterTransition = {
+                fadeIn(tween(100))
+            },
+            exitTransition = {
+                fadeOut(tween(100))
+            },
+            route = Screen.HomeNavigationGraph.Home.route
+        ) { navBackStackEntry ->
             HomeScreen()
         }
     }

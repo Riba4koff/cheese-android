@@ -24,11 +24,11 @@ class AuthorizationRepository(
     override suspend fun makeCallV2(phone: String): Flow<ResourceState<Boolean?>> = flow {
         emit(ResourceState.Loading(isLoading = true))
 
-        delay(1000)
+        /*delay(1000)
 
-        emit(ResourceState.Success(true))
+        emit(ResourceState.Success(true))*/
 
-        /*val response = safeNetworkCall { authorizationService.makeCall(phone) }
+        val response = safeNetworkCall { authorizationService.makeCall(phone) }
 
         response.onFailure { error ->
             when (error.code) {
@@ -43,7 +43,7 @@ class AuthorizationRepository(
             }
         }.onSuccess { successCall ->
             emit(ResourceState.Success(successCall))
-        }*/
+        }
 
         emit(ResourceState.Loading(isLoading = false))
     }
@@ -55,7 +55,7 @@ class AuthorizationRepository(
 
         val sendCodeResponse = safeNetworkCall { authorizationService.sendCode(phone, request) }
 
-        /*sendCodeResponse.onFailure { error ->
+        sendCodeResponse.onFailure { error ->
             if (error.code in 500..599) {
                 if (error.code == 500) emit(ResourceState.Error(error = ConfirmCodeUIError.WrongCodeError()))
                 else emit(ResourceState.Error(error = ConfirmCodeUIError.ServerError()))
@@ -68,11 +68,11 @@ class AuthorizationRepository(
             tokenService.authorize(response.token)
             emit(ResourceState.Success(Unit))
             return@onSuccess
-        }*/
+        }
 
-        delay(1000)
+        /*delay(1000)
 
-        emit(ResourceState.Success(Unit))
+        emit(ResourceState.Success(Unit))*/
 
         emit(ResourceState.Loading(isLoading = false))
     }

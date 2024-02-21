@@ -1,22 +1,19 @@
 package ru.antares.cheese_android.presentation.navigation.graphs
 
-import android.util.Log
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import ru.antares.cheese_android.domain.Animations
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogScreen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogViewModel
@@ -28,27 +25,19 @@ import ru.antares.cheese_android.sharedViewModel
 
 fun NavGraphBuilder.catalogNavigationGraph(
     catalogNavController: NavController,
-    currentRoute: String?
+    nextRoute: String?
 ) {
-    Log.d("current_route", currentRoute.toString())
-
     navigation(
         startDestination = Screen.CatalogNavigationGraph.Catalog.url,
         route = Screen.CatalogNavigationGraph.route
     ) {
         composable(
-            enterTransition = {
-                Log.d("init", initialState.destination.route.toString())
-                slideInHorizontally(tween(200)) { -it }
-            },
-            exitTransition = {
-                slideOutHorizontally(tween(200)) { -it }
-            },
+            enterTransition = Animations.AnimateToRight.enter,
+            exitTransition = Animations.AnimateToRight.exit,
             route = Screen.CatalogNavigationGraph.Catalog.route
         ) { navBackStackEntry ->
-            val viewModel: CatalogViewModel = navBackStackEntry.sharedViewModel(
-                navController = catalogNavController
-            )
+            val viewModel: CatalogViewModel =
+                navBackStackEntry.sharedViewModel(navController = catalogNavController)
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             CatalogScreen(
@@ -59,14 +48,37 @@ fun NavGraphBuilder.catalogNavigationGraph(
                 navigationEvents = viewModel.navigationEvents
             )
         }
-
         composable(
             enterTransition = {
                 val previousDestination = initialState.destination.route
-                slideInHorizontally(tween(200)) { it }
+                if (previousDestination == Screen.CatalogNavigationGraph.Products.url) {
+                    //animation from left to right
+                    slideIntoContainer(
+                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    )
+                } else {
+                    //Appearance animation from right to left
+                    slideIntoContainer(
+                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    )
+                }
             },
             exitTransition = {
-                slideOutHorizontally(tween(200)) { it }
+                if (nextRoute == Screen.CatalogNavigationGraph.Products.url) {
+                    //animation from right to left
+                    slideOutOfContainer(
+                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left
+                    )
+                } else {
+                    //animation from left to right
+                    slideOutOfContainer(
+                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right
+                    )
+                }
             },
             route = Screen.CatalogNavigationGraph.CatalogParentCategory.url,
             arguments = listOf(
@@ -77,11 +89,8 @@ fun NavGraphBuilder.catalogNavigationGraph(
             val parentID = navBackStackEntry.arguments?.getString("parentID") ?: ""
             val name = navBackStackEntry.arguments?.getString("name") ?: ""
 
-            val viewModel: CatalogParentCategoryViewModel = koinViewModel(
-                parameters = {
-                    parametersOf(parentID)
-                }
-            )
+            val viewModel: CatalogParentCategoryViewModel =
+                koinViewModel(parameters = { parametersOf(parentID) })
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             CatalogParentCategoryScreen(
@@ -94,13 +103,10 @@ fun NavGraphBuilder.catalogNavigationGraph(
             )
         }
 
+        // Products
         composable(
-            enterTransition = {
-                slideInHorizontally(tween(200)) { it }
-            },
-            exitTransition = {
-                slideOutHorizontally(tween(200)) { it }
-            },
+            enterTransition = Animations.AnimateToLeft.enter,
+            exitTransition = Animations.AnimateToLeft.exit,
             route = Screen.CatalogNavigationGraph.Products.url,
             arguments = listOf(navArgument("id") { type = NavType.StringType },
                 navArgument("name") { type = NavType.StringType })
@@ -108,11 +114,8 @@ fun NavGraphBuilder.catalogNavigationGraph(
             val id = navBackStackEntry.arguments?.getString("id") ?: ""
             val name = navBackStackEntry.arguments?.getString("name") ?: ""
 
-            val viewModel: ProductsViewModel = koinViewModel(
-                parameters = {
-                    parametersOf(id)
-                }
-            )
+            val viewModel: ProductsViewModel =
+                koinViewModel(parameters = { parametersOf(id) })
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             ProductsScreen(

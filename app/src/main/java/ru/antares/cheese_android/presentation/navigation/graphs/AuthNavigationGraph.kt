@@ -28,7 +28,6 @@ import ru.antares.cheese_android.sharedViewModel
 fun NavGraphBuilder.authNavigationGraph(
     globalNavController: NavController
 ) {
-    val animationDurationValue = 0
     navigation(
         startDestination = Screen.AuthNavigationGraph.InputPhone.route,
         route = Screen.AuthNavigationGraph.route

@@ -25,10 +25,10 @@ fun BottomBarNavHost(globalNavController: NavHostController) {
         ) {
             composable(
                 enterTransition = {
-                    fadeIn(tween(0))
+                    fadeIn(tween(100))
                 },
                 exitTransition = {
-                    fadeOut(tween(0))
+                    fadeOut(tween(100))
                 },
                 route = Screen.HomeNavigationGraph.route,
             ) { _ ->
@@ -36,10 +36,10 @@ fun BottomBarNavHost(globalNavController: NavHostController) {
             }
             composable(
                 enterTransition = {
-                    fadeIn(tween(0))
+                    fadeIn(tween(100))
                 },
                 exitTransition = {
-                    fadeOut(tween(0))
+                    fadeOut(tween(100))
                 },
                 route = Screen.CatalogNavigationGraph.route
             ) { _ ->
@@ -47,9 +47,9 @@ fun BottomBarNavHost(globalNavController: NavHostController) {
             }
             composable(
                 enterTransition = {
-                    fadeIn(tween(0))
+                    fadeIn(tween(100))
                 }, exitTransition = {
-                    fadeOut(tween(0))
+                    fadeOut(tween(100))
                 },
                 route = Screen.CommunityNavigationGraph.route
             ) { _ ->
@@ -57,10 +57,10 @@ fun BottomBarNavHost(globalNavController: NavHostController) {
             }
             composable(
                 enterTransition = {
-                    fadeIn(tween(0))
+                    fadeIn(tween(100))
                 },
                 exitTransition = {
-                    fadeOut(tween(0))
+                    fadeOut(tween(100))
                 },
                 route = Screen.CartNavigationGraph.route
             ) { _ ->
@@ -68,10 +68,10 @@ fun BottomBarNavHost(globalNavController: NavHostController) {
             }
             composable(
                 enterTransition = {
-                    fadeIn(tween(0))
+                    fadeIn(tween(100))
                 },
                 exitTransition = {
-                    fadeOut(tween(0))
+                    fadeOut(tween(100))
                 },
                 route = Screen.ProfileNavigationGraph.route
             ) { _ ->

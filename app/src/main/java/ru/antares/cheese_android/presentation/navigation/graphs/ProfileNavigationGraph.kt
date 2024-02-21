@@ -62,7 +62,6 @@ fun NavGraphBuilder.profileNavigationGraph(
             route = Screen.ProfileNavigationGraph.PersonalData.route
         ) { _ ->
             val viewModel: PersonalDataViewModel = getViewModel()
-            /*navBackStackEntry.sharedViewModel(navController = profileNavController)*/
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             PersonalDataScreen(
