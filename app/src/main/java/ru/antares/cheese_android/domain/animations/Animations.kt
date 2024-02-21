@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.domain
+package ru.antares.cheese_android.domain.animations
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
@@ -9,7 +9,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.navigation.NavBackStackEntry
-import arrow.core.compose
 
 sealed class Animations(
     val enter: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition),
@@ -28,7 +27,7 @@ sealed class Animations(
         }
     )
 
-    data object AnimateToRight: Animations(
+    data object AnimateToRight : Animations(
         enter = {
             slideIntoContainer(
                 animationSpec = tween(ANIMATE_TIME, easing = EaseIn),

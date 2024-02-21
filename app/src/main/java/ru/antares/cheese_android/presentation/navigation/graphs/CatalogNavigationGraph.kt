@@ -1,10 +1,5 @@
 package ru.antares.cheese_android.presentation.navigation.graphs
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -16,7 +11,9 @@ import androidx.navigation.navigation
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.antares.cheese_android.ObserveAsNavigationEvents
-import ru.antares.cheese_android.domain.Animations
+import ru.antares.cheese_android.domain.animations.Animations
+import ru.antares.cheese_android.domain.animations.enterHorizontallySlide
+import ru.antares.cheese_android.domain.animations.exitHorizontallySlide
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogScreen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogViewModel
@@ -58,38 +55,8 @@ fun NavGraphBuilder.catalogNavigationGraph(
 
         // Children categories
         composable(
-            enterTransition = {
-                val previousDestination = initialState.destination.route
-
-                if (previousDestination == Screen.CatalogNavigationGraph.Products.url) {
-                    //animation from left to right
-                    slideIntoContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    )
-                } else {
-                    //Appearance animation from right to left
-                    slideIntoContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    )
-                }
-            },
-            exitTransition = {
-                if (nextRoute == Screen.CatalogNavigationGraph.Products.url) {
-                    //animation from right to left
-                    slideOutOfContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left
-                    )
-                } else {
-                    //animation from left to right
-                    slideOutOfContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right
-                    )
-                }
-            },
+            enterTransition = enterHorizontallySlide(Screen.CatalogNavigationGraph.Products.url),
+            exitTransition = exitHorizontallySlide(nextRoute == Screen.CatalogNavigationGraph.Products.url),
             route = Screen.CatalogNavigationGraph.CatalogParentCategory.url,
             arguments = listOf(
                 navArgument("parentID") { type = NavType.StringType },
@@ -115,41 +82,13 @@ fun NavGraphBuilder.catalogNavigationGraph(
 
         // Products
         composable(
-            enterTransition = {
-                val previousDestination = initialState.destination.route
-
-                if (previousDestination == Screen.CatalogNavigationGraph.ProductDetail.url) {
-                    //animation from left to right
-                    slideIntoContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    )
-                } else {
-                    //animation from right to left
-                    slideIntoContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    )
-                }
-            },
-            exitTransition = {
-                if (nextRoute == Screen.CatalogNavigationGraph.ProductDetail.url) {
-                    //animation from right to left
-                    slideOutOfContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left
-                    )
-                } else {
-                    //animation from left to right
-                    slideOutOfContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right
-                    )
-                }
-            },
+            enterTransition = enterHorizontallySlide(Screen.CatalogNavigationGraph.ProductDetail.url),
+            exitTransition = exitHorizontallySlide(nextRoute == Screen.CatalogNavigationGraph.ProductDetail.url),
             route = Screen.CatalogNavigationGraph.Products.url,
-            arguments = listOf(navArgument("id") { type = NavType.StringType },
-                navArgument("name") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("id") { type = NavType.StringType },
+                navArgument("name") { type = NavType.StringType }
+            )
         ) { navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getString("id") ?: ""
             val name = navBackStackEntry.arguments?.getString("name") ?: ""
@@ -178,38 +117,8 @@ fun NavGraphBuilder.catalogNavigationGraph(
 
         // Product detail info
         composable(
-            enterTransition = {
-                val previousDestination = initialState.destination.route
-
-                if (previousDestination == Screen.CatalogNavigationGraph.Products.url) {
-                    //animation from right to left
-                    slideIntoContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    )
-                } else {
-                    //animation from left to right
-                    slideIntoContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    )
-                }
-            },
-            exitTransition = {
-                if (nextRoute == Screen.CatalogNavigationGraph.Products.url) {
-                    //animation from right to left
-                    slideOutOfContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left
-                    )
-                } else {
-                    //animation from left to right
-                    slideOutOfContainer(
-                        animationSpec = tween(Animations.ANIMATE_TIME, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right
-                    )
-                }
-            },
+            enterTransition = Animations.AnimateToLeft.enter,
+            exitTransition = Animations.AnimateToLeft.exit,
             route = Screen.CatalogNavigationGraph.ProductDetail.url,
             arguments = listOf(
                 navArgument("id") { type = NavType.StringType }

@@ -14,6 +14,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import org.koin.androidx.compose.getViewModel
+import ru.antares.cheese_android.domain.animations.Animations
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataScreen
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataViewModel
@@ -30,12 +31,8 @@ fun NavGraphBuilder.profileNavigationGraph(
         startDestination = Screen.ProfileNavigationGraph.Profile.route
     ) {
         composable(
-            enterTransition = {
-                slideInHorizontally(tween(300)) { -it }
-            },
-            exitTransition = {
-                slideOutHorizontally(tween(300)) { -it }
-            },
+            enterTransition = Animations.AnimateToRight.enter,
+            exitTransition = Animations.AnimateToRight.exit,
             route = Screen.ProfileNavigationGraph.Profile.route,
         ) { navBackStackEntry ->
             val viewModel: ProfileViewModel =
@@ -53,12 +50,8 @@ fun NavGraphBuilder.profileNavigationGraph(
             )
         }
         composable(
-            enterTransition = {
-                slideInHorizontally(tween(300)) { it }
-            },
-            exitTransition = {
-                slideOutHorizontally(tween(300)) { it }
-            },
+            enterTransition = Animations.AnimateToLeft.enter,
+            exitTransition = Animations.AnimateToLeft.exit,
             route = Screen.ProfileNavigationGraph.PersonalData.route
         ) { _ ->
             val viewModel: PersonalDataViewModel = getViewModel()
