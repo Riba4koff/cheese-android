@@ -14,6 +14,8 @@ import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogUIError
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryUIError
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryUIState
 
 /*
 * Получить категории
@@ -35,9 +37,6 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.Ca
 class CatalogRepository(
     private val service: CatalogService
 ) : ICatalogRepository {
-    private companion object {
-        const val CANNOT_LOAD_CATEGORIES = "Не удалось загрузить категории"
-    }
 
     /**
      * Returns a list of pairs with the value <parent category, List<child category>>
@@ -71,7 +70,7 @@ class CatalogRepository(
         if (pairsOfCategory == null) {
             emit(
                 ResourceState.Error(
-                    error = CatalogUIError.Loading(message = CANNOT_LOAD_CATEGORIES)
+                    error = CatalogUIError.Loading()
                 )
             )
         } else {
@@ -83,9 +82,30 @@ class CatalogRepository(
         parentID: String,
         page: Int?,
         pageSize: Int?
-    ): NetworkResponse<Pagination<CategoryDTO>> = safeNetworkCallWithPagination {
-        service.get(parentID = parentID, hasParent = true, page = page, pageSize = pageSize)
-    }.onFailure { error -> Log.d("LOAD_CATEGORIES_BY_PARENT_ID", error.message) }
+    ): Flow<ResourceState<Pagination<CategoryUIModel>>> = flow {
+        emit(ResourceState.Loading(isLoading = true))
+
+        safeNetworkCallWithPagination {
+            service.get(parentID = parentID, hasParent = true, page = page, pageSize = pageSize)
+        }.onSuccess { pagination ->
+            emit(
+                ResourceState.Success(
+                    data = Pagination(
+                        result = pagination.result.toCategoryUIModels(),
+                        sizeResult = pagination.sizeResult,
+                        page = pagination.page,
+                        amountOfAll = pagination.amountOfAll,
+                        amountOfPages = pagination.amountOfPages
+                    )
+                )
+            )
+        }.onFailure { error ->
+            Log.d("LOAD_CHILD_CATEGOIRES_ERROR", error.message)
+            emit(ResourceState.Error(CatalogParentCategoryUIError.Loading()))
+        }
+
+        emit(ResourceState.Loading(isLoading = false))
+    }
 
     private suspend fun parentCategories(
         page: Int?, pageSize: Int?

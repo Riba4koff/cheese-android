@@ -21,7 +21,7 @@ import ru.antares.cheese_android.ui.theme.CheeseTheme
 fun ErrorScreen(
     modifier: Modifier = Modifier,
     error: UIError,
-    retry: (UIError) -> Unit
+    onError: (UIError) -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -30,7 +30,7 @@ fun ErrorScreen(
                 style = CheeseTheme.typography.common12Light,
                 color = CheeseTheme.colors.gray
             )
-            TextButton(modifier = Modifier.height(32.dp), onClick = { retry(error) }) {
+            TextButton(modifier = Modifier.height(32.dp), onClick = { onError(error) }) {
                 Text(
                     text = stringResource(R.string.retry),
                     style = CheeseTheme.typography.common14Light,
@@ -46,6 +46,6 @@ fun ErrorScreen(
 fun ErrorScreenPreview() {
     CheeseTheme {
         ErrorScreen(modifier = Modifier,
-            error = PersonalDataUIError.UnknownError("Хз"), retry = {})
+            error = PersonalDataUIError.UnknownError("Хз"), onError = {})
     }
 }

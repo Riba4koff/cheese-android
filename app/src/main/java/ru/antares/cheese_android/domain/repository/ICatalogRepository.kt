@@ -17,5 +17,5 @@ interface ICatalogRepository {
         parentID: String,
         page: Int?,
         pageSize: Int?
-    ): NetworkResponse<Pagination<CategoryDTO>>
+    ): Flow<ResourceState<Pagination<CategoryUIModel>>>
 }

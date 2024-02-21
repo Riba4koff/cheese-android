@@ -150,7 +150,7 @@ fun PersonalDataScreen(
                 ERROR -> state.error?.let {
                     ErrorScreen(
                         error = it,
-                        retry = { uiError ->
+                        onError = { uiError ->
                             onError(uiError)
                         }
                     )

@@ -8,14 +8,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogScreen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogViewModel
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_detail_category.CatalogParentCategoryScreen
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_detail_category.CatalogParentCategoryViewModel
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryScreen
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsScreen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsViewModel
 import ru.antares.cheese_android.sharedViewModel
@@ -60,7 +59,7 @@ fun NavGraphBuilder.catalogNavigationGraph(catalogNavController: NavController) 
             CatalogParentCategoryScreen(
                 navController = catalogNavController,
                 name = name,
-                catalogParentCategoryViewState = state,
+                state = state,
                 onError = viewModel::onError,
                 onEvent = viewModel::onEvent,
                 navigationEvents = viewModel.navigationEvent

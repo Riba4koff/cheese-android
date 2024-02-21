@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalLayoutApi::class)
 
-package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_detail_category
+package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -24,8 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -41,40 +39,15 @@ import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CategoryItemView
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
-internal class CatalogParentCategoryPreviewProvider :
-    PreviewParameterProvider<CatalogParentCategoryViewState> {
-    override val values: Sequence<CatalogParentCategoryViewState> = sequenceOf(
-        CatalogParentCategoryViewState.Loading(),
-        CatalogParentCategoryViewState.Error(error = CatalogParentCategoryUIError.Loading("Не удалось загрузить категории")),
-        CatalogParentCategoryViewState.Success(
-            childCategories = listOf(
-                CategoryUIModel(name = "Твердые"),
-                CategoryUIModel(name = "Мягкие"),
-                CategoryUIModel(name = "С плесенью"),
-                CategoryUIModel(name = "Твердые"),
-                CategoryUIModel(name = "Мягкие"),
-                CategoryUIModel(name = "С плесенью"),
-                CategoryUIModel(name = "Твердые"),
-                CategoryUIModel(name = "Мягкие"),
-                CategoryUIModel(name = "С плесенью"),
-                CategoryUIModel(name = "Твердые"),
-                CategoryUIModel(name = "Мягкие"),
-                CategoryUIModel(name = "С плесенью"),
-            )
-        ),
-    )
-}
 
 @Preview(showBackground = true)
 @Composable
-fun CatalogParentCategoryScreenPreview(
-    @PreviewParameter(CatalogParentCategoryPreviewProvider::class) state: CatalogParentCategoryViewState
-) {
+fun CatalogParentCategoryScreenPreview() {
     CheeseTheme {
         CatalogParentCategoryScreen(
             navController = rememberNavController(),
             name = "Сыр",
-            catalogParentCategoryViewState = state,
+            state = CatalogParentCategoryState(),
             onError = {
 
             },
@@ -90,13 +63,13 @@ fun CatalogParentCategoryScreenPreview(
 fun CatalogParentCategoryScreen(
     navController: NavController,
     name: String,
-    catalogParentCategoryViewState: CatalogParentCategoryViewState,
+    state: CatalogParentCategoryState,
     onError: (UIError) -> Unit,
     onEvent: (CatalogParentCategoryEvent) -> Unit,
     navigationEvents: Flow<CatalogParentCategoryNavigationEvent>
 ) {
     ObserveAsNavigationEvents(flow = navigationEvents) { event ->
-        when (event){
+        when (event) {
             is CatalogParentCategoryNavigationEvent.NavigateToProducts -> {
                 navController.navigate("${Screen.CatalogNavigationGraph.Products.route}/${event.id}/${event.categoryName}")
             }
@@ -121,20 +94,23 @@ fun CatalogParentCategoryScreen(
         )
     }) {
         AnimatedContent(
-            targetState = catalogParentCategoryViewState,
+            targetState = state.uiState,
             label = "Child categories of parent category animated content",
             transitionSpec = {
                 fadeIn(tween(300)).togetherWith(fadeOut(tween(300)))
             },
-            contentKey = { it.key }
-        ) { state ->
-            when (state) {
-                is CatalogParentCategoryViewState.Error -> ErrorScreen(
-                    error = state.error, retry = onError
-                )
+        ) { uiState ->
+            when (uiState) {
+                CatalogParentCategoryUIState.LOADING -> LoadingScreen()
 
-                is CatalogParentCategoryViewState.Loading -> LoadingScreen()
-                is CatalogParentCategoryViewState.Success -> {
+                CatalogParentCategoryUIState.ERROR -> state.error?.let {
+                    ErrorScreen(
+                        error = state.error,
+                        onError = onError
+                    )
+                }
+
+                CatalogParentCategoryUIState.SUCCESS -> {
                     ParentCategoryScreenContent(
                         childCategories = state.childCategories,
                         onCategoryClick = {

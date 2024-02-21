@@ -109,7 +109,7 @@ fun CatalogScreen(
                 CatalogUIState.ERROR -> state.error?.let { catalogUIError ->
                     ErrorScreen(
                         error = catalogUIError,
-                        retry = onError
+                        onError = onError
                     )
                 }
 
