@@ -5,6 +5,9 @@ package ru.antares.cheese_android.presentation.view.main.catalog_graph.product_d
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -183,7 +186,10 @@ fun ProductDetailScreen(
     ) {
         AnimatedContent(
             targetState = state.loading,
-            label = "Product detail animated content"
+            label = "Product detail animated content",
+            transitionSpec = {
+                fadeIn(tween(300)).togetherWith(fadeOut(tween(300)))
+            }
         ) { isLoading ->
             if (isLoading) {
                 LoadingScreen()
