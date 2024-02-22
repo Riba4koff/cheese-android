@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.toUIModel
+import ru.antares.cheese_android.domain.errors.toUIModels
 import ru.antares.cheese_android.domain.repository.IProductsRepository
 
 /**
@@ -82,7 +84,7 @@ class ProductsViewModel(
             }.onSuccess { pagination ->
                 _mutableStateFlow.update { state ->
                     state.copy {
-                        ProductsState.products set state.products + pagination.result
+                        ProductsState.products set state.products + pagination.result.toUIModels()
                         ProductsState.loading set false
                         ProductsState.currentPage set page
                         ProductsState.endReached set (pagination.sizeResult <= pageSize && pagination.amountOfPages - 1 == page)

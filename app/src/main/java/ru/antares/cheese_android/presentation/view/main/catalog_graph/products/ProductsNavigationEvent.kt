@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.products
 
-import ru.antares.cheese_android.domain.models.uiModels.ProductUIModel
+import ru.antares.cheese_android.domain.errors.ProductModel
 
 /**
  * ProductsNavigationEvent.kt
@@ -10,5 +10,6 @@ import ru.antares.cheese_android.domain.models.uiModels.ProductUIModel
  */
 
 sealed interface ProductsNavigationEvent {
-    data class NavigateToProductDetailInfo(val product: ProductUIModel): ProductsNavigationEvent
+    data class NavigateToProductDetailInfo(val product: ProductModel): ProductsNavigationEvent
+    data object GoBack: ProductsNavigationEvent
 }

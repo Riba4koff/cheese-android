@@ -54,18 +54,19 @@ fun CheeseSearchTextFieldPreview() {
 @Composable
 fun CheeseSearchTextField(
     modifier: Modifier = Modifier,
-    search: (String) -> Unit,
+    search: () -> Unit = {},
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String = "Давайте найдем что-нибудь",
     keyboardActions: KeyboardActions = KeyboardActions(
         onSearch = {
-            search(value)
+            search()
         }
     ),
     keyboardOptions: KeyboardOptions = KeyboardOptions(
         imeAction = ImeAction.Search
     ),
+    enabled: Boolean = true,
     enableClearButton: Boolean = false,
     shape: RoundedCornerShape = CheeseTheme.shapes.small,
 ) {
@@ -121,6 +122,7 @@ fun CheeseSearchTextField(
         },
         shape = shape,
         colors = colors,
-        textStyle = CheeseTheme.typography.common14Light
+        textStyle = CheeseTheme.typography.common14Light,
+        enabled = enabled
     )
 }

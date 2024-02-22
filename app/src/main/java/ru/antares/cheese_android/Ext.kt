@@ -3,6 +3,7 @@ package ru.antares.cheese_android
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
@@ -12,6 +13,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -84,6 +87,20 @@ fun PerformLifecycleOwner(
     }
 }
 
+fun Modifier.clickable(
+    scale: Float,
+    onPressedChange: (Boolean) -> Unit,
+    onClick: () -> Unit
+) = this
+    .pointerInput(Unit) {
+        detectTapGestures(onPress = {
+            onPressedChange(true)
+            tryAwaitRelease()
+            onPressedChange(false)
+        }, onTap = { onClick() })
+    }
+    .scale(scale)
+
 val LazyListState.isLastItemVisible: Boolean
     get() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
 
@@ -108,4 +125,5 @@ fun rememberScrollContext(listState: LazyListState): ScrollContext {
     return scrollContext
 }
 
-fun LazyListState.isScrolledToTheEnd() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
+fun LazyListState.isScrolledToTheEnd() =
+    layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1

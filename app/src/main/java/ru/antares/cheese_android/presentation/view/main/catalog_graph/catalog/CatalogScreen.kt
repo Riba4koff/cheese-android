@@ -38,7 +38,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
+import ru.antares.cheese_android.presentation.models.CategoryUIModel
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen

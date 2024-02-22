@@ -1,12 +1,8 @@
 package ru.antares.cheese_android.data.repository.main
 
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
-import ru.antares.cheese_android.data.remote.dto.ProductDTO
 import ru.antares.cheese_android.data.remote.dto.toProductUIModel
 import ru.antares.cheese_android.data.remote.dto.toProductUIModels
 import ru.antares.cheese_android.data.remote.models.Pagination
@@ -14,7 +10,7 @@ import ru.antares.cheese_android.data.remote.services.main.products.ProductsServ
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
 import ru.antares.cheese_android.domain.ResourceState
-import ru.antares.cheese_android.domain.models.uiModels.ProductUIModel
+import ru.antares.cheese_android.domain.errors.ProductModel
 import ru.antares.cheese_android.domain.repository.IProductsRepository
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailUIError
 
@@ -37,7 +33,7 @@ class ProductsRepository(
         page: Int?,
         size: Int?,
         sortByColumn: String?
-    ): Flow<ResourceState<Pagination<ProductUIModel>>> = flow {
+    ): Flow<ResourceState<Pagination<ProductModel>>> = flow {
         emit(ResourceState.Loading(isLoading = true))
 
         safeNetworkCallWithPagination {
@@ -71,7 +67,7 @@ class ProductsRepository(
     /**
      * GET: Product by id
      * */
-    override suspend fun get(id: String): Flow<ResourceState<ProductUIModel>> = flow {
+    override suspend fun get(id: String): Flow<ResourceState<ProductModel>> = flow {
         emit(ResourceState.Loading(isLoading = true))
 
         safeNetworkCall { productsService.getProductByID(productID = id) }.onSuccess { productDTO ->

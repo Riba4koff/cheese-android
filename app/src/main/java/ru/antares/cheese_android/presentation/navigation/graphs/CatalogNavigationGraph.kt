@@ -102,12 +102,15 @@ fun NavGraphBuilder.catalogNavigationGraph(
                     is ProductsNavigationEvent.NavigateToProductDetailInfo -> {
                         catalogNavController.navigate(Screen.CatalogNavigationGraph.ProductDetail.route + "/${event.product.id}")
                     }
+
+                    ProductsNavigationEvent.GoBack -> {
+                        catalogNavController.popBackStack()
+                    }
                 }
             }
 
             ProductsScreen(
                 name = name,
-                navController = catalogNavController,
                 state = state,
                 onError = viewModel::onError,
                 onEvent = viewModel::onEvent,

@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.data.remote.dto
 
-import ru.antares.cheese_android.domain.models.uiModels.ProductUIModel
+import ru.antares.cheese_android.domain.errors.ProductModel
 
 data class ProductDTO(
     val id: String,
@@ -16,7 +16,7 @@ data class ProductDTO(
     val unitName: String
 )
 
-fun ProductDTO.toProductUIModel() = ProductUIModel(
+fun ProductDTO.toProductUIModel() = ProductModel(
     id = id,
     name = name,
     price = price,

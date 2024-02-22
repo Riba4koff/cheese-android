@@ -1,7 +1,7 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog
 
 import arrow.optics.optics
-import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
+import ru.antares.cheese_android.presentation.models.CategoryUIModel
 import androidx.compose.runtime.Immutable
 
 

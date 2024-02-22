@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.data.remote.dto
 
-import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
+import ru.antares.cheese_android.presentation.models.CategoryUIModel
 
 data class CategoryDTO(
     val id: String,

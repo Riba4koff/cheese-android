@@ -2,7 +2,7 @@ package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_p
 
 import arrow.optics.optics
 import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
+import ru.antares.cheese_android.presentation.models.CategoryUIModel
 import javax.annotation.concurrent.Immutable
 
 sealed interface CatalogParentCategoryViewState {

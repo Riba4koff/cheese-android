@@ -26,10 +26,11 @@ import ru.antares.cheese_android.ui.theme.CheeseTheme
 @Composable
 fun CheeseTopBarWrapper(
     topBarContent: @Composable BoxScope.() -> Unit = {},
+    search: () -> Unit = {},
     searchValue: String = "",
     onSearchChange: ((String) -> Unit)? = null,
-    onSearch: ((String) -> Unit) = {},
     enableClearButton: Boolean = false,
+    enabledSearch: Boolean = true,
     content: @Composable BoxScope.() -> Unit
 ) {
     val topBarHeight = 42.dp
@@ -50,10 +51,11 @@ fun CheeseTopBarWrapper(
                         horizontal = CheeseTheme.paddings.medium,
                         vertical = CheeseTheme.paddings.small
                     ),
-                search = onSearch,
                 value = searchValue,
                 onValueChange = it,
-                enableClearButton = enableClearButton
+                enableClearButton = enableClearButton,
+                search = search,
+                enabled = enabledSearch
             )
         }
         Box(
@@ -87,7 +89,7 @@ fun CATopBarPreview() {
             },
             onSearchChange = {
 
-            }
+            },
         ) {
             /* TODO: content */
         }

@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.products
 
-import ru.antares.cheese_android.domain.models.uiModels.ProductUIModel
+import ru.antares.cheese_android.domain.errors.ProductModel
 
 /**
  * ProductsEvent.kt
@@ -10,8 +10,8 @@ import ru.antares.cheese_android.domain.models.uiModels.ProductUIModel
  */
 
 sealed interface ProductsEvent {
-    data class OnProductClick(val product: ProductUIModel) : ProductsEvent
-    data class AddProductToCart(val product: ProductUIModel) : ProductsEvent
-    data class RemoveProductFromCart(val product: ProductUIModel) : ProductsEvent
+    data class OnProductClick(val product: ProductModel) : ProductsEvent
+    data class AddProductToCart(val product: ProductModel) : ProductsEvent
+    data class RemoveProductFromCart(val product: ProductModel) : ProductsEvent
     data class LoadNextPage(val page: Int, val size: Int): ProductsEvent
 }

@@ -11,11 +11,10 @@ import ru.antares.cheese_android.data.remote.dto.toCategoryUIModel
 import ru.antares.cheese_android.data.remote.dto.toCategoryUIModels
 import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
 import ru.antares.cheese_android.domain.ResourceState
-import ru.antares.cheese_android.domain.models.uiModels.CategoryUIModel
+import ru.antares.cheese_android.presentation.models.CategoryUIModel
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogUIError
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryUIError
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryUIState
 
 /*
 * Получить категории

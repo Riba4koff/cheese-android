@@ -3,7 +3,8 @@ package ru.antares.cheese_android.presentation.view.main.catalog_graph.products
 import androidx.compose.runtime.Immutable
 import arrow.optics.optics
 import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.domain.models.uiModels.ProductUIModel
+import ru.antares.cheese_android.domain.errors.ProductModel
+import ru.antares.cheese_android.presentation.models.ProductUIModel
 
 /**
  * ProductState.kt
