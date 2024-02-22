@@ -19,7 +19,9 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.Ca
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryScreen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryViewModel
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailNavigationEvent
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailScreen
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsNavigationEvent
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsScreen
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsViewModel
@@ -129,7 +131,33 @@ fun NavGraphBuilder.catalogNavigationGraph(
         ) { navBackStackEntry ->
             val productID = navBackStackEntry.arguments?.getString("id") ?: ""
 
-            ProductDetailScreen()
+            val viewModel: ProductDetailViewModel = koinViewModel(
+                parameters = {
+                    parametersOf(productID)
+                }
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
+                when (navigationEvent) {
+                    ProductDetailNavigationEvent.GoBack -> {
+                        catalogNavController.popBackStack()
+                    }
+                    ProductDetailNavigationEvent.NavigateToFeedBack -> {
+                        /*TODO: navigate to user feed back */
+                    }
+                    is ProductDetailNavigationEvent.NavigateToProduct -> {
+                        /* TODO: navigate to next product screen */
+                    }
+                }
+            }
+
+            ProductDetailScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                onNavigationEvent = viewModel::onNavigationEvent,
+                onError = viewModel::onError
+            )
         }
     }
 }

@@ -34,4 +34,6 @@
     <string name="date_of_birth_can_only_be_changed_once">Дату рождения можно изменить только 1 раз</string>
     <string name="not_available">Нет в наличии</string>
     <string name="buy">Купить</string>
+    <string name="description">Описание</string>
+    <string name="products_recommendations">Рекомендации</string>
 </resources>

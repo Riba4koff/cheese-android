@@ -1,6 +1,7 @@
 package ru.antares.cheese_android.data.repository.main
 
 import android.util.Log
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import ru.antares.cheese_android.data.remote.dto.toProductUIModel
@@ -70,6 +71,8 @@ class ProductsRepository(
     override suspend fun get(id: String): Flow<ResourceState<ProductModel>> = flow {
         emit(ResourceState.Loading(isLoading = true))
 
+        delay(300)
+
         safeNetworkCall { productsService.getProductByID(productID = id) }.onSuccess { productDTO ->
             val productUIModel = productDTO.toProductUIModel()
             emit(ResourceState.Success(productUIModel))
@@ -77,6 +80,9 @@ class ProductsRepository(
         }.onFailure { error ->
             Log.d(GET_PRODUCT_ERROR_TAG, error.toString())
             emit(ResourceState.Error(ProductDetailUIError.LoadingError()))
+            return@onFailure
         }
+
+        emit(ResourceState.Loading(isLoading = false))
     }
 }

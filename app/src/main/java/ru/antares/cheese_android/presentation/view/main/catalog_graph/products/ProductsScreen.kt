@@ -218,6 +218,8 @@ fun ProductsScreen(
                                 key = { _, it -> it.value.id }
                             ) { index, product ->
                                 ProductView(
+                                    modifier = Modifier
+                                        .animateItemPlacement(tween(50)),
                                     product = product,
                                     onClick = { pr ->
                                         onNavigationEvent(
@@ -234,7 +236,10 @@ fun ProductsScreen(
                             }
                             item {
                                 if (state.loadingNextPage && !state.endReached) {
-                                    LoadingProductView()
+                                    LoadingProductView(
+                                        modifier = Modifier
+                                            .animateItemPlacement(tween(50))
+                                    )
                                 }
                             }
                         }
@@ -383,9 +388,9 @@ private fun ProductViewBlur(product: ProductUIModel) {
 }
 
 @Composable
-fun LoadingProductView() {
+fun LoadingProductView(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .aspectRatio(3f / 2f)
             .background(

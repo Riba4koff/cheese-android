@@ -7,6 +7,7 @@ import ru.antares.cheese_android.presentation.view.authorization.confirm_code.Co
 import ru.antares.cheese_android.presentation.view.authorization.input_phone.InputPhoneViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryViewModel
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsViewModel
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataViewModel
 import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileViewModel
@@ -38,4 +39,5 @@ private val catalogViewModelsModule = module {
     viewModelOf(::CatalogViewModel)
     viewModelOf(::CatalogParentCategoryViewModel)
     viewModelOf(::ProductsViewModel)
+    viewModelOf(::ProductDetailViewModel)
 }
