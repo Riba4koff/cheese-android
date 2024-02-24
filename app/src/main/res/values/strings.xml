@@ -36,4 +36,5 @@
     <string name="buy">Купить</string>
     <string name="description">Описание</string>
     <string name="products_recommendations">Рекомендации</string>
+    <string name="add_to_cart">Добавить в корзину</string>
 </resources>

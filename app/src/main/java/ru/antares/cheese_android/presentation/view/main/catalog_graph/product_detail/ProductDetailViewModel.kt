@@ -7,15 +7,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.models.toUIModels
+import ru.antares.cheese_android.domain.repository.ICartRepository
 import ru.antares.cheese_android.domain.repository.IProductsRepository
+import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
 import ru.antares.cheese_android.presentation.models.ProductUIModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsViewModel
 
@@ -27,12 +31,33 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.P
  */
 
 class ProductDetailViewModel(
-    private val repository: IProductsRepository,
-    private val productID: String
+    private val cartRepo: ICartRepository,
+    private val prodRepo: IProductsRepository,
+    private val productID: String,
+    private val getCartFlowUseCase: GetCartFlowUseCase
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<ProductDetailViewState> =
         MutableStateFlow(ProductDetailViewState())
-    val state: StateFlow<ProductDetailViewState> = _mutableStateFlow.asStateFlow()
+    val state: StateFlow<ProductDetailViewState> = combine(
+        _mutableStateFlow,
+        getCartFlowUseCase.value
+    ) { state, cart ->
+        val countInCart = cart.find { it.productID == state.product?.value?.id }?.amount ?: 0
+
+        state.copy(
+            product = state.product?.copy(countInCart = countInCart),
+            recommendations = state.recommendations.map { recommendation ->
+                val countInCartRec = cart.find { it.productID == recommendation.value.id }?.amount
+
+                if (countInCartRec != null) recommendation.copy(countInCart = countInCartRec)
+                else recommendation
+            }
+        )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        ProductDetailViewState()
+    )
 
 
     private val _navigationEvents: Channel<ProductDetailNavigationEvent> = Channel()
@@ -49,11 +74,11 @@ class ProductDetailViewModel(
     fun onEvent(event: ProductDetailEvent) = viewModelScope.launch {
         when (event) {
             is ProductDetailEvent.AddProductToCart -> {
-                /*TODO: - add product to cart */
+                addProductToCart(event.product)
             }
 
             is ProductDetailEvent.RemoveProductFromCart -> {
-                /*TODO: - remove product from cart */
+                removeProductFromCart(event.product)
             }
 
             is ProductDetailEvent.LoadNextPageOfRecommendations -> {
@@ -67,16 +92,20 @@ class ProductDetailViewModel(
     }
 
     fun onError(error: UIError) {
-        when (error as ProductDetailUIError) {
+        when (error) {
             is ProductDetailUIError.LoadingError -> {
-                _mutableStateFlow.update { state -> state.copy(uiError = null) }
                 loadProduct(productID)
+            }
+            else -> {
+                _mutableStateFlow.update { state ->
+                    state.copy(uiError = null)
+                }
             }
         }
     }
 
     private fun loadProduct(productID: String) = viewModelScope.launch {
-        repository.get(productID).collectLatest { resource ->
+        prodRepo.get(productID).collectLatest { resource ->
             resource.onLoading { isLoading ->
                 _mutableStateFlow.update { state ->
                     state.copy {
@@ -101,7 +130,7 @@ class ProductDetailViewModel(
 
     private fun loadNextPageOfRecommendations(categoryID: String, page: Int, pageSize: Int) =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.get(
+            prodRepo.get(
                 categoryID = categoryID, page = page, size = ProductsViewModel.PAGE_SIZE
             ).collectLatest { resource ->
                 resource.onLoading { isLoading ->
@@ -128,4 +157,44 @@ class ProductDetailViewModel(
                 }
             }
         }
+
+    private suspend fun addProductToCart(product: ProductUIModel) {
+        if (!state.value.loadingCart) {
+            cartRepo.increment(product.countInCart, product.value.id).collectLatest { resource ->
+                resource.onLoading { isLoading ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            ProductDetailViewState.loadingCart set isLoading
+                        }
+                    }
+                }.onError { error ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            ProductDetailViewState.uiError set error
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun removeProductFromCart(product: ProductUIModel) {
+        if (!state.value.loadingCart) {
+            cartRepo.decrement(product.countInCart, product.value.id).collectLatest { resource ->
+                resource.onLoading { isLoading ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            ProductDetailViewState.loadingCart set isLoading
+                        }
+                    }
+                }.onError { error ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            ProductDetailViewState.uiError set error
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

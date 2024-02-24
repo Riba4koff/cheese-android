@@ -1,5 +1,6 @@
 @file:OptIn(
-    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class
 )
 
@@ -66,6 +67,7 @@ import ru.antares.cheese_android.clickable
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.domain.models.ProductModel
+import ru.antares.cheese_android.onClick
 import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
 import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
@@ -92,18 +94,14 @@ fun ProductsScreenPreview() {
                     description = "",
                     unit = 0,
                     category = CategoryModel(
-                        id = "",
-                        name = "Сыр",
-                        position = 0,
-                        parentID = null
+                        id = "", name = "Сыр", position = 0, parentID = null
                     ),
                     categories = emptyList(),
                     categoryId = "",
                     recommend = false,
                     outOfStock = false,
                     unitName = "шт"
-                ),
-                countInCart = 0
+                ), countInCart = 0
             ),
             ProductUIModel(
                 value = ProductModel(
@@ -113,37 +111,25 @@ fun ProductsScreenPreview() {
                     description = "",
                     unit = 0,
                     category = CategoryModel(
-                        id = "",
-                        name = "Сыр",
-                        position = 0,
-                        parentID = null
+                        id = "", name = "Сыр", position = 0, parentID = null
                     ),
                     categories = emptyList(),
                     categoryId = "",
                     recommend = false,
                     outOfStock = false,
                     unitName = "шт"
-                ),
-                countInCart = 502
+                ), countInCart = 502
             ),
         )
-        ProductsScreen(
-            name = "",
-            state = ProductsState(
-                products = products,
-                loading = false,
-                loadingCart = true
-            ),
-            onEvent = {
+        ProductsScreen(name = "", state = ProductsState(
+            products = products, loading = false, loadingCart = true
+        ), onEvent = {
 
-            },
-            onNavigationEvent = {
+        }, onNavigationEvent = {
 
-            },
-            onError = {
+        }, onError = {
 
-            }
-        )
+        })
     }
 }
 
@@ -157,41 +143,32 @@ fun ProductsScreen(
 ) {
     val (search, onSearchChange) = remember { mutableStateOf("") }
 
-    CheeseTopBarWrapper(
-        topBarContent = {
-            IconButton(
-                modifier = Modifier
-                    .padding(start = CheeseTheme.paddings.smallest)
-                    .size(CheeseTheme.paddings.large)
-                    .align(Alignment.CenterStart), onClick = {
-                    onNavigationEvent(ProductsNavigationEvent.GoBack)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                    contentDescription = null
-                )
-            }
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = name,
-                style = CheeseTheme.typography.common16Medium
+    CheeseTopBarWrapper(topBarContent = {
+        IconButton(modifier = Modifier
+            .padding(start = CheeseTheme.paddings.smallest)
+            .size(CheeseTheme.paddings.large)
+            .align(Alignment.CenterStart), onClick = {
+            onNavigationEvent(ProductsNavigationEvent.GoBack)
+        }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                contentDescription = null
             )
-        },
-        enableClearButton = true,
-        onSearchChange = onSearchChange,
-        search = {
-            /* TODO: navigate to search screen and make network call to receive products */
-        },
-        searchValue = search
+        }
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = name,
+            style = CheeseTheme.typography.common16Medium
+        )
+    }, enableClearButton = true, onSearchChange = onSearchChange, search = {
+        /* TODO: navigate to search screen and make network call to receive products */
+    }, searchValue = search
     ) {
-        AnimatedContent(
-            targetState = state.loading,
+        AnimatedContent(targetState = state.loading,
             label = "Products state animated content",
             transitionSpec = {
                 fadeIn(tween(200)).togetherWith(fadeOut(tween(200)))
-            }
-        ) { uiState ->
+            }) { uiState ->
             when (uiState) {
                 true -> {
                     LoadingScreen()
@@ -200,8 +177,7 @@ fun ProductsScreen(
                 false -> {
                     if (state.products.isEmpty()) {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "Тут пусто...",
@@ -218,13 +194,9 @@ fun ProductsScreen(
                             ),
                             verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small)
                         ) {
-                            itemsIndexed(
-                                items = state.products,
-                                key = { _, it -> it.value.id }
-                            ) { index, product ->
-                                ProductView(
-                                    modifier = Modifier
-                                        .animateItemPlacement(tween(50)),
+                            itemsIndexed(items = state.products,
+                                key = { _, it -> it.value.id }) { index, product ->
+                                ProductView(modifier = Modifier.animateItemPlacement(tween(50)),
                                     product = product,
                                     onClick = { pr ->
                                         onNavigationEvent(
@@ -236,33 +208,23 @@ fun ProductsScreen(
                                     },
                                     removeFromCart = { pr ->
                                         onEvent(ProductsEvent.RemoveProductFromCart(pr))
-                                    }
-                                )
+                                    })
                                 if (index >= state.products.size - 1 && !state.loadingNextPage && !state.endReached) onEvent(
                                     ProductsEvent.LoadNextPage(
-                                        page = state.currentPage + 1,
-                                        size = state.pageSize
+                                        page = state.currentPage + 1, size = state.pageSize
                                     )
                                 )
                             }
                             item {
                                 if (state.loadingNextPage && !state.endReached) {
                                     LoadingProductView(
-                                        modifier = Modifier
-                                            .animateItemPlacement(tween(50))
+                                        modifier = Modifier.animateItemPlacement(tween(50))
                                     )
                                 }
                             }
                             item {
 
                             }
-                        }
-                        AnimatedVisibility(
-                            visible = state.loadingCart,
-                            enter = fadeIn(),
-                            exit = fadeOut()
-                        ) {
-                            LoadingScreen()
                         }
                     }
                 }
@@ -282,6 +244,15 @@ fun ProductsScreen(
             }
         }
     }
+
+    AnimatedVisibility(
+        visible = state.loadingCart, enter = fadeIn(), exit = fadeOut()
+    ) {
+        LoadingScreen(
+            modifier = Modifier
+                .onClick { /* DO NOTHING */ }
+        )
+    }
 }
 
 @Composable
@@ -294,21 +265,16 @@ fun ProductView(
 ) {
     val (pressed, onPressedChange) = remember { mutableStateOf(false) }
     val productAnimatedValue by animateFloatAsState(
-        targetValue = if (pressed) 0.96f else 1f,
-        label = "Product view animated scale"
+        targetValue = if (pressed) 0.96f else 1f, label = "Product view animated scale"
     )
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(3f / 2f)
-            .clickable(
-                scale = productAnimatedValue,
-                onPressedChange = onPressedChange,
-                onClick = {
-                    onClick(product)
-                }
-            )
+            .clickable(scale = productAnimatedValue, onPressedChange = onPressedChange, onClick = {
+                onClick(product)
+            })
             .border(
                 border = BorderStroke(0.5.dp, CheeseTheme.colors.gray.copy(0.3f)),
                 shape = CheeseTheme.shapes.medium
@@ -319,10 +285,8 @@ fun ProductView(
     ) {
         AsyncImage(
             modifier = Modifier.fillMaxWidth(),
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(product.value.imageUrl)
-                .crossfade(true)
-                .build(),
+            model = ImageRequest.Builder(LocalContext.current).data(product.value.imageUrl)
+                .crossfade(true).build(),
             contentDescription = "product image",
             contentScale = ContentScale.Crop
         )
@@ -332,8 +296,7 @@ fun ProductView(
                 .fillMaxWidth()
                 .height(60.dp)
                 .background(
-                    CheeseTheme.colors.white.copy(0.8f),
-                    RoundedCornerShape(
+                    CheeseTheme.colors.white.copy(0.8f), RoundedCornerShape(
                         topStart = CheeseTheme.paddings.medium,
                         topEnd = CheeseTheme.paddings.medium,
                     )
@@ -343,15 +306,11 @@ fun ProductView(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             ProductInfoView(
-                modifier = Modifier
-                    .weight(1f),
-                product = product
+                modifier = Modifier.weight(1f), product = product
             )
             if (product.value.outOfStock.not()) {
                 CartButtons(
-                    product = product,
-                    addToCart = addToCart,
-                    removeFromCart = removeFromCart
+                    product = product, addToCart = addToCart, removeFromCart = removeFromCart
                 )
             }
         }
@@ -361,8 +320,7 @@ fun ProductView(
 
 @Composable
 fun ProductInfoView(
-    modifier: Modifier = Modifier,
-    product: ProductUIModel
+    modifier: Modifier = Modifier, product: ProductUIModel
 ) {
     val priceText = "${parsePrice(product.value.price)}₽"
 
@@ -383,8 +341,7 @@ fun ProductInfoView(
             horizontalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small)
         ) {
             Text(
-                text = priceText,
-                style = CheeseTheme.typography.common14Bold
+                text = priceText, style = CheeseTheme.typography.common14Bold
             )
             Text(
                 text = "${product.value.unit} ${product.value.unitName}",
@@ -426,15 +383,11 @@ fun LoadingProductView(modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .aspectRatio(3f / 2f)
             .background(
-                Color.LightGray.copy(0.1f),
-                CheeseTheme.shapes.small
-            ),
-        contentAlignment = Alignment.Center
+                Color.LightGray.copy(0.1f), CheeseTheme.shapes.small
+            ), contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
-            modifier = Modifier.size(24.dp),
-            color = CheeseTheme.colors.accent,
-            strokeWidth = 2.dp
+            modifier = Modifier.size(24.dp), color = CheeseTheme.colors.accent, strokeWidth = 2.dp
         )
     }
 }
@@ -449,19 +402,16 @@ private fun CartButtons(
         modifier = Modifier
             .clip(CheeseTheme.shapes.medium)
             .background(
-                CheeseTheme.colors.accent,
-                CheeseTheme.shapes.medium
+                CheeseTheme.colors.accent, CheeseTheme.shapes.medium
             )
             .height(40.dp)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
+            .clickable(interactionSource = remember { MutableInteractionSource() },
                 indication = if (product.countInCart == 0) rememberRipple() else null,
                 onClick = {
                     if (product.countInCart == 0) {
                         addToCart(product)
                     }
-                }
-            )
+                })
     ) {
         if (product.countInCart == 0) Text(
             modifier = Modifier
@@ -477,29 +427,21 @@ private fun CartButtons(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                IconButton(
-                    modifier = Modifier
-                        .size(24.dp),
-                    onClick = {
-                        removeFromCart(product)
-                    }) {
+                IconButton(modifier = Modifier.size(24.dp), onClick = {
+                    removeFromCart(product)
+                }) {
                     Icon(
-                        modifier = Modifier
-                            .size(20.dp),
+                        modifier = Modifier.size(20.dp),
                         painter = painterResource(id = R.drawable.minus),
                         contentDescription = null
                     )
                 }
                 Text(text = "${product.countInCart}")
-                IconButton(
-                    modifier = Modifier
-                        .size(24.dp),
-                    onClick = {
-                        addToCart(product)
-                    }) {
+                IconButton(modifier = Modifier.size(24.dp), onClick = {
+                    addToCart(product)
+                }) {
                     Icon(
-                        modifier = Modifier
-                            .size(20.dp),
+                        modifier = Modifier.size(20.dp),
                         painter = painterResource(id = R.drawable.plus),
                         contentDescription = null
                     )

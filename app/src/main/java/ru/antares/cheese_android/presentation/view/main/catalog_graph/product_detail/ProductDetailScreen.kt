@@ -1,16 +1,21 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class)
 
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail
 
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -28,12 +34,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,12 +51,16 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.domain.models.ProductModel
+import ru.antares.cheese_android.clickable
 import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.models.CategoryModel
+import ru.antares.cheese_android.domain.models.ProductModel
+import ru.antares.cheese_android.onClick
+import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
+import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTopBarWrapper
-import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.presentation.models.ProductUIModel
 import ru.antares.cheese_android.presentation.util.parsePrice
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.LoadingProductView
@@ -88,7 +102,7 @@ fun ProductDetailScreenPreview() {
                         outOfStock = false,
                         unitName = "шт"
                     ),
-                    countInCart = 0
+                    countInCart = 10
                 ),
                 uiError = null,
                 recommendations = listOf(
@@ -197,14 +211,30 @@ fun ProductDetailScreen(
                 ProductDetailScreenContent(
                     state = state,
                     onEvent = onEvent,
-                    onNavigationEvent = onNavigationEvent
+                    onNavigationEvent = onNavigationEvent,
                 )
             }
         }
 
-        state.uiError?.let { uiError ->
-            ErrorScreen(error = uiError, onError = onError)
+        val error: MutableState<UIError?> = remember { mutableStateOf(null) }
+
+        LaunchedEffect(key1 = state.uiError) {
+            error.value = state.uiError
         }
+
+        error.value?.let {
+            ErrorAlertDialog(error = it) {
+                error.value = null
+                onError(it)
+            }
+        }
+    }
+
+    AnimatedVisibility(visible = state.loadingCart, enter = fadeIn(), exit = fadeOut()) {
+        LoadingScreen(
+            modifier = Modifier
+                .onClick { /*DO NOTHING*/ }
+        )
     }
 }
 
@@ -212,129 +242,244 @@ fun ProductDetailScreen(
 fun ProductDetailScreenContent(
     state: ProductDetailViewState,
     onEvent: (ProductDetailEvent) -> Unit,
-    onNavigationEvent: (ProductDetailNavigationEvent) -> Unit
+    onNavigationEvent: (ProductDetailNavigationEvent) -> Unit,
 ) {
     state.product?.let { product ->
-        val filteredRecommendations = remember { mutableStateOf(state.recommendations) }
-
-        LaunchedEffect(key1 = state.recommendations) {
-            filteredRecommendations.value = state.recommendations.filter { recommendation ->
-                recommendation.value.id != product.value.id
-            }
-        }
-
-        LaunchedEffect(key1 = state.recommendations.isEmpty()) {
-            Log.d("loading_recommendations", "top")
-            if (state.recommendations.isEmpty()) {
-                Log.d("loading_recommendations", "bottom")
-                onEvent(
-                    ProductDetailEvent.LoadNextPageOfRecommendations(
-                        categoryID = product.value.categoryId,
-                        page = 0,
-                        size = 4
-                    )
-                )
-            }
-        }
-
-        LazyColumn(
+        Box(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
         ) {
-            item {
-                AsyncImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(246.dp),
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(product.value.imageUrl)
-                        .crossfade(true)
-                        .placeholder(R.drawable.product_place_holder)
-                        .build(),
-                    contentDescription = "product image",
-                    contentScale = ContentScale.Crop
-                )
-            }
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = CheeseTheme.paddings.medium)
-                ) {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(text = product.value.name, style = CheeseTheme.typography.common28Bold)
+            val filteredRecommendations = remember { mutableStateOf(state.recommendations) }
 
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = "${parsePrice(product.value.price)}₽",
-                        style = CheeseTheme.typography.common16Semibold
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = "${product.value.unit} ${product.value.unitName}",
-                        style = CheeseTheme.typography.common14Regular
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = stringResource(R.string.description),
-                        style = CheeseTheme.typography.common12Medium,
-                        color = CheeseTheme.colors.gray
-                    )
-                    ProductDescription(product.value.description)
+            LaunchedEffect(key1 = state.recommendations) {
+                filteredRecommendations.value = state.recommendations.filter { recommendation ->
+                    recommendation.value.id != product.value.id
                 }
             }
-            item {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = CheeseTheme.paddings.medium)
-                        .padding(top = CheeseTheme.paddings.large, bottom = CheeseTheme.paddings.medium),
-                    text = stringResource(R.string.products_recommendations),
-                    style = CheeseTheme.typography.common28Bold
-                )
-            }
-            itemsIndexed(
-                items = filteredRecommendations.value,
-                key = { _, it -> it.value.id }
-            ) { index, model ->
-                ProductView(
-                    modifier = Modifier
-                        .animateItemPlacement(tween(50))
-                        .padding(horizontal = CheeseTheme.paddings.medium)
-                        .padding(bottom = CheeseTheme.paddings.small),
-                    product = model,
-                    onClick = { recommendation ->
-                        onNavigationEvent(
-                            ProductDetailNavigationEvent.NavigateToProduct(
-                                recommendation.value.id
-                            )
+
+            LaunchedEffect(key1 = state.recommendations.isEmpty()) {
+                if (state.recommendations.isEmpty()) {
+                    onEvent(
+                        ProductDetailEvent.LoadNextPageOfRecommendations(
+                            categoryID = product.value.categoryId,
+                            page = 0,
+                            size = 4
                         )
-                    },
-                    addToCart = { product ->
-
-                    },
-                    removeFromCart = { product ->
-
-                    }
-                )
-                if (index >= state.recommendations.size - 1 && !state.loadingNextPageRecommendations && !state.endReached) onEvent(
-                    ProductDetailEvent.LoadNextPageOfRecommendations(
-                        categoryID = model.value.categoryId,
-                        page = state.currentPage + 1,
-                        size = state.pageSize
                     )
-                )
+                }
             }
-            item {
-                if (state.loadingNextPageRecommendations && !state.endReached) {
-                    LoadingProductView(
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+            ) {
+                item {
+                    AsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(246.dp),
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(product.value.imageUrl)
+                            .crossfade(true)
+                            .placeholder(R.drawable.product_place_holder)
+                            .build(),
+                        contentDescription = "product image",
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = CheeseTheme.paddings.medium)
+                    ) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(text = product.value.name, style = CheeseTheme.typography.common28Bold)
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "${parsePrice(product.value.price)}₽",
+                            style = CheeseTheme.typography.common16Semibold
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "${product.value.unit} ${product.value.unitName}",
+                            style = CheeseTheme.typography.common14Regular
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = stringResource(R.string.description),
+                            style = CheeseTheme.typography.common12Medium,
+                            color = CheeseTheme.colors.gray
+                        )
+                        ProductDescription(product.value.description)
+                    }
+                }
+                item {
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = CheeseTheme.paddings.medium)
+                            .padding(
+                                top = CheeseTheme.paddings.large,
+                                bottom = CheeseTheme.paddings.medium
+                            ),
+                        text = stringResource(R.string.products_recommendations),
+                        style = CheeseTheme.typography.common28Bold
+                    )
+                }
+                itemsIndexed(
+                    items = filteredRecommendations.value,
+                    key = { _, it -> it.value.id }
+                ) { index, model ->
+                    ProductView(
                         modifier = Modifier
                             .animateItemPlacement(tween(50))
                             .padding(horizontal = CheeseTheme.paddings.medium)
-                            .padding(bottom = CheeseTheme.paddings.small)
+                            .padding(bottom = CheeseTheme.paddings.small),
+                        product = model,
+                        onClick = { recommendation ->
+                            onNavigationEvent(
+                                ProductDetailNavigationEvent.NavigateToProduct(
+                                    recommendation.value.id
+                                )
+                            )
+                        },
+                        addToCart = { product ->
+                            onEvent(ProductDetailEvent.AddProductToCart(product))
+                        },
+                        removeFromCart = { product ->
+                            onEvent(ProductDetailEvent.RemoveProductFromCart(product))
+                        }
+                    )
+                    if (index >= state.recommendations.size - 1 && !state.loadingNextPageRecommendations && !state.endReached) onEvent(
+                        ProductDetailEvent.LoadNextPageOfRecommendations(
+                            categoryID = model.value.categoryId,
+                            page = state.currentPage + 1,
+                            size = state.pageSize
+                        )
                     )
                 }
+                item {
+                    if (state.loadingNextPageRecommendations && !state.endReached) {
+                        LoadingProductView(
+                            modifier = Modifier
+                                .animateItemPlacement(tween(50))
+                                .padding(horizontal = CheeseTheme.paddings.medium)
+                                .padding(bottom = CheeseTheme.paddings.small)
+                        )
+                    }
+                }
+            }
+
+            CartButtons(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter),
+                addToCart = {
+                    onEvent(ProductDetailEvent.AddProductToCart(product))
+                },
+                removeFromCart = {
+                    onEvent(ProductDetailEvent.RemoveProductFromCart(product))
+                },
+                countInCart = state.product.countInCart
+            )
+        }
+    }
+}
+
+@Composable
+private fun CartButtons(
+    modifier: Modifier = Modifier,
+    addToCart: () -> Unit,
+    removeFromCart: () -> Unit,
+    countInCart: Int
+) {
+    if (countInCart == 0) {
+        val (pressed, onPressedChange) = remember { mutableStateOf(false) }
+        val cartButtonAnimationValue by animateFloatAsState(
+            targetValue = if (pressed) 0.95f else 1f,
+            label = "Cart button animation value"
+        )
+        val opacity by animateFloatAsState(
+            targetValue = if (pressed) 0.7f else 1f,
+            label = "Cart button opacity value"
+        )
+
+        Box(
+            modifier = modifier
+                .padding(CheeseTheme.paddings.medium)
+                .height(64.dp)
+                .fillMaxWidth()
+                .clickable(
+                    cartButtonAnimationValue,
+                    onPressedChange,
+                    onClick = addToCart
+                )
+                .alpha(opacity)
+                .background(
+                    CheeseTheme.colors.accent,
+                    CheeseTheme.shapes.medium
+                )
+        ) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.Center),
+                text = stringResource(R.string.add_to_cart),
+                style = CheeseTheme.typography.common14Semibold
+            )
+        }
+    } else {
+        Box(
+            modifier = modifier
+                .padding(CheeseTheme.paddings.medium)
+                .height(64.dp)
+                .fillMaxWidth()
+                .background(
+                    CheeseTheme.colors.accent,
+                    CheeseTheme.shapes.medium
+                )
+                .clickable(
+                    indication = null,
+                    interactionSource = remember {
+                        MutableInteractionSource()
+                    },
+                    onClick = {
+                        /* DO NOTHING */
+                    }
+                )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Spacer(modifier = Modifier.width(CheeseTheme.paddings.large))
+                IconButton(
+                    modifier = Modifier,
+                    onClick = removeFromCart
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.minus),
+                        contentDescription = null
+                    )
+                }
+                Text(
+                    modifier = Modifier,
+                    text = "$countInCart",
+                    style = CheeseTheme.typography.common16Semibold
+                )
+                IconButton(
+                    modifier = Modifier,
+                    onClick = addToCart
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.plus),
+                        contentDescription = null
+                    )
+                }
+                Spacer(modifier = Modifier.width(CheeseTheme.paddings.large))
             }
         }
     }
