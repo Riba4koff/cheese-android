@@ -41,12 +41,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.domain.errors.ProductModel
+import ru.antares.cheese_android.domain.models.ProductModel
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTopBarWrapper
-import ru.antares.cheese_android.presentation.models.CategoryUIModel
+import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.presentation.models.ProductUIModel
 import ru.antares.cheese_android.presentation.util.parsePrice
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.LoadingProductView
@@ -75,7 +75,7 @@ fun ProductDetailScreenPreview() {
                                 "Тарелка для вдумчивого изучения сыров от Месье Рокфор. Составляется ПОД ЗАКАЗ из изысканных образцов, имеющихся в наличии. Пожелания обговариваются индивидуально" +
                                 "Тарелка для вдумчивого изучения сыров от Месье Рокфор. Составляется ПОД ЗАКАЗ из изысканных образцов, имеющихся в наличии. Пожелания обговариваются индивидуально",
                         unit = 0,
-                        category = CategoryUIModel(
+                        category = CategoryModel(
                             id = "",
                             name = "Сыр",
                             position = 0,
@@ -99,7 +99,7 @@ fun ProductDetailScreenPreview() {
                             price = 15000.0,
                             description = "",
                             unit = 0,
-                            category = CategoryUIModel(
+                            category = CategoryModel(
                                 id = "",
                                 name = "Сыр",
                                 position = 0,
@@ -120,7 +120,7 @@ fun ProductDetailScreenPreview() {
                             price = 15000.0,
                             description = "",
                             unit = 0,
-                            category = CategoryUIModel(
+                            category = CategoryModel(
                                 id = "",
                                 name = "Сыр",
                                 position = 0,
@@ -297,24 +297,30 @@ fun ProductDetailScreenContent(
             itemsIndexed(
                 items = filteredRecommendations.value,
                 key = { _, it -> it.value.id }
-            ) { index, product ->
+            ) { index, model ->
                 ProductView(
                     modifier = Modifier
                         .animateItemPlacement(tween(50))
                         .padding(horizontal = CheeseTheme.paddings.medium)
                         .padding(bottom = CheeseTheme.paddings.small),
-                    product = product,
+                    product = model,
                     onClick = { recommendation ->
                         onNavigationEvent(
                             ProductDetailNavigationEvent.NavigateToProduct(
                                 recommendation.value.id
                             )
                         )
+                    },
+                    addToCart = { product ->
+
+                    },
+                    removeFromCart = { product ->
+
                     }
                 )
                 if (index >= state.recommendations.size - 1 && !state.loadingNextPageRecommendations && !state.endReached) onEvent(
                     ProductDetailEvent.LoadNextPageOfRecommendations(
-                        categoryID = product.value.categoryId,
+                        categoryID = model.value.categoryId,
                         page = state.currentPage + 1,
                         size = state.pageSize
                     )

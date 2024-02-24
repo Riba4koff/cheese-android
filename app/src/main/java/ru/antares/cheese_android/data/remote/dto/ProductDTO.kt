@@ -1,6 +1,7 @@
 package ru.antares.cheese_android.data.remote.dto
 
-import ru.antares.cheese_android.domain.errors.ProductModel
+import ru.antares.cheese_android.data.local.room.dao.products.ProductEntity
+import ru.antares.cheese_android.domain.models.ProductModel
 
 data class ProductDTO(
     val id: String,
@@ -16,7 +17,7 @@ data class ProductDTO(
     val unitName: String
 )
 
-fun ProductDTO.toProductUIModel() = ProductModel(
+fun ProductDTO.toEntity() = ProductEntity(
     id = id,
     name = name,
     price = price,
@@ -26,8 +27,20 @@ fun ProductDTO.toProductUIModel() = ProductModel(
     categoryId = categoryId,
     recommend = recommend,
     outOfStock = outOfStock,
-    category = category.toCategoryUIModel(),
-    categories = categories.toCategoryUIModels()
 )
 
-fun List<ProductDTO>.toProductUIModels() = this.map { dto -> dto.toProductUIModel() }
+fun ProductDTO.toProductModel() = ProductModel(
+    id = id,
+    name = name,
+    price = price,
+    description = description,
+    unit = unit,
+    unitName = unitName,
+    categoryId = categoryId,
+    recommend = recommend,
+    outOfStock = outOfStock,
+    category = category.toCategoryModel(),
+    categories = categories.toCategoryModels()
+)
+
+fun List<ProductDTO>.toProductModels() = this.map { dto -> dto.toProductModel() }

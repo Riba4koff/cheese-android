@@ -3,7 +3,7 @@ package ru.antares.cheese_android.data.local.room.dao.catalog
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ru.antares.cheese_android.presentation.models.CategoryUIModel
+import ru.antares.cheese_android.domain.models.CategoryModel
 
 @Entity("categories")
 data class CategoryEntity(
@@ -13,7 +13,7 @@ data class CategoryEntity(
     @ColumnInfo("parentID") val parentID: String?
 )
 
-fun CategoryEntity.toCategoryUIModel() = CategoryUIModel(
+fun CategoryEntity.toCategoryUIModel() = CategoryModel(
     id = id,
     name = name,
     position = position,

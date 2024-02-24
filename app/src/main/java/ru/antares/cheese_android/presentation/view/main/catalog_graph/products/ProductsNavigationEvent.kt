@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.products
 
-import ru.antares.cheese_android.domain.errors.ProductModel
+import ru.antares.cheese_android.domain.models.ProductModel
 
 /**
  * ProductsNavigationEvent.kt

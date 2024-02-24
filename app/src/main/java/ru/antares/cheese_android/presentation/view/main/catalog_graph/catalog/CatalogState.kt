@@ -1,7 +1,7 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog
 
 import arrow.optics.optics
-import ru.antares.cheese_android.presentation.models.CategoryUIModel
+import ru.antares.cheese_android.domain.models.CategoryModel
 import androidx.compose.runtime.Immutable
 
 
@@ -10,8 +10,8 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class CatalogState(
     val uiState: CatalogUIState = CatalogUIState.LOADING,
-    val categories: List<CategoryUIModel> = emptyList(),
-    val listOfCategoryPairs: List<Pair<CategoryUIModel, List<CategoryUIModel>>> = listOf(),
+    val categories: List<CategoryModel> = emptyList(),
+    val listOfCategoryPairs: List<Pair<CategoryModel, List<CategoryModel>>> = listOf(),
     val sizeResult: Int = 0,
     val page: Int = 0,
     val amountOfPages: Int = 0,

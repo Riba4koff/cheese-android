@@ -12,12 +12,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.data.remote.dto.toCategoryUIModels
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogState
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogUIState
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.uiState
 
 class CatalogParentCategoryViewModel(
     private val repository: ICatalogRepository,

@@ -7,16 +7,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.domain.errors.toUIModel
-import ru.antares.cheese_android.domain.errors.toUIModels
+import ru.antares.cheese_android.domain.models.ProductModel
+import ru.antares.cheese_android.domain.models.toUIModels
+import ru.antares.cheese_android.domain.repository.ICartRepository
 import ru.antares.cheese_android.domain.repository.IProductsRepository
+import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
+import ru.antares.cheese_android.presentation.models.ProductUIModel
+import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.CartUIError
 
 /**
  * ProductsViewModel.kt
@@ -26,7 +32,10 @@ import ru.antares.cheese_android.domain.repository.IProductsRepository
  */
 
 class ProductsViewModel(
-    private val repository: IProductsRepository, private val categoryID: String
+    private val productsRepo: IProductsRepository,
+    private val cartRepo: ICartRepository,
+    private val categoryID: String,
+    private val getCartFlowUseCase: GetCartFlowUseCase
 ) : ViewModel() {
     companion object {
         const val PAGE_SIZE = 4
@@ -34,7 +43,22 @@ class ProductsViewModel(
 
     private val _mutableStateFlow: MutableStateFlow<ProductsState> =
         MutableStateFlow(ProductsState())
-    val state: StateFlow<ProductsState> = _mutableStateFlow.asStateFlow()
+    val state: StateFlow<ProductsState> = combine(
+        _mutableStateFlow,
+        getCartFlowUseCase.value
+    ) { state, cart ->
+        state.copy(
+            products = state.products.map { product ->
+                val productAmount = cart.find { it.productID == product.value.id }?.amount
+                if (productAmount != null) product.copy(countInCart = productAmount)
+                else product
+            }
+        )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        ProductsState()
+    )
 
     private val _navigationEvents: Channel<ProductsNavigationEvent> = Channel()
     val navigationEvents: Flow<ProductsNavigationEvent> = _navigationEvents.receiveAsFlow()
@@ -45,17 +69,9 @@ class ProductsViewModel(
 
     fun onEvent(event: ProductsEvent) = viewModelScope.launch {
         when (event) {
-            is ProductsEvent.AddProductToCart -> {
+            is ProductsEvent.AddProductToCart -> addProductToCart(event.product)
 
-            }
-
-            is ProductsEvent.OnProductClick -> {
-
-            }
-
-            is ProductsEvent.RemoveProductFromCart -> {
-
-            }
+            is ProductsEvent.RemoveProductFromCart -> removeProductFromCart(event.product)
 
             is ProductsEvent.LoadNextPage -> loadNextPage(event.page, event.size)
         }
@@ -66,7 +82,7 @@ class ProductsViewModel(
     }
 
     private fun loadNextPage(page: Int, pageSize: Int) = viewModelScope.launch(Dispatchers.IO) {
-        repository.get(
+        productsRepo.get(
             categoryID = categoryID, page = page, size = PAGE_SIZE
         ).collectLatest { resource ->
             resource.onLoading { isLoading ->
@@ -94,10 +110,55 @@ class ProductsViewModel(
         }
     }
 
+    private suspend fun addProductToCart(product: ProductUIModel) {
+        if (!state.value.loadingCart) {
+            cartRepo.increment(product.countInCart, product.value.id).collectLatest { resource ->
+                resource.onLoading { isLoading ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            ProductsState.loadingCart set isLoading
+                        }
+                    }
+                }.onError { error ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            ProductsState.error set error
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun removeProductFromCart(product: ProductUIModel) {
+        if (!state.value.loadingCart) {
+            cartRepo.decrement(product.countInCart, product.value.id).collectLatest { resource ->
+                resource.onLoading { isLoading ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            ProductsState.loadingCart set isLoading
+                        }
+                    }
+                }.onError { error ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            ProductsState.error set error
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun onError(error: UIError) = viewModelScope.launch {
-        when (error as ProductsUIError) {
+        when (error) {
             is ProductsUIError.LoadingError -> {
-                /*TODO: handle error*/
+                loadNextPage(state.value.currentPage, state.value.pageSize)
+            }
+            else -> {
+                _mutableStateFlow.update { state ->
+                    state.copy(error = null)
+                }
             }
         }
     }

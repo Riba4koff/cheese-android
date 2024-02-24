@@ -6,6 +6,7 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.products
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -14,7 +15,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,6 +41,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,8 +64,10 @@ import coil.request.ImageRequest
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.clickable
 import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.presentation.models.CategoryUIModel
-import ru.antares.cheese_android.domain.errors.ProductModel
+import ru.antares.cheese_android.domain.models.CategoryModel
+import ru.antares.cheese_android.domain.models.ProductModel
+import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
+import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTopBarWrapper
 import ru.antares.cheese_android.presentation.models.ProductUIModel
@@ -87,7 +91,7 @@ fun ProductsScreenPreview() {
                     price = 15000.0,
                     description = "",
                     unit = 0,
-                    category = CategoryUIModel(
+                    category = CategoryModel(
                         id = "",
                         name = "Сыр",
                         position = 0,
@@ -108,7 +112,7 @@ fun ProductsScreenPreview() {
                     price = 15000.0,
                     description = "",
                     unit = 0,
-                    category = CategoryUIModel(
+                    category = CategoryModel(
                         id = "",
                         name = "Сыр",
                         position = 0,
@@ -127,7 +131,8 @@ fun ProductsScreenPreview() {
             name = "",
             state = ProductsState(
                 products = products,
-                loading = false
+                loading = false,
+                loadingCart = true
             ),
             onEvent = {
 
@@ -225,6 +230,12 @@ fun ProductsScreen(
                                         onNavigationEvent(
                                             ProductsNavigationEvent.NavigateToProductDetailInfo(pr.value)
                                         )
+                                    },
+                                    addToCart = { pr ->
+                                        onEvent(ProductsEvent.AddProductToCart(pr))
+                                    },
+                                    removeFromCart = { pr ->
+                                        onEvent(ProductsEvent.RemoveProductFromCart(pr))
                                     }
                                 )
                                 if (index >= state.products.size - 1 && !state.loadingNextPage && !state.endReached) onEvent(
@@ -242,9 +253,32 @@ fun ProductsScreen(
                                     )
                                 }
                             }
+                            item {
+
+                            }
+                        }
+                        AnimatedVisibility(
+                            visible = state.loadingCart,
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
+                            LoadingScreen()
                         }
                     }
                 }
+            }
+        }
+
+        val error: MutableState<UIError?> = remember { mutableStateOf(null) }
+
+        LaunchedEffect(state.error) {
+            error.value = state.error
+        }
+
+        error.value?.let {
+            ErrorAlertDialog(error = it) {
+                error.value = null
+                onError(it)
             }
         }
     }
@@ -254,7 +288,9 @@ fun ProductsScreen(
 fun ProductView(
     modifier: Modifier = Modifier,
     product: ProductUIModel,
-    onClick: (ProductUIModel) -> Unit
+    onClick: (ProductUIModel) -> Unit,
+    addToCart: (ProductUIModel) -> Unit,
+    removeFromCart: (ProductUIModel) -> Unit,
 ) {
     val (pressed, onPressedChange) = remember { mutableStateOf(false) }
     val productAnimatedValue by animateFloatAsState(
@@ -314,12 +350,8 @@ fun ProductView(
             if (product.value.outOfStock.not()) {
                 CartButtons(
                     product = product,
-                    addToCart = {
-
-                    },
-                    removeFromCart = {
-
-                    }
+                    addToCart = addToCart,
+                    removeFromCart = removeFromCart
                 )
             }
         }

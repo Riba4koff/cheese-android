@@ -3,7 +3,7 @@ package ru.antares.cheese_android.domain.repository
 import kotlinx.coroutines.flow.Flow
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.domain.ResourceState
-import ru.antares.cheese_android.domain.errors.ProductModel
+import ru.antares.cheese_android.domain.models.ProductModel
 
 /**
  * @author Pavel Rybakov

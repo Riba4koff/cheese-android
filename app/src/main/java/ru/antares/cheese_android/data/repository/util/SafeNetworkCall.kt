@@ -1,5 +1,6 @@
 package ru.antares.cheese_android.data.repository.util
 
+import android.util.Log
 import retrofit2.Response
 import ru.antares.cheese_android.data.remote.models.CheeseNetworkResponse
 import ru.antares.cheese_android.data.remote.models.NetworkError
@@ -35,6 +36,7 @@ suspend fun <T> safeNetworkCall(block: suspend () -> Response<CheeseNetworkRespo
             )
         }
     } catch (e: Exception) {
+        Log.d("SAFE_NETWORK_CALL", e.message.orEmpty())
         NetworkResponse.Error(error = NetworkError("Неизвестная ошибка"))
     }
 

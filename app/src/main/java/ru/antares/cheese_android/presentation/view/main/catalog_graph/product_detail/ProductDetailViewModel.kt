@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.domain.errors.toUIModels
+import ru.antares.cheese_android.domain.models.toUIModels
 import ru.antares.cheese_android.domain.repository.IProductsRepository
 import ru.antares.cheese_android.presentation.models.ProductUIModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsViewModel

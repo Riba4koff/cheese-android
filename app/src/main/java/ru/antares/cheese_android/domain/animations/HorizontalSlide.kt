@@ -6,6 +6,8 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.tween
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 
 /**
  * HorizontalSlide.kt
@@ -19,13 +21,13 @@ import androidx.navigation.NavBackStackEntry
  *
  * navigation: screen_1 -> screen_2 -> screen_3
  *
- * for screen_2 - screen_1 is [previousRoute]
+ * for screen_2 - screen_1 is [previousScreen]
  *
- * for screen_3 - screen_2 is [previousRoute]
+ * for screen_3 - screen_2 is [previousScreen]
  * */
-fun enterHorizontallySlide(previousRoute: String): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition) {
+fun enterHorizontallySlide(previousScreen: String): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition) {
     return {
-        val isPreviousScreen = previousRoute == initialState.destination.route
+        val isPreviousScreen = previousScreen == initialState.destination.route
 
         val towards = if (isPreviousScreen) AnimatedContentTransitionScope.SlideDirection.Right
         else AnimatedContentTransitionScope.SlideDirection.Left

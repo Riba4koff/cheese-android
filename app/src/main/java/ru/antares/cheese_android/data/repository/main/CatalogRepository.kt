@@ -7,11 +7,11 @@ import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService
 import ru.antares.cheese_android.data.remote.dto.CategoryDTO
-import ru.antares.cheese_android.data.remote.dto.toCategoryUIModel
-import ru.antares.cheese_android.data.remote.dto.toCategoryUIModels
+import ru.antares.cheese_android.data.remote.dto.toCategoryModel
+import ru.antares.cheese_android.data.remote.dto.toCategoryModels
 import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
 import ru.antares.cheese_android.domain.ResourceState
-import ru.antares.cheese_android.presentation.models.CategoryUIModel
+import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogUIError
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryUIError
@@ -43,7 +43,7 @@ class CatalogRepository(
     override suspend fun getListOfCategoryPairs(
         page: Int?,
         pageSize: Int?
-    ): Flow<ResourceState<List<Pair<CategoryUIModel, List<CategoryUIModel>>>>> = flow {
+    ): Flow<ResourceState<List<Pair<CategoryModel, List<CategoryModel>>>>> = flow {
         emit(ResourceState.Loading(isLoading = true))
 
         val parentCategories = parentCategories(
@@ -56,11 +56,11 @@ class CatalogRepository(
                 childCategories(categoryDTO.id)
                     .getOrNull()
                     ?.result
-                    ?.toCategoryUIModels()
+                    ?.toCategoryModels()
                     ?: emptyList()
 
             if (childCategories.isNotEmpty()) {
-                categoryDTO.toCategoryUIModel() to childCategories
+                categoryDTO.toCategoryModel() to childCategories
             } else {
                 null
             }
@@ -81,7 +81,7 @@ class CatalogRepository(
         parentID: String,
         page: Int?,
         pageSize: Int?
-    ): Flow<ResourceState<Pagination<CategoryUIModel>>> = flow {
+    ): Flow<ResourceState<Pagination<CategoryModel>>> = flow {
         emit(ResourceState.Loading(isLoading = true))
 
         safeNetworkCallWithPagination {
@@ -90,7 +90,7 @@ class CatalogRepository(
             emit(
                 ResourceState.Success(
                     data = Pagination(
-                        result = pagination.result.toCategoryUIModels(),
+                        result = pagination.result.toCategoryModels(),
                         sizeResult = pagination.sizeResult,
                         page = pagination.page,
                         amountOfAll = pagination.amountOfAll,

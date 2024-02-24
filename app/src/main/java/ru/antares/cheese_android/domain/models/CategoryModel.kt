@@ -1,10 +1,10 @@
-package ru.antares.cheese_android.presentation.models
+package ru.antares.cheese_android.domain.models
 
 import androidx.compose.runtime.Immutable
 import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
 
 @Immutable
-data class CategoryUIModel(
+data class CategoryModel(
     val id: String = "",
     val name: String = "",
     val position: Int = 0,
@@ -14,7 +14,7 @@ data class CategoryUIModel(
         get() = "https://mobile-backend.cheese.asg-demo.ru/api/v1/store/categories/${id}/image"
 }
 
-fun CategoryUIModel.toEntity() = CategoryEntity(
+fun CategoryModel.toEntity() = CategoryEntity(
     id = id,
     name = name,
     position = position,

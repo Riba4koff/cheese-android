@@ -2,7 +2,7 @@ package ru.antares.cheese_android.presentation.models
 
 import androidx.compose.runtime.Immutable
 import arrow.optics.optics
-import ru.antares.cheese_android.domain.errors.ProductModel
+import ru.antares.cheese_android.domain.models.ProductModel
 
 @optics
 @Immutable

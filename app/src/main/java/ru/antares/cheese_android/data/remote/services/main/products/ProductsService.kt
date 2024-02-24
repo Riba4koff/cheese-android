@@ -42,6 +42,4 @@ interface ProductsService {
     suspend fun getProductByID(
         @Path("id") productID: String
     ): Response<CheeseNetworkResponse<ProductDTO>>
-
-
 }

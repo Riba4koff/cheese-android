@@ -3,6 +3,7 @@ package ru.antares.cheese_android.presentation.navigation.graphs
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -29,8 +30,9 @@ import ru.antares.cheese_android.sharedViewModel
 
 fun NavGraphBuilder.catalogNavigationGraph(
     catalogNavController: NavController,
-    nextRoute: String?
+        nextRoute: String?,
 ) {
+
     navigation(
         startDestination = Screen.CatalogNavigationGraph.Catalog.url,
         route = Screen.CatalogNavigationGraph.route
@@ -143,9 +145,11 @@ fun NavGraphBuilder.catalogNavigationGraph(
                     ProductDetailNavigationEvent.GoBack -> {
                         catalogNavController.popBackStack()
                     }
+
                     ProductDetailNavigationEvent.NavigateToFeedBack -> {
                         /*TODO: navigate to user feed back */
                     }
+
                     is ProductDetailNavigationEvent.NavigateToProduct -> {
                         /* TODO: navigate to next product screen */
                     }

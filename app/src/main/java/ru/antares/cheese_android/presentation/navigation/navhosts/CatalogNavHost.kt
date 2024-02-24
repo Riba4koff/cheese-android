@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,6 +26,9 @@ fun CatalogNavHost(paddings: PaddingValues) {
         navController = catalogNavController,
         startDestination = Screen.CatalogNavigationGraph.route
     ) {
-        catalogNavigationGraph(catalogNavController, nextRoute)
+        catalogNavigationGraph(
+            catalogNavController = catalogNavController,
+            nextRoute = nextRoute,
+        )
     }
 }

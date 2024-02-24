@@ -7,22 +7,22 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CatalogDao {
+interface CategoryDao {
     @Query("SELECT * FROM categories")
-    fun categoryEntityFlow(): Flow<CategoryEntity>
+    fun subscribeCategoryFlow(): Flow<CategoryEntity>
 
     @Query("SELECT * FROM categories WHERE categories.id = :id")
-    suspend fun getByID(id: String): CategoryEntity
+    suspend fun get(id: String): CategoryEntity
 
     @Query("SELECT * FROM categories WHERE categories.parentID = :parentID")
     suspend fun getByParentID(parentID: String): CategoryEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(value: CategoryEntity): Unit
+    suspend fun insert(value: CategoryEntity)
 
     @Query("DELETE FROM categories WHERE categories.id = :id")
-    suspend fun remove(id: String): Unit
+    suspend fun remove(id: String)
 
     @Query("DELETE FROM categories")
-    suspend fun clear(): Unit
+    suspend fun clear()
 }

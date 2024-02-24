@@ -1,8 +1,7 @@
-package ru.antares.cheese_android.domain.errors
+package ru.antares.cheese_android.domain.models
 
 import androidx.compose.runtime.Immutable
 import arrow.optics.optics
-import ru.antares.cheese_android.presentation.models.CategoryUIModel
 import ru.antares.cheese_android.presentation.models.ProductUIModel
 
 @optics
@@ -13,9 +12,9 @@ data class ProductModel(
     val price: Double,
     val description: String,
     val unit: Int,
-    val category: CategoryUIModel,
+    val category: CategoryModel,
     val categoryId: String,
-    val categories: List<CategoryUIModel>,
+    val categories: List<CategoryModel>,
     val recommend: Boolean,
     val outOfStock: Boolean,
     val unitName: String

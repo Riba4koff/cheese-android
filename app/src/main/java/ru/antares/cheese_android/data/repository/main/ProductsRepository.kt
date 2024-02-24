@@ -4,14 +4,16 @@ import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import ru.antares.cheese_android.data.remote.dto.toProductUIModel
-import ru.antares.cheese_android.data.remote.dto.toProductUIModels
+import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
+import ru.antares.cheese_android.data.local.room.dao.products.ProductsLocalStorage
+import ru.antares.cheese_android.data.remote.dto.toProductModel
+import ru.antares.cheese_android.data.remote.dto.toProductModels
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.services.main.products.ProductsService
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
 import ru.antares.cheese_android.domain.ResourceState
-import ru.antares.cheese_android.domain.errors.ProductModel
+import ru.antares.cheese_android.domain.models.ProductModel
 import ru.antares.cheese_android.domain.repository.IProductsRepository
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailUIError
 
@@ -19,7 +21,7 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_de
  * @author Pavel Rybakov
  * */
 class ProductsRepository(
-    private val productsService: ProductsService
+    private val productsService: ProductsService,
 ) : IProductsRepository {
     companion object {
         const val GET_PRODUCTS_ERROR_TAG = "GET_PRODUCTS_ERROR"
@@ -45,7 +47,7 @@ class ProductsRepository(
                 sortByColumn = sortByColumn
             )
         }.onSuccess { pagination ->
-            val mappedList = pagination.result.toProductUIModels()
+            val mappedList = pagination.result.toProductModels()
             emit(
                 ResourceState.Success(
                     Pagination(
@@ -74,7 +76,7 @@ class ProductsRepository(
         delay(300)
 
         safeNetworkCall { productsService.getProductByID(productID = id) }.onSuccess { productDTO ->
-            val productUIModel = productDTO.toProductUIModel()
+            val productUIModel = productDTO.toProductModel()
             emit(ResourceState.Success(productUIModel))
             return@onSuccess
         }.onFailure { error ->

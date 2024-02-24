@@ -38,7 +38,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.presentation.models.CategoryUIModel
+import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
@@ -50,7 +50,7 @@ import ru.antares.cheese_android.ui.theme.CheeseTheme
 @Composable
 fun CategoryItemPreview() {
     CheeseTheme {
-        CategoryItemView(category = CategoryUIModel(name = "Сырная тарелка с кусочками винограда"),
+        CategoryItemView(category = CategoryModel(name = "Сырная тарелка с кусочками винограда"),
             onCategoryClick = {
 
             })
@@ -154,10 +154,10 @@ private fun CatalogScreenContent(
 
 @Composable
 fun PairCategoryView(
-    parent: CategoryUIModel,
-    child: List<CategoryUIModel>,
-    onCategoryClick: (CategoryUIModel) -> Unit,
-    openParentCategory: (CategoryUIModel) -> Unit
+    parent: CategoryModel,
+    child: List<CategoryModel>,
+    onCategoryClick: (CategoryModel) -> Unit,
+    openParentCategory: (CategoryModel) -> Unit
 ) {
     Column {
         Row(
@@ -201,8 +201,8 @@ fun PairCategoryView(
 @Composable
 fun CategoryItemView(
     modifier: Modifier = Modifier,
-    category: CategoryUIModel,
-    onCategoryClick: (CategoryUIModel) -> Unit
+    category: CategoryModel,
+    onCategoryClick: (CategoryModel) -> Unit
 ) {
     val gradientColor = arrayOf(
         0.0f to Color.Transparent,
@@ -271,8 +271,8 @@ private fun LoadingCategoryItemView(modifier: Modifier = Modifier, isLoading: Bo
 @Composable
 fun MoreCategoryItemView(
     modifier: Modifier = Modifier,
-    category: CategoryUIModel,
-    onClick: (CategoryUIModel) -> Unit
+    category: CategoryModel,
+    onClick: (CategoryModel) -> Unit
 ) {
     val gradientColor = arrayOf(
         0.0f to Color.Transparent,

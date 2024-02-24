@@ -1,6 +1,7 @@
 package ru.antares.cheese_android.data.remote.dto
 
-import ru.antares.cheese_android.presentation.models.CategoryUIModel
+import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
+import ru.antares.cheese_android.domain.models.CategoryModel
 
 data class CategoryDTO(
     val id: String,
@@ -9,11 +10,15 @@ data class CategoryDTO(
     val parentID: String? = null
 )
 
-fun CategoryDTO.toCategoryUIModel() = CategoryUIModel(
+fun CategoryDTO.toEntity() = CategoryEntity(
+    id, name, position, parentID
+)
+
+fun CategoryDTO.toCategoryModel() = CategoryModel(
     id = id,
     name = name,
     position = position,
     parentID = parentID
 )
 
-fun List<CategoryDTO>.toCategoryUIModels() = this.map { it.toCategoryUIModel() }
+fun List<CategoryDTO>.toCategoryModels() = this.map { it.toCategoryModel() }

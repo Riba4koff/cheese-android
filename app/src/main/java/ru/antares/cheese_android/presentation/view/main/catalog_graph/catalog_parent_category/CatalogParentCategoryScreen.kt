@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.presentation.models.CategoryUIModel
+import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTopBarWrapper
@@ -125,8 +125,8 @@ fun CatalogParentCategoryScreen(
 
 @Composable
 private fun ParentCategoryScreenContent(
-    childCategories: List<CategoryUIModel>,
-    onCategoryClick: (CategoryUIModel) -> Unit
+    childCategories: List<CategoryModel>,
+    onCategoryClick: (CategoryModel) -> Unit
 ) {
     FlowRow(
         modifier = Modifier
