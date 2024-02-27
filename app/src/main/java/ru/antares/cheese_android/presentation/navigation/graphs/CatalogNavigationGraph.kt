@@ -1,5 +1,8 @@
 package ru.antares.cheese_android.presentation.navigation.graphs
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -30,7 +33,7 @@ import ru.antares.cheese_android.sharedViewModel
 
 fun NavGraphBuilder.catalogNavigationGraph(
     catalogNavController: NavController,
-        nextRoute: String?,
+    nextRoute: String?,
 ) {
 
     navigation(
@@ -146,12 +149,14 @@ fun NavGraphBuilder.catalogNavigationGraph(
                         catalogNavController.popBackStack()
                     }
 
-                    ProductDetailNavigationEvent.NavigateToFeedBack -> {
-                        /*TODO: navigate to user feed back */
+                    is ProductDetailNavigationEvent.NavigateToFeedBack -> {
+                        /* TODO: navigate to next product screen */
                     }
 
                     is ProductDetailNavigationEvent.NavigateToProduct -> {
-                        /* TODO: navigate to next product screen */
+                        catalogNavController.navigate(
+                            route = Screen.CatalogNavigationGraph.ProductDetail.route + "/${navigationEvent.productID}"
+                        )
                     }
                 }
             }

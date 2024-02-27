@@ -9,6 +9,6 @@ package ru.antares.cheese_android.presentation.view.main.catalog_graph.product_d
 
 sealed interface ProductDetailNavigationEvent {
     data object GoBack : ProductDetailNavigationEvent
-    data object NavigateToFeedBack : ProductDetailNavigationEvent
+    data class NavigateToFeedBack(val productID: String) : ProductDetailNavigationEvent
     data class NavigateToProduct(val productID: String) : ProductDetailNavigationEvent
 }

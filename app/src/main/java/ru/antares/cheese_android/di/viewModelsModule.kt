@@ -6,6 +6,7 @@ import org.koin.dsl.module
 import ru.antares.cheese_android.presentation.view.authorization.confirm_code.ConfirmCodeViewModel
 import ru.antares.cheese_android.presentation.view.authorization.input_phone.InputPhoneViewModel
 import ru.antares.cheese_android.presentation.view.main.MainViewModel
+import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.CartViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailViewModel
@@ -20,7 +21,8 @@ val viewModelsModule: List<Module>
         splashScreenViewModelModule,
         authViewModelsModule,
         profileViewModelsModule,
-        catalogViewModelsModule
+        catalogViewModelsModule,
+        cartViewModelsModule
     )
 
 private val splashScreenViewModelModule = module {
@@ -34,6 +36,10 @@ private val mainViewModel = module {
 private val authViewModelsModule = module {
     viewModelOf(::InputPhoneViewModel)
     viewModelOf(::ConfirmCodeViewModel)
+}
+
+private val cartViewModelsModule = module {
+    viewModelOf(::CartViewModel)
 }
 
 private val profileViewModelsModule = module {

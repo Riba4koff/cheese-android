@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -222,13 +223,20 @@ fun CategoryItemView(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            AsyncImage(
-                modifier = Modifier.fillMaxSize(),
-                model = ImageRequest.Builder(LocalContext.current).data(category.imageLink)
-                    .crossfade(true).build(),
-                contentDescription = "Category image",
-                contentScale = ContentScale.Crop
-            )
+            Box(contentAlignment = Alignment.Center){
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = CheeseTheme.colors.accent,
+                    strokeWidth = 2.dp
+                )
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = ImageRequest.Builder(LocalContext.current).data(category.imageLink)
+                        .crossfade(true).build(),
+                    contentDescription = "Category image",
+                    contentScale = ContentScale.Crop
+                )
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()

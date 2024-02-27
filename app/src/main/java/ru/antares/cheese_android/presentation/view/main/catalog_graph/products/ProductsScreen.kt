@@ -283,13 +283,20 @@ fun ProductView(
             .clip(CheeseTheme.shapes.medium),
         contentAlignment = Alignment.Center
     ) {
-        AsyncImage(
-            modifier = Modifier.fillMaxWidth(),
-            model = ImageRequest.Builder(LocalContext.current).data(product.value.imageUrl)
-                .crossfade(true).build(),
-            contentDescription = "product image",
-            contentScale = ContentScale.Crop
-        )
+        Box(modifier = Modifier, contentAlignment = Alignment.Center) {
+            androidx.compose.material.CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = CheeseTheme.colors.accent,
+                strokeWidth = 2.dp
+            )
+            AsyncImage(
+                modifier = Modifier.fillMaxWidth(),
+                model = ImageRequest.Builder(LocalContext.current).data(product.value.imageUrl)
+                    .crossfade(true).build(),
+                contentDescription = "product image",
+                contentScale = ContentScale.Crop
+            )
+        }
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -310,7 +317,9 @@ fun ProductView(
             )
             if (product.value.outOfStock.not()) {
                 CartButtons(
-                    product = product, addToCart = addToCart, removeFromCart = removeFromCart
+                    product = product,
+                    addToCart = addToCart,
+                    removeFromCart = removeFromCart
                 )
             }
         }

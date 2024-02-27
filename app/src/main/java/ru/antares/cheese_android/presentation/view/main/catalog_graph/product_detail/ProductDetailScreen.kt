@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
@@ -274,18 +275,25 @@ fun ProductDetailScreenContent(
                     .fillMaxSize(),
             ) {
                 item {
-                    AsyncImage(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(246.dp),
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(product.value.imageUrl)
-                            .crossfade(true)
-                            .placeholder(R.drawable.product_place_holder)
-                            .build(),
-                        contentDescription = "product image",
-                        contentScale = ContentScale.Crop
-                    )
+                    Box(contentAlignment = Alignment.Center){
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = CheeseTheme.colors.accent,
+                            strokeWidth = 2.dp
+                        )
+                        AsyncImage(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(246.dp),
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(product.value.imageUrl)
+                                .crossfade(true)
+                                .crossfade(200)
+                                .build(),
+                            contentDescription = "product image",
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
                 item {
                     Column(
@@ -370,6 +378,9 @@ fun ProductDetailScreenContent(
                                 .padding(bottom = CheeseTheme.paddings.small)
                         )
                     }
+                }
+                item {
+                    Box(modifier = Modifier.height(64.dp))
                 }
             }
 
