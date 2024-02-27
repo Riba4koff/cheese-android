@@ -43,8 +43,11 @@ class CartRepository(
             emit(ResourceState.Loading(isLoading = true))
 
             safeNetworkCall { cartService.get() }.onFailure { error ->
-                Log.d("LOAD_CART_ERROR", error.message)
-                emit(ResourceState.Error(CartUIError.LoadCartError()))
+                if (error.code == 401) {
+                    emit(ResourceState.Error(CartUIError.UnauthorizedError()))
+                } else {
+                    emit(ResourceState.Error(CartUIError.LoadCartError()))
+                }
                 return@onFailure
             }.onSuccess { response ->
                 emit(ResourceState.Success(response))
@@ -69,8 +72,11 @@ class CartRepository(
                     )
                 )
             }.onFailure { error ->
-                Log.d("ADD_PRODUCT_TO_CART", error.message)
-                emit(ResourceState.Error(CartUIError.IncrementProductError()))
+                if (error.code == 401) {
+                    emit(ResourceState.Error(CartUIError.UnauthorizedError()))
+                } else {
+                    emit(ResourceState.Error(CartUIError.IncrementProductError()))
+                }
                 return@onFailure
             }.onSuccess { success ->
                 if (success) {
@@ -101,8 +107,11 @@ class CartRepository(
                         )
                     )
                 }.onFailure { error ->
-                    Log.d("DECREMENT_PRODUCT_FROM_CART", error.message)
-                    emit(ResourceState.Error(CartUIError.DecrementProductError()))
+                    if (error.code == 401) {
+                        emit(ResourceState.Error(CartUIError.UnauthorizedError()))
+                    } else {
+                        emit(ResourceState.Error(CartUIError.DecrementProductError()))
+                    }
                     return@onFailure
                 }.onSuccess { success ->
                     if (success) {
@@ -117,8 +126,11 @@ class CartRepository(
                 safeNetworkCall {
                     cartService.delete(productID = productID)
                 }.onFailure { error ->
-                    Log.d("DELETE_PRODUCT_ERROR", error.message)
-                    emit(ResourceState.Error(CartUIError.DeleteProductError()))
+                    if (error.code == 401) {
+                        emit(ResourceState.Error(CartUIError.UnauthorizedError()))
+                    } else {
+                        emit(ResourceState.Error(CartUIError.DeleteProductError()))
+                    }
                     return@onFailure
                 }.onSuccess { success ->
                     if (success) {
@@ -140,8 +152,11 @@ class CartRepository(
         safeNetworkCall {
             cartService.delete(productID = productID)
         }.onFailure { error ->
-            Log.d("DELETE_PRODUCT_ERROR", error.message)
-            emit(ResourceState.Error(CartUIError.DeleteProductError()))
+            if (error.code == 401) {
+                emit(ResourceState.Error(CartUIError.UnauthorizedError()))
+            } else {
+                emit(ResourceState.Error(CartUIError.DeleteProductError()))
+            }
             return@onFailure
         }.onSuccess { success ->
             if (success) {

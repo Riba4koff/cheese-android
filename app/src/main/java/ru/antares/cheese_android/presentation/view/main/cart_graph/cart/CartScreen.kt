@@ -164,6 +164,7 @@ fun CartScreen(
 
     error.value?.let {
         ErrorAlertDialog(error = it) {
+            error.value = null
             onError(it)
         }
     }

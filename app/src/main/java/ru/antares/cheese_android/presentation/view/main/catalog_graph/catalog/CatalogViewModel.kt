@@ -3,6 +3,7 @@ package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.optics.copy
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,7 +57,7 @@ class CatalogViewModel(
     }
 
     fun onError(error: UIError) {
-        when (error as CatalogUIError) {
+        when (error) {
             is CatalogUIError.Loading -> {
                 /** handle loading error */
                 load(null, null)
@@ -72,7 +73,7 @@ class CatalogViewModel(
         }
     }
 
-    private fun load(page: Int?, pageSize: Int?) = viewModelScope.launch {
+    private fun load(page: Int?, pageSize: Int?) = viewModelScope.launch(Dispatchers.IO) {
         repository.getListOfCategoryPairs(page, pageSize).collectLatest { resource ->
             resource.onLoading { isLoading ->
                 if (isLoading) {

@@ -114,6 +114,10 @@ class CartViewModel(
             is CartUIError.LoadCartError -> {
                 /* TODO() ... */
             }
+
+            is CartUIError.UnauthorizedError -> {
+                /* TODO() ... */
+            }
         }
     }
 

@@ -29,4 +29,8 @@ sealed interface CartUIError : UIError {
     data class ClearError(
         override val message: String = "Ошибка при очистке корзины"
     ): CartUIError
+
+    data class UnauthorizedError(
+        override val message: String = "Вы не авторизованы!"
+    ): CartUIError
 }
