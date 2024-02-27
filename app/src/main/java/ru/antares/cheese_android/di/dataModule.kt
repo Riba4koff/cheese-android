@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind
@@ -19,9 +18,9 @@ import ru.antares.cheese_android.data.local.room.CheeseDataBase
 import ru.antares.cheese_android.data.local.room.dao.cart.CartDao
 import ru.antares.cheese_android.data.local.room.dao.cart.CartLocalStorage
 import ru.antares.cheese_android.data.local.room.dao.cart.ICartLocalStorage
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryDao
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryLocalStorage
-import ru.antares.cheese_android.data.local.room.dao.catalog.ICategoryLocalStorage
+import ru.antares.cheese_android.data.local.room.dao.catalog.CategoriesDao
+import ru.antares.cheese_android.data.local.room.dao.catalog.CategoriesLocalStorage
+import ru.antares.cheese_android.data.local.room.dao.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
 import ru.antares.cheese_android.data.local.room.dao.products.ProductsDao
 import ru.antares.cheese_android.data.local.room.dao.products.ProductsLocalStorage
@@ -52,7 +51,7 @@ private val daoModule = module {
 private val localStorageModule = module {
     factoryOf(::CartLocalStorage) { bind<ICartLocalStorage>() }
     factoryOf(::ProductsLocalStorage) { bind<IProductsLocalStorage>() }
-    factoryOf(::CategoryLocalStorage) { bind<ICategoryLocalStorage>() }
+    factoryOf(::CategoriesLocalStorage) { bind<ICategoriesLocalStorage>() }
 }
 
 private val dataStoreModule = module {
@@ -70,7 +69,7 @@ private fun provideCheeseAppDataBase(context: Context) = Room.databaseBuilder(
     klass = CheeseDataBase::class.java, name = CheeseDataBase.DB_NAME
 ).fallbackToDestructiveMigration().build()
 
-private fun provideCategoryDao(database: CheeseDataBase): CategoryDao {
+private fun provideCategoryDao(database: CheeseDataBase): CategoriesDao {
     return database.catalogDao()
 }
 

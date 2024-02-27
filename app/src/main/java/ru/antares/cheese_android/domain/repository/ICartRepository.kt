@@ -17,5 +17,6 @@ interface ICartRepository {
     suspend fun get(): Flow<ResourceState<BasketResponse>>
     suspend fun increment(currentAmount: Int, productID: String): Flow<ResourceState<Boolean>>
     suspend fun decrement(currentAmount: Int, productID: String): Flow<ResourceState<Boolean>>
+    suspend fun delete(productID: String): Flow<ResourceState<Boolean>>
     suspend fun clear(productID: String): Flow<ResourceState<Boolean>>
 }

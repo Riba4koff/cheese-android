@@ -1,7 +1,7 @@
 @file:OptIn(
     ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class,
-    ExperimentalFoundationApi::class
+    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
 )
 
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.products
@@ -36,6 +36,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -141,28 +142,42 @@ fun ProductsScreen(
     onNavigationEvent: (ProductsNavigationEvent) -> Unit,
     onError: (UIError) -> Unit
 ) {
-    val (search, onSearchChange) = remember { mutableStateOf("") }
-
-    CheeseTopBarWrapper(topBarContent = {
-        IconButton(modifier = Modifier
-            .padding(start = CheeseTheme.paddings.smallest)
-            .size(CheeseTheme.paddings.large)
-            .align(Alignment.CenterStart), onClick = {
-            onNavigationEvent(ProductsNavigationEvent.GoBack)
-        }) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = null
+    CheeseTopBarWrapper(
+        topBarContent = {
+            IconButton(
+                modifier = Modifier
+                    .padding(start = CheeseTheme.paddings.smallest)
+                    .size(CheeseTheme.paddings.large)
+                    .align(Alignment.CenterStart), onClick = {
+                    onNavigationEvent(ProductsNavigationEvent.GoBack)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                    contentDescription = null
+                )
+            }
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = name,
+                style = CheeseTheme.typography.common16Medium
             )
+            IconButton(
+                modifier = Modifier
+                    .padding(end = CheeseTheme.paddings.smallest)
+                    .size(CheeseTheme.paddings.large)
+                    .align(Alignment.CenterEnd), onClick = {
+                    onNavigationEvent(ProductsNavigationEvent.GoBack)
+                }
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size(20.dp),
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = null
+                )
+            }
         }
-        Text(
-            modifier = Modifier.align(Alignment.Center),
-            text = name,
-            style = CheeseTheme.typography.common16Medium
-        )
-    }, enableClearButton = true, onSearchChange = onSearchChange, search = {
-        /* TODO: navigate to search screen and make network call to receive products */
-    }, searchValue = search
     ) {
         AnimatedContent(targetState = state.loading,
             label = "Products state animated content",
@@ -284,10 +299,10 @@ fun ProductView(
         contentAlignment = Alignment.Center
     ) {
         Box(modifier = Modifier, contentAlignment = Alignment.Center) {
-            androidx.compose.material.CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
-                color = CheeseTheme.colors.accent,
-                strokeWidth = 2.dp
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(CheeseTheme.colors.lightGray)
             )
             AsyncImage(
                 modifier = Modifier.fillMaxWidth(),
@@ -313,7 +328,8 @@ fun ProductView(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             ProductInfoView(
-                modifier = Modifier.weight(1f), product = product
+                modifier = Modifier.weight(1f),
+                product = product
             )
             if (product.value.outOfStock.not()) {
                 CartButtons(

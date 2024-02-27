@@ -4,8 +4,11 @@ import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import ru.antares.cheese_android.data.local.room.dao.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
+import ru.antares.cheese_android.data.local.room.dao.products.ProductsDao
 import ru.antares.cheese_android.data.local.room.dao.products.ProductsLocalStorage
+import ru.antares.cheese_android.data.remote.dto.toEntity
 import ru.antares.cheese_android.data.remote.dto.toProductModel
 import ru.antares.cheese_android.data.remote.dto.toProductModels
 import ru.antares.cheese_android.data.remote.models.Pagination
@@ -22,6 +25,8 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_de
  * */
 class ProductsRepository(
     private val productsService: ProductsService,
+    private val productsLocalStorage: IProductsLocalStorage,
+    private val categoriesLocalStorage: ICategoriesLocalStorage
 ) : IProductsRepository {
     companion object {
         const val GET_PRODUCTS_ERROR_TAG = "GET_PRODUCTS_ERROR"
@@ -29,7 +34,15 @@ class ProductsRepository(
     }
 
     /**
-     * GET: List of products
+     * GET
+     * List of products
+     *
+     * @param categoryID id of category
+     * @param page number of received page
+     * @param size size of received page
+     * @param sortByColumn type of sorting - ASC/DESC
+     *
+     * @return [Flow]<[ResourceState]<[Pagination]<[ProductModel]>>>
      * */
     override suspend fun get(
         categoryID: String,
@@ -47,11 +60,16 @@ class ProductsRepository(
                 sortByColumn = sortByColumn
             )
         }.onSuccess { pagination ->
-            val mappedList = pagination.result.toProductModels()
+            val products = pagination.result
+            val categories = pagination.result.map { it.category }
+
+            productsLocalStorage.insert(products)
+            categoriesLocalStorage.insert(categories)
+
             emit(
                 ResourceState.Success(
                     Pagination(
-                        result = mappedList,
+                        result = pagination.result.toProductModels(),
                         sizeResult = pagination.sizeResult,
                         page = pagination.page,
                         amountOfPages = pagination.amountOfPages,
@@ -59,6 +77,7 @@ class ProductsRepository(
                     )
                 )
             )
+
             return@onSuccess
         }.onFailure { error ->
             Log.d(GET_PRODUCTS_ERROR_TAG, error.toString())
@@ -68,7 +87,12 @@ class ProductsRepository(
     }
 
     /**
-     * GET: Product by id
+     * GET
+     * Product by id
+     *
+     * @param id id of category
+     *
+     * @return  [Flow]<[ResourceState]<[ProductModel]>>
      * */
     override suspend fun get(id: String): Flow<ResourceState<ProductModel>> = flow {
         emit(ResourceState.Loading(isLoading = true))

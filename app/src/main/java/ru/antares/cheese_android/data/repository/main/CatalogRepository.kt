@@ -3,6 +3,7 @@ package ru.antares.cheese_android.data.repository.main.catalog
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import ru.antares.cheese_android.data.local.room.dao.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService
@@ -34,7 +35,8 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_pa
  * */
 
 class CatalogRepository(
-    private val service: CatalogService
+    private val service: CatalogService,
+    private val categoresLocalStorage: ICategoriesLocalStorage
 ) : ICatalogRepository {
 
     /**
@@ -87,6 +89,10 @@ class CatalogRepository(
         safeNetworkCallWithPagination {
             service.get(parentID = parentID, hasParent = true, page = page, pageSize = pageSize)
         }.onSuccess { pagination ->
+            val categories = pagination.result
+
+            categoresLocalStorage.insert(categories)
+
             emit(
                 ResourceState.Success(
                     data = Pagination(
@@ -99,7 +105,7 @@ class CatalogRepository(
                 )
             )
         }.onFailure { error ->
-            Log.d("LOAD_CHILD_CATEGOIRES_ERROR", error.message)
+            Log.d("LOAD_CHILD_CATEGORIES_ERROR", error.message)
             emit(ResourceState.Error(CatalogParentCategoryUIError.Loading()))
         }
 
@@ -113,6 +119,10 @@ class CatalogRepository(
             service.get(hasParent = false, page = page, pageSize = pageSize)
         }.onFailure { error ->
             Log.d("LOAD_PARENT_CATEGORIES", error.message)
+        }.onSuccess { pagination ->
+            val categories = pagination.result
+
+            categoresLocalStorage.insert(categories)
         }
     }
 
@@ -125,6 +135,10 @@ class CatalogRepository(
             )
         }.onFailure { error ->
             Log.d("LOAD_PARENT_CATEGORIES", error.message)
+        }.onSuccess { pagination ->
+            val categories = pagination.result
+
+            categoresLocalStorage.insert(categories)
         }
     }
 }

@@ -27,6 +27,10 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
                     CartNavigationEvent.ToCheckoutOrder -> {
                         /* TODO: navigate to checkout order */
                     }
+
+                    CartNavigationEvent.NavigateToCatalog -> {
+
+                    }
                 }
             }
 

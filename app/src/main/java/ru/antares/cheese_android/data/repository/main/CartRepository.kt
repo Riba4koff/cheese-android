@@ -134,6 +134,28 @@ class CartRepository(
             emit(ResourceState.Loading(isLoading = false))
         }
 
+    override suspend fun delete(productID: String): Flow<ResourceState<Boolean>> = flow {
+        emit(ResourceState.Loading(isLoading = true))
+
+        safeNetworkCall {
+            cartService.delete(productID = productID)
+        }.onFailure { error ->
+            Log.d("DELETE_PRODUCT_ERROR", error.message)
+            emit(ResourceState.Error(CartUIError.DeleteProductError()))
+            return@onFailure
+        }.onSuccess { success ->
+            if (success) {
+                cartLocalStorage.delete(productID)
+                emit(ResourceState.Success(success))
+            } else {
+                emit(ResourceState.Error(CartUIError.DeleteProductError()))
+            }
+            return@onSuccess
+        }
+
+        emit(ResourceState.Loading(isLoading = false))
+    }
+
     override suspend fun clear(productID: String): Flow<ResourceState<Boolean>> =
         flow {
             emit(ResourceState.Loading(isLoading = true))

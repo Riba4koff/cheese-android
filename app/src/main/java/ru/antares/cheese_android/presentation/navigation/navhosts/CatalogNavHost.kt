@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -16,8 +17,10 @@ import ru.antares.cheese_android.presentation.navigation.graphs.catalogNavigatio
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 
 @Composable
-fun CatalogNavHost(paddings: PaddingValues) {
-    val catalogNavController = rememberNavController()
+fun CatalogNavHost(
+    paddings: PaddingValues,
+    catalogNavController: NavHostController
+) {
     val navBackStackEntry by catalogNavController.currentBackStackEntryAsState()
     val nextRoute = navBackStackEntry?.destination?.route
 

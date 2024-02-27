@@ -3,7 +3,7 @@ package ru.antares.cheese_android.presentation.navigation.bottomBar
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 
-enum class BottomBarDestinations(
+enum class BottomBarDestination(
     val icon: Int,
     val title: String,
     val route: String

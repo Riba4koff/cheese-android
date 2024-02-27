@@ -110,7 +110,7 @@ class ProductsViewModel(
         }
     }
 
-    private suspend fun addProductToCart(product: ProductUIModel) {
+    private fun addProductToCart(product: ProductUIModel) = viewModelScope.launch(Dispatchers.IO) {
         if (!state.value.loadingCart) {
             cartRepo.increment(product.countInCart, product.value.id).collectLatest { resource ->
                 resource.onLoading { isLoading ->
@@ -130,7 +130,7 @@ class ProductsViewModel(
         }
     }
 
-    private suspend fun removeProductFromCart(product: ProductUIModel) {
+    private fun removeProductFromCart(product: ProductUIModel) = viewModelScope.launch(Dispatchers.IO) {
         if (!state.value.loadingCart) {
             cartRepo.decrement(product.countInCart, product.value.id).collectLatest { resource ->
                 resource.onLoading { isLoading ->

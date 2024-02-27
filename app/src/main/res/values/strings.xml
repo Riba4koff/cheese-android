@@ -39,4 +39,7 @@
     <string name="add_to_cart">Добавить в корзину</string>
     <string name="go_checkout_order">Перейти к оформлению</string>
     <string name="total">Итого</string>
+    <string name="empty_cart_title">В корзине пусто</string>
+    <string name="empty_cart_description">Перед тем, как оформить заказ\nЗаполните корзину продуктами</string>
+    <string name="go_to_shopping">Перейти к покупкам</string>
 </resources>

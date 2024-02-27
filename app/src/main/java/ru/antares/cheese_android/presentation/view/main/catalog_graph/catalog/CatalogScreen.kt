@@ -223,20 +223,13 @@ fun CategoryItemView(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            Box(contentAlignment = Alignment.Center){
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = CheeseTheme.colors.accent,
-                    strokeWidth = 2.dp
-                )
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = ImageRequest.Builder(LocalContext.current).data(category.imageLink)
-                        .crossfade(true).build(),
-                    contentDescription = "Category image",
-                    contentScale = ContentScale.Crop
-                )
-            }
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = ImageRequest.Builder(LocalContext.current).data(category.imageLink)
+                    .crossfade(true).build(),
+                contentDescription = "Category image",
+                contentScale = ContentScale.Crop
+            )
             Box(
                 modifier = Modifier
                     .fillMaxSize()

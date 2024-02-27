@@ -276,6 +276,12 @@ fun ProductDetailScreenContent(
             ) {
                 item {
                     Box(contentAlignment = Alignment.Center){
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(246.dp)
+                                .background(CheeseTheme.colors.lightGray)
+                        )
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             color = CheeseTheme.colors.accent,

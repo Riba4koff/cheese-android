@@ -7,9 +7,9 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CategoryDao {
+interface CategoriesDao {
     @Query("SELECT * FROM categories")
-    fun subscribeCategoryFlow(): Flow<CategoryEntity>
+    fun subscribeCategoryFlow(): Flow<List<CategoryEntity>>
 
     @Query("SELECT * FROM categories WHERE categories.id = :id")
     suspend fun get(id: String): CategoryEntity

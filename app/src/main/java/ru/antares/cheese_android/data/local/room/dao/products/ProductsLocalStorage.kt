@@ -2,7 +2,7 @@ package ru.antares.cheese_android.data.local.room.dao.products
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryDao
+import ru.antares.cheese_android.data.local.room.dao.catalog.CategoriesDao
 import ru.antares.cheese_android.data.local.room.dao.catalog.toCategoryUIModel
 import ru.antares.cheese_android.data.remote.dto.ProductDTO
 import ru.antares.cheese_android.data.remote.dto.toEntity
@@ -22,7 +22,6 @@ interface IProductsLocalStorage {
 
 class ProductsLocalStorage(
     private val productsDao: ProductsDao,
-    private val categoryDao: CategoryDao
 ): IProductsLocalStorage {
     override fun products(): Flow<List<ProductModel>> = productsDao.subscribeProductsFlow().map { productWithCategories ->
         productWithCategories.map { productWithCategory ->
@@ -47,9 +46,7 @@ class ProductsLocalStorage(
 
     override suspend fun insert(products: List<ProductDTO>) {
         products.forEach { dto ->
-            val categoryEntity = dto.category.toEntity()
             val productEntity = dto.toEntity()
-            categoryDao.insert(categoryEntity)
             productsDao.insert(productEntity)
         }
     }

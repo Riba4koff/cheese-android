@@ -9,7 +9,7 @@ import ru.antares.cheese_android.domain.models.ProductModel
  */
 
 sealed interface CartEvent {
-    data class AddProductToCart(val product: ProductModel): CartEvent
-    data class RemoveProductFromCart(val product: ProductModel): CartEvent
-    data class DeleteProductFromCart(val product: ProductModel): CartEvent
+    data class AddProductToCart(val productID: String, val amount: Int): CartEvent
+    data class RemoveProductFromCart(val productID: String, val amount: Int): CartEvent
+    data class DeleteProductFromCart(val productID: String): CartEvent
 }

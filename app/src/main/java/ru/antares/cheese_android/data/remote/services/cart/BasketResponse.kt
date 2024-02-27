@@ -6,6 +6,6 @@ data class BasketResponse(
     val page: Int,
     val amountOfAll: Int,
     val amountOfPages: Int,
-    val totalCost: Int,
-    val totalCostWithDiscount: Int
+    val totalCost: Double,
+    val totalCostWithDiscount: Double
 )
