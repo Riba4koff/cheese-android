@@ -18,6 +18,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import ru.antares.cheese_android.domain.animations.Animations
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.authorization.confirm_code.ConfirmCodeScreen
 import ru.antares.cheese_android.presentation.view.authorization.confirm_code.ConfirmCodeViewModel
@@ -33,12 +34,9 @@ fun NavGraphBuilder.authNavigationGraph(
         route = Screen.AuthNavigationGraph.route
     ) {
         composable(
-            enterTransition = {
-                slideInHorizontally(animationSpec = tween(300)) { it }
-            },
-            exitTransition = {
-                slideOutHorizontally(animationSpec = tween(300)) { -it }
-            }, route = Screen.AuthNavigationGraph.InputPhone.route
+            enterTransition = Animations.Default.enter,
+            exitTransition = Animations.Default.exit,
+            route = Screen.AuthNavigationGraph.InputPhone.route
         ) { _ ->
             val viewModel: InputPhoneViewModel = koinViewModel()
             val state by viewModel.stateFlow.collectAsStateWithLifecycle()
@@ -52,12 +50,8 @@ fun NavGraphBuilder.authNavigationGraph(
             )
         }
         composable(
-            enterTransition = {
-                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
-            },
+            enterTransition = Animations.Default.enter,
+            exitTransition = Animations.Default.exit,
             route = Screen.AuthNavigationGraph.ConfirmCode.url,
             arguments = listOf(
                 navArgument("phone") { type = NavType.StringType }

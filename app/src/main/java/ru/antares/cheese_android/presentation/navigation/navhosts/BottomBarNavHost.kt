@@ -61,8 +61,8 @@ fun BottomBarNavHost(globalNavController: NavHostController) {
                 val homeNavController = rememberNavController()
 
                 HomeNavHost(
-                    homeNavController = homeNavController,
-                    paddings = paddings
+                    paddings = paddings,
+                    homeNavController = homeNavController
                 )
             }
             composable(

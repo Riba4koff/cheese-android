@@ -3,6 +3,8 @@ package ru.antares.cheese_android.presentation.navigation.graphs
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -127,8 +129,12 @@ fun NavGraphBuilder.catalogNavigationGraph(
 
         // Product detail info
         composable(
-            enterTransition = Animations.AnimateToLeft.enter,
-            exitTransition = Animations.AnimateToLeft.exit,
+            enterTransition = {
+                fadeIn(tween(128))
+            },
+            exitTransition = {
+                fadeOut(tween(128))
+            },
             route = Screen.CatalogNavigationGraph.ProductDetail.url,
             arguments = listOf(
                 navArgument("id") { type = NavType.StringType }

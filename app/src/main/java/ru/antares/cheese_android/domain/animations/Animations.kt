@@ -15,7 +15,7 @@ sealed class Animations(
     val exit: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition),
 ) {
     companion object {
-        const val ANIMATE_TIME = 200
+        const val ANIMATE_TIME = 128
     }
 
     data object Default : Animations(
