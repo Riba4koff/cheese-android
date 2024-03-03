@@ -181,7 +181,8 @@ private fun CartContent(
 
     AnimatedContent(
         targetState = state.products.isNotEmpty(),
-        label = "Products list animated content"
+        label = "Products list animated content",
+        transitionSpec = { fadeIn(tween(200)).togetherWith(fadeOut(tween(200))) }
     ) { isNotEmpty ->
         if (isNotEmpty) {
             Box(
