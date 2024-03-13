@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -83,6 +84,7 @@ import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.shaker.ShakeConfig
+import ru.antares.cheese_android.presentation.components.swipe.SwipeToDeleteContainer
 import ru.antares.cheese_android.presentation.components.topbars.CheeseTopAppBar
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.presentation.util.parsePrice
@@ -216,30 +218,46 @@ private fun CartContent(
                 ) {
                     LazyColumn(
                         contentPadding = PaddingValues(
-                            horizontal = CheeseTheme.paddings.medium,
+                            horizontal = CheeseTheme.paddings.medium
                         ),
                         verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.medium)
                     ) {
                         itemsIndexed(
                             items = state.products,
                             key = { _, it -> it.product.id }
-                        ) { index, product ->
-                            CartProductView(
-                                modifier = Modifier
-                                    .animateItemPlacement(),
-                                product = product, addToCart = { cpm ->
-                                    onEvent(CartEvent.AddProductToCart(cpm.product.id, cpm.amount))
-                                }, removeFromCart = { cpm ->
-                                    onEvent(
-                                        CartEvent.RemoveProductFromCart(
-                                            cpm.product.id,
-                                            cpm.amount
-                                        )
-                                    )
-                                }, deleteFromCart = { cpm ->
+                        ) { index, cpm ->
+                            SwipeToDeleteContainer(
+                                shape = CheeseTheme.shapes.medium,
+                                item = cpm,
+                                onDelete = {
                                     onEvent(CartEvent.DeleteProductFromCart(cpm.product.id))
                                 }
-                            )
+                            ) {
+                                CartProductView(
+                                    modifier = Modifier
+                                        .animateItemPlacement(),
+                                    product = cpm,
+                                    addToCart = { cpm ->
+                                        onEvent(
+                                            CartEvent.AddProductToCart(
+                                                cpm.product.id,
+                                                cpm.amount
+                                            )
+                                        )
+                                    },
+                                    removeFromCart = { cpm ->
+                                        onEvent(
+                                            CartEvent.RemoveProductFromCart(
+                                                cpm.product.id,
+                                                cpm.amount
+                                            )
+                                        )
+                                    },
+                                    deleteFromCart = { cpm ->
+                                        onEvent(CartEvent.DeleteProductFromCart(cpm.product.id))
+                                    }
+                                )
+                            }
                         }
                         item {
                             Spacer(Modifier.height(124.dp))
@@ -372,7 +390,12 @@ private fun CartProductView(
         )
     }
 
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier.background(
+            color = CheeseTheme.colors.white,
+            shape = CheeseTheme.shapes.medium
+        )
+    ) {
         Row(
             modifier = Modifier
                 .aspectRatio(336f / 146f)
