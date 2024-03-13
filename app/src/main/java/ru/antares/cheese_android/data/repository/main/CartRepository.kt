@@ -1,7 +1,9 @@
 package ru.antares.cheese_android.data.repository.main
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.local.room.dao.cart.CartEntity
 import ru.antares.cheese_android.data.local.room.dao.cart.ICartLocalStorage
 import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
@@ -27,7 +29,9 @@ class CartRepository(
 ) : ICartRepository {
     override suspend fun updateLocalCart() {
         safeNetworkCall {
-            cartService.get()
+            withContext(Dispatchers.IO) {
+                cartService.get()
+            }
         }.onSuccess { response ->
             cartLocalStorage.clear()
 
@@ -56,7 +60,11 @@ class CartRepository(
         flow {
             emit(ResourceState.Loading(isLoading = true))
 
-            safeNetworkCall { cartService.get() }.onFailure { error ->
+            safeNetworkCall {
+                withContext(Dispatchers.IO) {
+                    cartService.get()
+                }
+            }.onFailure { error ->
                 if (error.code == 401) {
                     cartLocalStorage.clear()
                     emit(ResourceState.Error(CartUIError.UnauthorizedError()))
@@ -136,12 +144,14 @@ class CartRepository(
 
             if (currentAmount > 1) {
                 safeNetworkCall {
-                    cartService.update(
-                        request = UpdateCartRequest(
-                            productID = productID,
-                            amount = currentAmount - 1
+                    withContext(Dispatchers.IO) {
+                        cartService.update(
+                            request = UpdateCartRequest(
+                                productID = productID,
+                                amount = currentAmount - 1
+                            )
                         )
-                    )
+                    }
                 }.onFailure { error ->
                     if (error.code == 401) {
                         cartLocalStorage.clear()
@@ -161,7 +171,9 @@ class CartRepository(
                 }
             } else {
                 safeNetworkCall {
-                    cartService.delete(productID = productID)
+                    withContext(Dispatchers.IO) {
+                        cartService.delete(productID = productID)
+                    }
                 }.onFailure { error ->
                     if (error.code == 401) {
                         cartLocalStorage.clear()
@@ -188,7 +200,9 @@ class CartRepository(
         emit(ResourceState.Loading(isLoading = true))
 
         safeNetworkCall {
-            cartService.delete(productID = productID)
+            withContext(Dispatchers.IO) {
+                cartService.delete(productID = productID)
+            }
         }.onFailure { error ->
             if (error.code == 401) {
                 cartLocalStorage.clear()
@@ -214,7 +228,11 @@ class CartRepository(
         flow {
             emit(ResourceState.Loading(isLoading = true))
 
-            safeNetworkCall { cartService.clear() }.onFailure { error ->
+            safeNetworkCall {
+                withContext(Dispatchers.IO) {
+                    cartService.clear()
+                }
+            }.onFailure { error ->
                 emit(ResourceState.Error(CartUIError.ClearError()))
                 return@onFailure
             }.onSuccess { success ->
