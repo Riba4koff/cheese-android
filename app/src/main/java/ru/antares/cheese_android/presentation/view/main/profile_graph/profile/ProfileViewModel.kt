@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState.AUTHORIZED
-import ru.antares.cheese_android.data.local.datastore.token.ITokenService
+import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.local.datastore.user.IUserDataStore
 import ru.antares.cheese_android.data.local.datastore.user.User
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
@@ -25,7 +25,7 @@ import ru.antares.cheese_android.domain.errors.UIError
 
 
 class ProfileViewModel(
-    private val tokenService: ITokenService,
+    private val tokenService: IAuthorizationDataStore,
     private val authorizationRepository: AuthorizationRepository,
     private val profileRepository: ProfileRepository,
     private val userDataStore: IUserDataStore,

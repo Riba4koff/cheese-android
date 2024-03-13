@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.antares.cheese_android.presentation.view.main.community_graph.community
+package ru.antares.cheese_android.presentation.view.main.home_graph.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,20 +20,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.presentation.components.topbars.CheeseTopAppBar
-import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Preview(showBackground = true)
 @Composable
-fun CommunityScreenPreview() {
+fun HomeScreenPreview() {
     CheeseTheme {
-        CommunityScreen()
+        HomeScreen()
     }
 }
 
 @Composable
-fun CommunityScreen() {
-    CheeseTopAppBar(stringResource(id = R.string.community_title)) {
-
+fun HomeScreen() {
+    CheeseTopAppBar(title = stringResource(id = R.string.home_title)) {
+        
     }
 }

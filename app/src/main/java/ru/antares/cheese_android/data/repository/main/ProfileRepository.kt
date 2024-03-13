@@ -3,10 +3,9 @@ package ru.antares.cheese_android.data.repository.main
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import ru.antares.cheese_android.data.local.datastore.token.ITokenService
+import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.local.datastore.user.IUserDataStore
 import ru.antares.cheese_android.data.local.datastore.user.User
-import ru.antares.cheese_android.data.local.models.LocalResponse
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.services.main.profile.ProfileService
 import ru.antares.cheese_android.data.remote.services.main.profile.request.UpdateProfileRequest
@@ -24,7 +23,7 @@ import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.Pr
 class ProfileRepository(
     private val profileService: ProfileService,
     private val userDS: IUserDataStore,
-    private val tokenService: ITokenService
+    private val tokenService: IAuthorizationDataStore
 ) : IProfileRepository {
     override fun get(): Flow<ResourceState<ProfileResponse>> = flow {
         emit(ResourceState.Loading(isLoading = true))

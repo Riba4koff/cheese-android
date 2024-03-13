@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ru.antares.cheese_android.presentation.view.main.cart_graph.cart
 
 import androidx.compose.animation.AnimatedContent
@@ -33,10 +35,16 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -49,6 +57,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -74,6 +83,7 @@ import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.shaker.ShakeConfig
+import ru.antares.cheese_android.presentation.components.topbars.CheeseTopAppBar
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.presentation.util.parsePrice
 import ru.antares.cheese_android.ui.theme.CheeseTheme
@@ -85,7 +95,7 @@ fun CartScreenPreview() {
         CartScreen(
             state = CartState(
                 loading = false,
-                products = emptyList()/*(1..5).map {
+                products = (1..5).map {
                     CartProductModel(
                         amount = it,
                         price = it * 100.0,
@@ -109,9 +119,10 @@ fun CartScreenPreview() {
                             unitName = "гр"
                         )
                     )
-                }*/,
+                },
                 error = null,
-                totalCost = 12500.0
+                totalCost = 12500.0,
+                authorized = true
             ),
             onEvent = {
 
@@ -121,7 +132,7 @@ fun CartScreenPreview() {
             },
             onError = {
 
-            }
+            },
         )
     }
 }
@@ -139,7 +150,7 @@ fun CartScreen(
         error.value = state.error
     }
 
-    CheeseTitleWrapper(title = stringResource(R.string.cart_title)) {
+    CheeseTopAppBar(title = stringResource(id = R.string.cart_title)) {
         AnimatedContent(
             targetState = state.loading,
             label = "Cart animated content",
@@ -150,14 +161,18 @@ fun CartScreen(
             if (loading) {
                 LoadingScreen()
             } else {
-                CartContent(
-                    state = state,
-                    onEvent = onEvent,
-                    onNavigationEvent = onNavigationEvent,
-                    navigateToCatalog = {
-                        onNavigationEvent(CartNavigationEvent.NavigateToCatalog)
-                    }
-                )
+                if (state.authorized == true) {
+                    CartContent(
+                        state = state,
+                        onEvent = onEvent,
+                        onNavigationEvent = onNavigationEvent,
+                        navigateToCatalog = {
+                            onNavigationEvent(CartNavigationEvent.NavigateToCatalog)
+                        }
+                    )
+                } else {
+                    UnauthorizedContent()
+                }
             }
         }
     }
@@ -170,6 +185,17 @@ fun CartScreen(
     }
 }
 
+@Composable
+fun UnauthorizedContent() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(
+            text = "Авторизуйтесь, чтобы начать покупки",
+            style = CheeseTheme.typography.common16Semibold,
+            color = CheeseTheme.colors.gray
+        )
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CartContent(
@@ -178,132 +204,138 @@ private fun CartContent(
     onNavigationEvent: (CartNavigationEvent) -> Unit,
     navigateToCatalog: () -> Unit
 ) {
-
-    AnimatedContent(
-        targetState = state.products.isNotEmpty(),
-        label = "Products list animated content"
-    ) { isNotEmpty ->
-        if (isNotEmpty) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                LazyColumn(
-                    contentPadding = PaddingValues(
-                        horizontal = CheeseTheme.paddings.medium,
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.medium)
-                ) {
-                    itemsIndexed(
-                        items = state.products,
-                        key = { _, it -> it.product.id }
-                    ) { index, product ->
-                        CartProductView(
-                            modifier = Modifier
-                                .animateItemPlacement(),
-                            product = product, addToCart = { cpm ->
-                                onEvent(CartEvent.AddProductToCart(cpm.product.id, cpm.amount))
-                            }, removeFromCart = { cpm ->
-                                onEvent(CartEvent.RemoveProductFromCart(cpm.product.id, cpm.amount))
-                            }, deleteFromCart = { cpm ->
-                                onEvent(CartEvent.DeleteProductFromCart(cpm.product.id))
-                            }
-                        )
-                    }
-                    item {
-                        Spacer(Modifier.height(124.dp))
-                    }
-                }
-
-                Column(
+    Box(modifier = Modifier.fillMaxSize()) {
+        AnimatedContent(
+            targetState = state.products.isNotEmpty(),
+            label = "Products list animated content"
+        ) { isNotEmpty ->
+            if (isNotEmpty) {
+                Box(
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = CheeseTheme.paddings.medium),
-                    verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small)
+                        .fillMaxSize()
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = CheeseTheme.paddings.medium)
-                            .background(
-                                color = CheeseTheme.colors.white,
-                                shape = CheeseTheme.shapes.medium
-                            )
-                            .border(
-                                border = BorderStroke(
-                                    width = 1.dp,
-                                    color = CheeseTheme.colors.lightGray
-                                ),
-                                shape = CheeseTheme.shapes.medium
-                            )
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    LazyColumn(
+                        contentPadding = PaddingValues(
+                            horizontal = CheeseTheme.paddings.medium,
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.medium)
                     ) {
-                        Text(
-                            modifier = Modifier
-                                .padding(start = CheeseTheme.paddings.medium),
-                            text = stringResource(R.string.total),
-                            style = CheeseTheme.typography.common16Semibold
-                        )
-                        Text(
-                            modifier = Modifier
-                                .padding(end = CheeseTheme.paddings.medium),
-                            text = "${parsePrice(state.totalCost)}₽",
-                            style = CheeseTheme.typography.common16Semibold
-                        )
+                        itemsIndexed(
+                            items = state.products,
+                            key = { _, it -> it.product.id }
+                        ) { index, product ->
+                            CartProductView(
+                                modifier = Modifier
+                                    .animateItemPlacement(),
+                                product = product, addToCart = { cpm ->
+                                    onEvent(CartEvent.AddProductToCart(cpm.product.id, cpm.amount))
+                                }, removeFromCart = { cpm ->
+                                    onEvent(
+                                        CartEvent.RemoveProductFromCart(
+                                            cpm.product.id,
+                                            cpm.amount
+                                        )
+                                    )
+                                }, deleteFromCart = { cpm ->
+                                    onEvent(CartEvent.DeleteProductFromCart(cpm.product.id))
+                                }
+                            )
+                        }
+                        item {
+                            Spacer(Modifier.height(124.dp))
+                        }
                     }
-                    CheeseButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(64.dp)
-                            .padding(horizontal = CheeseTheme.paddings.medium),
-                        text = stringResource(R.string.go_checkout_order)
-                    ) {
-                        onNavigationEvent(CartNavigationEvent.ToCheckoutOrder)
-                    }
-                }
 
-                AnimatedVisibility(
-                    visible = state.cartLoading,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    LoadingScreen(modifier = Modifier.clickable { /* DO NOTHING */ })
-                }
-            }
-        } else {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.medium)
-                ) {
-                    Image(
+                    Column(
                         modifier = Modifier
-                            .padding(horizontal = CheeseTheme.paddings.large + CheeseTheme.paddings.large),
-                        painter = painterResource(id = R.drawable.empty_cart_placeholder),
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.height(CheeseTheme.paddings.medium))
-                    Text(
-                        text = stringResource(R.string.empty_cart_title),
-                        style = CheeseTheme.typography.common24Bold,
-                        color = CheeseTheme.colors.black
-                    )
-                    Text(
-                        text = stringResource(R.string.empty_cart_description),
-                        style = CheeseTheme.typography.common14Regular,
-                        color = CheeseTheme.colors.gray,
-                        textAlign = TextAlign.Center
-                    )
-                    /*CheeseButton(
-                        shape = CheeseTheme.shapes.small,
-                        text = stringResource(R.string.go_to_shopping),
-                        onClick = navigateToCatalog
-                    )*/
-                    Spacer(modifier = Modifier.height(64.dp))
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = CheeseTheme.paddings.medium),
+                        verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = CheeseTheme.paddings.medium)
+                                .background(
+                                    color = CheeseTheme.colors.white,
+                                    shape = CheeseTheme.shapes.medium
+                                )
+                                .border(
+                                    border = BorderStroke(
+                                        width = 1.dp,
+                                        color = CheeseTheme.colors.lightGray
+                                    ),
+                                    shape = CheeseTheme.shapes.medium
+                                )
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .padding(start = CheeseTheme.paddings.medium),
+                                text = stringResource(R.string.total),
+                                style = CheeseTheme.typography.common16Semibold
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .padding(end = CheeseTheme.paddings.medium),
+                                text = "${parsePrice(state.totalCost)}₽",
+                                style = CheeseTheme.typography.common16Semibold
+                            )
+                        }
+                        CheeseButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(64.dp)
+                                .padding(horizontal = CheeseTheme.paddings.medium),
+                            text = stringResource(R.string.go_checkout_order)
+                        ) {
+                            onNavigationEvent(CartNavigationEvent.ToCheckoutOrder)
+                        }
+                    }
+
+                    AnimatedVisibility(
+                        visible = state.cartLoading,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        LoadingScreen(modifier = Modifier.clickable { /* DO NOTHING */ })
+                    }
+                }
+            } else {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.medium)
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .padding(horizontal = CheeseTheme.paddings.large + CheeseTheme.paddings.large),
+                            painter = painterResource(id = R.drawable.empty_cart_placeholder),
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.height(CheeseTheme.paddings.medium))
+                        Text(
+                            text = stringResource(R.string.empty_cart_title),
+                            style = CheeseTheme.typography.common24Bold,
+                            color = CheeseTheme.colors.black
+                        )
+                        Text(
+                            text = stringResource(R.string.empty_cart_description),
+                            style = CheeseTheme.typography.common14Regular,
+                            color = CheeseTheme.colors.gray,
+                            textAlign = TextAlign.Center
+                        )
+                        /*CheeseButton(
+                            shape = CheeseTheme.shapes.small,
+                            text = stringResource(R.string.go_to_shopping),
+                            onClick = navigateToCatalog
+                        )*/
+                        Spacer(modifier = Modifier.height(64.dp))
+                    }
                 }
             }
         }

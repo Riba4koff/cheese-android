@@ -16,6 +16,7 @@ import javax.annotation.concurrent.Immutable
 @Immutable
 data class CartState(
     val loading: Boolean = true,
+    val authorized: Boolean? = null,
     val cartLoading: Boolean = false,
     val error: UIError? = null,
     val products: List<CartProductModel> = emptyList(),

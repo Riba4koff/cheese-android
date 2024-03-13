@@ -13,7 +13,8 @@ import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
 
 
 data class ProductWithCategory(
-    @Embedded val product: ProductEntity,
+    @Embedded
+    val product: ProductEntity,
     @Relation(
         parentColumn = "categoryId",
         entityColumn = "id"

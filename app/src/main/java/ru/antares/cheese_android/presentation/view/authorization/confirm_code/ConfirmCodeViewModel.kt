@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.data.local.datastore.token.ITokenService
+import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.remote.services.auth.dto.DeviceDTO
 import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
 import ru.antares.cheese_android.domain.errors.UIError
@@ -21,7 +21,7 @@ import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 class ConfirmCodeViewModel(
     private val phone: String,
     private val repository: IAuthorizationRepository,
-    private val tokenService: ITokenService
+    private val tokenService: IAuthorizationDataStore
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<ConfirmCodeState> =
         MutableStateFlow(ConfirmCodeState())

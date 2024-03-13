@@ -10,8 +10,8 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import ru.antares.cheese_android.data.local.datastore.token.ITokenService
-import ru.antares.cheese_android.data.local.datastore.token.TokenService
+import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
+import ru.antares.cheese_android.data.local.datastore.token.AuthorizationDataStore
 import ru.antares.cheese_android.data.local.datastore.user.IUserDataStore
 import ru.antares.cheese_android.data.local.datastore.user.UserDataStore
 import ru.antares.cheese_android.data.local.room.CheeseDataBase
@@ -55,7 +55,7 @@ private val localStorageModule = module {
 }
 
 private val dataStoreModule = module {
-    singleOf(::TokenService) { bind<ITokenService>() }
+    singleOf(::AuthorizationDataStore) { bind<IAuthorizationDataStore>() }
     singleOf(::UserDataStore) { bind<IUserDataStore>() }
 }
 

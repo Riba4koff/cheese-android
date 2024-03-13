@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ru.antares.cheese_android.presentation.view.main.profile_graph.profile
 
 import android.util.Log
@@ -10,6 +12,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,9 +26,15 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -36,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -51,6 +61,7 @@ import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
+import ru.antares.cheese_android.presentation.components.topbars.CheeseTopAppBar
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
@@ -75,6 +86,7 @@ fun ProfileScreenPreview() {
         )
     }
 }
+
 @Composable
 fun ProfileScreen(
     state: ProfileState,
@@ -131,7 +143,7 @@ fun ProfileScreen(
         error.value = state.error
     }
 
-    CheeseTitleWrapper(title = stringResource(id = R.string.profile_title)) {
+    CheeseTopAppBar(title = stringResource(id = R.string.profile_title)) {
         AnimatedContent(
             targetState = state.isLoading,
             label = "Profile animated content",
@@ -141,13 +153,13 @@ fun ProfileScreen(
         ) { uiState ->
             when (uiState) {
                 true -> {
-                    LoadingScreen(modifier = Modifier.align(Alignment.Center))
+                    LoadingScreen()
                 }
+
                 false -> {
                     if (state.isAuthorized) {
                         UserIsAuthorizedContent(
                             modifier = Modifier
-                                .align(Alignment.TopCenter)
                                 .padding(top = CheeseTheme.paddings.large),
                             onEvent = onEvent,
                             onNavigationEvent = onNavigationEvent,

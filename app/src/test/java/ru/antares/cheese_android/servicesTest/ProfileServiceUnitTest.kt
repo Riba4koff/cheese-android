@@ -9,7 +9,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.antares.cheese_android.data.local.datastore.token.ITokenService
+import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.remote.models.CheeseNetworkResponse
 import ru.antares.cheese_android.data.remote.services.main.profile.ProfileService
 import ru.antares.cheese_android.data.remote.services.main.profile.request.UpdateProfileRequest
@@ -24,7 +24,7 @@ import ru.antares.cheese_android.data.remote.services.main.profile.response.Prof
 class ProfileServiceUnitTest {
     private lateinit var mockWebServer: MockWebServer
     private lateinit var profileService: ProfileService
-    private lateinit var tokenService: ITokenService
+    private lateinit var tokenService: IAuthorizationDataStore
 
     @Before
     fun setup() {

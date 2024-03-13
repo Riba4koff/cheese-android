@@ -21,7 +21,7 @@ import ru.antares.cheese_android.data.local.room.dao.products.ProductsDao
         CartEntity::class,
         ProductEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class CheeseDataBase : RoomDatabase() {
@@ -31,12 +31,5 @@ abstract class CheeseDataBase : RoomDatabase() {
 
     companion object {
         const val DB_NAME = "Cheese_DB"
-
-        fun createDatabase(context: Context): RoomDatabase {
-            return Room.databaseBuilder(
-                context,
-                CheeseDataBase::class.java, DB_NAME
-            ).fallbackToDestructiveMigration().build()
-        }
     }
 }

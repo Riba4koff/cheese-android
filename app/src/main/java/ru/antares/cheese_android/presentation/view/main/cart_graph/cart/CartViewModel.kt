@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.antares.cheese_android.data.local.datastore.token.AuthorizationDataStore
+import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState
+import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.repository.main.CartRepository
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.models.CartProductModel
@@ -27,6 +30,7 @@ import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
  */
 
 class CartViewModel(
+    private val authorizationDataStore: IAuthorizationDataStore,
     private val getCartFlowUseCase: GetCartFlowUseCase,
     private val repository: CartRepository
 ) : ViewModel() {
@@ -63,11 +67,24 @@ class CartViewModel(
                                 CartState.totalCostWithDiscount set response.totalCostWithDiscount
                                 CartState.currentPage set response.page
                                 CartState.loading set false
+                                CartState.authorized set true
                             }
                         }
                     }
                 }
             }
+            /*authorizationDataStore.authorizedState.collectLatest { authState ->
+                if (authState == AuthorizedState.AUTHORIZED) {
+
+                } else {
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            CartState.loading set false
+                            CartState.authorized set false
+                        }
+                    }
+                }
+            }*/
         }
     }
 

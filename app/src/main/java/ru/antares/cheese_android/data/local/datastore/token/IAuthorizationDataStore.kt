@@ -2,7 +2,7 @@ package ru.antares.cheese_android.data.local.datastore.token
 
 import kotlinx.coroutines.flow.Flow
 
-interface ITokenService {
+interface IAuthorizationDataStore {
     val authorizedState: Flow<AuthorizedState>
 
     suspend fun getToken(): String

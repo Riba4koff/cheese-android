@@ -3,8 +3,8 @@ package ru.antares.cheese_android.presentation.view.authorization.input_phone
 import ru.antares.cheese_android.domain.errors.UIError
 
 sealed interface InputPhoneUIError : UIError {
-    data class TooMuchCallsError(
-        override val message: String = "Вы превысили\nдопустимое количество звонков.\nПопробуйте позже"
+    data class MakeCallError(
+        override val message: String = "Не удалось совершить звонок\nПопробуйте позже"
     ) : InputPhoneUIError
 
     data class ServerError(

@@ -2,7 +2,6 @@ package ru.antares.cheese_android.presentation.view.authorization.input_phone
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,14 +11,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.data.local.datastore.token.ITokenService
-import ru.antares.cheese_android.data.remote.models.NetworkResponse
+import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 
 class InputPhoneViewModel(
     private val repository: IAuthorizationRepository,
-    private val tokenService: ITokenService
+    private val tokenService: IAuthorizationDataStore
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<InputPhoneState> =
         MutableStateFlow(InputPhoneState())
@@ -84,7 +82,7 @@ class InputPhoneViewModel(
                         )
 
                         false -> _mutableStateFlow.update { state ->
-                            state.copy(error = InputPhoneUIError.TooMuchCallsError())
+                            state.copy(error = InputPhoneUIError.MakeCallError())
                         }
 
                         else -> _mutableStateFlow.update { state ->
@@ -113,7 +111,7 @@ class InputPhoneViewModel(
                 }
             }
 
-            is InputPhoneUIError.TooMuchCallsError -> {
+            is InputPhoneUIError.MakeCallError -> {
                 _mutableStateFlow.update { state ->
                     state.copy(error = null)
                 }

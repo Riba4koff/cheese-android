@@ -2,7 +2,9 @@ package ru.antares.cheese_android.data.local.room.dao.products
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
 
 /**
  * ProductEntity.kt
@@ -11,7 +13,16 @@ import androidx.room.PrimaryKey
  * Android studio
  */
 
-@Entity("products")
+@Entity(
+    tableName = "products",
+    foreignKeys = [
+        ForeignKey(
+            entity = CategoryEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["categoryId"]
+        )
+    ]
+)
 data class ProductEntity(
     @PrimaryKey val id: String,
     @ColumnInfo("name") val name: String,

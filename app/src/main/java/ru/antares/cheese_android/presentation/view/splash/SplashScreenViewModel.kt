@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState
-import ru.antares.cheese_android.data.local.datastore.token.ITokenService
+import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 
 class SplashScreenViewModel(
-    private val tokenService: ITokenService
+    private val tokenService: IAuthorizationDataStore
 ): ViewModel() {
     private val _userAuthorizedState: MutableStateFlow<SplashScreenState> =
         MutableStateFlow(SplashScreenState.LOADING)

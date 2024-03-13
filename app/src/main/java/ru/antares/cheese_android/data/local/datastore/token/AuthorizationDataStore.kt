@@ -16,7 +16,7 @@ import java.io.IOException
 
 private const val TAG = "TOKEN_SERVICE"
 
-class TokenService(context: Context) : ITokenService {
+class AuthorizationDataStore(context: Context) : IAuthorizationDataStore {
 
     private companion object KEYS {
         val bearerToken = stringPreferencesKey("BEARER_TOKEN_KEY")

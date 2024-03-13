@@ -11,11 +11,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,6 +29,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -43,6 +49,7 @@ import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
+import ru.antares.cheese_android.presentation.components.topbars.CheeseTopAppBar
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
@@ -92,15 +99,7 @@ fun CatalogScreen(
 
     val (search, onSearchChange) = remember { mutableStateOf("") }
 
-    CheeseTitleWrapper(
-        title = stringResource(R.string.catalog_title),
-        searchValue = search,
-        onSearchChange = onSearchChange,
-        enableClearButton = true,
-        onSearch = { searchValue ->
-            /*TODO: logic of search*/
-        }
-    ) {
+    CheeseTopAppBar(title = stringResource(id = R.string.catalog_title)) {
         AnimatedContent(
             targetState = state.uiState,
             label = "Catalog screen animated content",
@@ -116,7 +115,9 @@ fun CatalogScreen(
 
                 CatalogUIState.LOADING -> LoadingScreen(modifier = Modifier)
                 CatalogUIState.SUCCESS -> CatalogScreenContent(
-                    state = state, onEvent = onEvent, search = search
+                    state = state,
+                    onEvent = onEvent,
+                    search = search
                 )
             }
         }
