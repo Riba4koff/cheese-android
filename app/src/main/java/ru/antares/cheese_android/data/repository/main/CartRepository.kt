@@ -1,11 +1,10 @@
 package ru.antares.cheese_android.data.repository.main
 
-import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import ru.antares.cheese_android.data.local.room.dao.cart.CartDao
 import ru.antares.cheese_android.data.local.room.dao.cart.CartEntity
 import ru.antares.cheese_android.data.local.room.dao.cart.ICartLocalStorage
+import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
 import ru.antares.cheese_android.data.remote.services.cart.BasketResponse
 import ru.antares.cheese_android.data.remote.services.cart.CartService
 import ru.antares.cheese_android.data.remote.services.cart.UpdateCartRequest
@@ -23,16 +22,31 @@ import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.CartUIEr
 
 class CartRepository(
     private val cartService: CartService,
-    private val cartLocalStorage: ICartLocalStorage
+    private val cartLocalStorage: ICartLocalStorage,
+    private val productsLocalStorage: IProductsLocalStorage
 ) : ICartRepository {
     override suspend fun updateLocalCart() {
-        safeNetworkCall { cartService.get() }.onSuccess { response ->
-            response.result.forEach { cartProductDTO ->
+        safeNetworkCall {
+            cartService.get()
+        }.onSuccess { response ->
+            cartLocalStorage.clear()
+
+            val cartEntities = response.result.map { cartProductDTO ->
+                CartEntity(
+                    amount = cartProductDTO.amount,
+                    productID = cartProductDTO.product.id
+                )
+            }
+
+            val products = response.result.map { cartProductDTO ->
+                cartProductDTO.product
+            }
+
+            productsLocalStorage.insert(products)
+
+            cartEntities.forEach { entity ->
                 cartLocalStorage.insert(
-                    entity = CartEntity(
-                        amount = cartProductDTO.amount,
-                        productID = cartProductDTO.product.id
-                    )
+                    entity = entity
                 )
             }
         }
@@ -44,12 +58,34 @@ class CartRepository(
 
             safeNetworkCall { cartService.get() }.onFailure { error ->
                 if (error.code == 401) {
+                    cartLocalStorage.clear()
                     emit(ResourceState.Error(CartUIError.UnauthorizedError()))
                 } else {
                     emit(ResourceState.Error(CartUIError.LoadCartError()))
                 }
                 return@onFailure
             }.onSuccess { response ->
+                cartLocalStorage.clear()
+
+                val cartEntities = response.result.map { cartProductDTO ->
+                    CartEntity(
+                        amount = cartProductDTO.amount,
+                        productID = cartProductDTO.product.id
+                    )
+                }
+
+                val products = response.result.map { cartProductDTO ->
+                    cartProductDTO.product
+                }
+
+                productsLocalStorage.insert(products)
+
+                cartEntities.forEach { entity ->
+                    cartLocalStorage.insert(
+                        entity = entity
+                    )
+                }
+
                 emit(ResourceState.Success(response))
                 return@onSuccess
             }
@@ -108,6 +144,7 @@ class CartRepository(
                     )
                 }.onFailure { error ->
                     if (error.code == 401) {
+                        cartLocalStorage.clear()
                         emit(ResourceState.Error(CartUIError.UnauthorizedError()))
                     } else {
                         emit(ResourceState.Error(CartUIError.DecrementProductError()))
@@ -127,6 +164,7 @@ class CartRepository(
                     cartService.delete(productID = productID)
                 }.onFailure { error ->
                     if (error.code == 401) {
+                        cartLocalStorage.clear()
                         emit(ResourceState.Error(CartUIError.UnauthorizedError()))
                     } else {
                         emit(ResourceState.Error(CartUIError.DeleteProductError()))
@@ -153,6 +191,7 @@ class CartRepository(
             cartService.delete(productID = productID)
         }.onFailure { error ->
             if (error.code == 401) {
+                cartLocalStorage.clear()
                 emit(ResourceState.Error(CartUIError.UnauthorizedError()))
             } else {
                 emit(ResourceState.Error(CartUIError.DeleteProductError()))
@@ -171,12 +210,11 @@ class CartRepository(
         emit(ResourceState.Loading(isLoading = false))
     }
 
-    override suspend fun clear(productID: String): Flow<ResourceState<Boolean>> =
+    override suspend fun clear(): Flow<ResourceState<Boolean>> =
         flow {
             emit(ResourceState.Loading(isLoading = true))
 
             safeNetworkCall { cartService.clear() }.onFailure { error ->
-                Log.d("CLEAR_CART_ERROR", error.message)
                 emit(ResourceState.Error(CartUIError.ClearError()))
                 return@onFailure
             }.onSuccess { success ->
