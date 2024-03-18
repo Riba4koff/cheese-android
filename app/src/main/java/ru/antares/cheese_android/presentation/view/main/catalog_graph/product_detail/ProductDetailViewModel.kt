@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.models.toUIModels
 import ru.antares.cheese_android.domain.repository.ICartRepository
 import ru.antares.cheese_android.domain.repository.IProductsRepository
@@ -91,14 +91,14 @@ class ProductDetailViewModel(
         }
     }
 
-    fun onError(error: UIError) {
+    fun onError(error: AppError) {
         when (error) {
-            is ProductDetailUIError.LoadingError -> {
+            is ProductDetailAppError.LoadingError -> {
                 loadProduct(productID)
             }
             else -> {
                 _mutableStateFlow.update { state ->
-                    state.copy(uiError = null)
+                    state.copy(appError = null)
                 }
             }
         }
@@ -115,7 +115,7 @@ class ProductDetailViewModel(
             }.onError { error ->
                 _mutableStateFlow.update { state ->
                     state.copy {
-                        ProductDetailViewState.uiError set error
+                        ProductDetailViewState.appError set error
                     }
                 }
             }.onSuccess { product ->
@@ -142,7 +142,7 @@ class ProductDetailViewModel(
                 }.onError { error ->
                     _mutableStateFlow.update { state ->
                         state.copy {
-                            ProductDetailViewState.uiError set error
+                            ProductDetailViewState.appError set error
                         }
                     }
                 }.onSuccess { pagination ->
@@ -170,7 +170,7 @@ class ProductDetailViewModel(
                 }.onError { error ->
                     _mutableStateFlow.update { state ->
                         state.copy {
-                            ProductDetailViewState.uiError set error
+                            ProductDetailViewState.appError set error
                         }
                     }
                 }
@@ -190,7 +190,7 @@ class ProductDetailViewModel(
                 }.onError { error ->
                     _mutableStateFlow.update { state ->
                         state.copy {
-                            ProductDetailViewState.uiError set error
+                            ProductDetailViewState.appError set error
                         }
                     }
                 }

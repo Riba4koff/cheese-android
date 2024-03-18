@@ -25,6 +25,8 @@ import ru.antares.cheese_android.data.repository.main.CartRepository
 import ru.antares.cheese_android.data.repository.main.ProductsRepository
 import ru.antares.cheese_android.data.repository.main.ProfileRepository
 import ru.antares.cheese_android.data.repository.main.catalog.CatalogRepository
+import ru.antares.cheese_android.domain.paymentType.PaymentType
+import ru.antares.cheese_android.domain.paymentType.PaymentTypeAdapter
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 import ru.antares.cheese_android.domain.repository.ICartRepository
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
@@ -106,6 +108,7 @@ private fun provideOkHttpClient(tokenService: IAuthorizationDataStore): OkHttpCl
 private fun provideRetrofit(client: OkHttpClient): Retrofit {
     val gson: Gson = GsonBuilder()
         .registerTypeAdapter(Attachment::class.java, AttachmentAdapter())
+        .registerTypeAdapter(PaymentType::class.java, PaymentTypeAdapter())
         .create()
     return Retrofit.Builder()
         .baseUrl(BASE_URL)

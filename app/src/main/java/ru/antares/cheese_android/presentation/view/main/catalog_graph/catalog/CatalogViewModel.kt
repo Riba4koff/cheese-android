@@ -13,8 +13,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.domain.ResourceState
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 
 class CatalogViewModel(
@@ -56,18 +55,18 @@ class CatalogViewModel(
         }
     }
 
-    fun onError(error: UIError) {
+    fun onError(error: AppError) {
         when (error) {
-            is CatalogUIError.Loading -> {
+            is CatalogAppError.Loading -> {
                 /** handle loading error */
                 load(null, null)
             }
 
-            is CatalogUIError.Updating -> {
+            is CatalogAppError.Updating -> {
                 /** handle updating error */
             }
 
-            is CatalogUIError.UnknownError -> {
+            is CatalogAppError.UnknownError -> {
                 /** handle unknown error */
             }
         }
@@ -86,8 +85,8 @@ class CatalogViewModel(
             }.onError { error ->
                 _mutableStateFlow.update { state ->
                     state.copy {
-                        CatalogState.error set if (error is CatalogUIError) error
-                        else CatalogUIError.UnknownError()
+                        CatalogState.error set if (error is CatalogAppError) error
+                        else CatalogAppError.UnknownError()
                         CatalogState.uiState set CatalogUIState.ERROR
                     }
                 }

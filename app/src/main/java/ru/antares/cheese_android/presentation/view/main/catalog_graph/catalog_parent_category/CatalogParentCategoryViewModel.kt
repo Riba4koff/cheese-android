@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 
 class CatalogParentCategoryViewModel(
@@ -50,9 +50,9 @@ class CatalogParentCategoryViewModel(
         }
     }
 
-    fun onError(error: UIError) {
-        when (error as CatalogParentCategoryUIError) {
-            is CatalogParentCategoryUIError.Loading -> {
+    fun onError(error: AppError) {
+        when (error as CatalogParentCategoryAppError) {
+            is CatalogParentCategoryAppError.Loading -> {
                 load(parentID = parentID)
             }
         }

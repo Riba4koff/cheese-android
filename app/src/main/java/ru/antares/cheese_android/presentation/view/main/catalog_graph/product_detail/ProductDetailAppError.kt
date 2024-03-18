@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail
 
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 
 /**
  * ProductDetailUIError.kt
@@ -9,8 +9,8 @@ import ru.antares.cheese_android.domain.errors.UIError
  * Android studio
  */
 
-sealed interface ProductDetailUIError: UIError {
+sealed interface ProductDetailAppError: AppError {
     data class LoadingError(
         override val message: String = "Не удалось загрузить\nинформацию о продукте"
-    ): ProductDetailUIError
+    ): ProductDetailAppError
 }

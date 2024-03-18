@@ -11,8 +11,8 @@ import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeReque
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
-import ru.antares.cheese_android.presentation.view.authorization.confirm_code.ConfirmCodeUIError
-import ru.antares.cheese_android.presentation.view.authorization.input_phone.InputPhoneUIError
+import ru.antares.cheese_android.presentation.view.authorization.confirm_code.ConfirmCodeAppError
+import ru.antares.cheese_android.presentation.view.authorization.input_phone.InputPhoneAppError
 
 class AuthorizationRepository(
     private val authorizationService: AuthorizationService,
@@ -30,11 +30,11 @@ class AuthorizationRepository(
         response.onFailure { error ->
             when (error.code) {
                 in 500..599 -> {
-                    emit(ResourceState.Error(error = InputPhoneUIError.ServerError()))
+                    emit(ResourceState.Error(error = InputPhoneAppError.ServerError()))
                     return@onFailure
                 }
                 else -> {
-                    emit(ResourceState.Error(error = InputPhoneUIError.UnknownError()))
+                    emit(ResourceState.Error(error = InputPhoneAppError.UnknownError()))
                     return@onFailure
                 }
             }
@@ -54,11 +54,11 @@ class AuthorizationRepository(
 
         sendCodeResponse.onFailure { error ->
             if (error.code in 500..599) {
-                if (error.code == 500) emit(ResourceState.Error(error = ConfirmCodeUIError.WrongCodeError()))
-                else emit(ResourceState.Error(error = ConfirmCodeUIError.ServerError()))
+                if (error.code == 500) emit(ResourceState.Error(error = ConfirmCodeAppError.WrongCodeError()))
+                else emit(ResourceState.Error(error = ConfirmCodeAppError.ServerError()))
                 return@onFailure
             } else {
-                emit(ResourceState.Error(error = InputPhoneUIError.UnknownError()))
+                emit(ResourceState.Error(error = InputPhoneAppError.UnknownError()))
                 return@onFailure
             }
         }.onSuccess { response ->

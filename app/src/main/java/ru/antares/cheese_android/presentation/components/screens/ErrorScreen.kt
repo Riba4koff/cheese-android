@@ -14,15 +14,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataUIError
+import ru.antares.cheese_android.domain.errors.AppError
+import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataAppError
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Composable
 fun ErrorScreen(
     modifier: Modifier = Modifier,
-    error: UIError,
-    onError: (UIError) -> Unit
+    error: AppError,
+    onError: (AppError) -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -48,6 +48,6 @@ fun ErrorScreen(
 fun ErrorScreenPreview() {
     CheeseTheme {
         ErrorScreen(modifier = Modifier,
-            error = PersonalDataUIError.UnknownError("Хз"), onError = {})
+            error = PersonalDataAppError.UnknownError("Хз"), onError = {})
     }
 }

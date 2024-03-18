@@ -2,7 +2,6 @@
 
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -53,13 +52,11 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.clickable
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.domain.models.ProductModel
 import ru.antares.cheese_android.onClick
 import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
-import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
-import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTopBarWrapper
 import ru.antares.cheese_android.presentation.models.ProductUIModel
@@ -105,7 +102,7 @@ fun ProductDetailScreenPreview() {
                     ),
                     countInCart = 10
                 ),
-                uiError = null,
+                appError = null,
                 recommendations = listOf(
                     ProductUIModel(
                         value = ProductModel(
@@ -170,7 +167,7 @@ fun ProductDetailScreen(
     state: ProductDetailViewState,
     onEvent: (ProductDetailEvent) -> Unit,
     onNavigationEvent: (ProductDetailNavigationEvent) -> Unit,
-    onError: (UIError) -> Unit
+    onError: (AppError) -> Unit
 ) {
     CheeseTopBarWrapper(
         topBarContent = {
@@ -217,10 +214,10 @@ fun ProductDetailScreen(
             }
         }
 
-        val error: MutableState<UIError?> = remember { mutableStateOf(null) }
+        val error: MutableState<AppError?> = remember { mutableStateOf(null) }
 
-        LaunchedEffect(key1 = state.uiError) {
-            error.value = state.uiError
+        LaunchedEffect(key1 = state.appError) {
+            error.value = state.appError
         }
 
         error.value?.let {

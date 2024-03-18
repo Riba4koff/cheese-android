@@ -13,14 +13,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +23,6 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -44,13 +37,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.topbars.CheeseTopAppBar
-import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
@@ -81,7 +73,7 @@ fun CatalogScreenPreview() {
 fun CatalogScreen(
     navController: NavController,
     state: CatalogState,
-    onError: (UIError) -> Unit,
+    onError: (AppError) -> Unit,
     onEvent: (CatalogEvent) -> Unit,
     navigationEvents: Flow<CatalogNavigationEvent>
 ) {

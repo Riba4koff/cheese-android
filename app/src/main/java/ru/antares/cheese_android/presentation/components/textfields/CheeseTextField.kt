@@ -42,7 +42,7 @@ fun CheeseTextField(
     leadingIcon: (@Composable () -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     shape: RoundedCornerShape = CheeseTheme.shapes.small,
-    textStyle: TextStyle = CheeseTheme.typography.common16Light,
+    textStyle: TextStyle = CheeseTheme.typography.common16Medium,
     enabled: Boolean = false
 ) {
     val textFieldColors = TextFieldDefaults.colors(
@@ -68,7 +68,10 @@ fun CheeseTextField(
             keyboardActions = keyboardActions,
             keyboardOptions = keyboardOptions,
             placeholder = {
-                Text(text = placeholder)
+                Text(
+                    text = placeholder,
+                    style = CheeseTheme.typography.common14Medium
+                )
             },
             colors = textFieldColors,
             visualTransformation = visualTransformation,
@@ -99,8 +102,8 @@ fun CheeseTextField(
 }
 
 /**
-* Unfocused cheese text field
-* */
+ * Unfocused cheese text field
+ * */
 @Preview(showBackground = true)
 @Composable
 fun CheeseUnfocusedTextFieldPreview() {

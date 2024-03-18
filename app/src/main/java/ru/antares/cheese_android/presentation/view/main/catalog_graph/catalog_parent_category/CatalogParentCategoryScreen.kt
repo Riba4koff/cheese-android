@@ -30,7 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
@@ -64,7 +64,7 @@ fun CatalogParentCategoryScreen(
     navController: NavController,
     name: String,
     state: CatalogParentCategoryState,
-    onError: (UIError) -> Unit,
+    onError: (AppError) -> Unit,
     onEvent: (CatalogParentCategoryEvent) -> Unit,
     navigationEvents: Flow<CatalogParentCategoryNavigationEvent>
 ) {

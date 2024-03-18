@@ -35,6 +35,7 @@ data class Colors(
     val primary: Color = Color.Unspecified,
     val bottomBarColor: Color = Color.Unspecified,
     val gray: Color = Color.Unspecified,
+    val darkGray: Color = Color.Unspecified,
     val lightGray: Color = Color.Unspecified,
     val red: Color = Color.Unspecified,
     val blue: Color = Color.Unspecified,
@@ -142,7 +143,8 @@ fun CheeseTheme(
         lightGray = Color(0xFFEFEFEF),
         red = Color(0xFFEF0D1B),
         blue = Color(0xFF007CF9),
-        profileIconColor = Color(0xFF6C757D)
+        profileIconColor = Color(0xFF6C757D),
+        darkGray = Color(0xFF333333)
     )
 
     val textStyles = TextStyles(

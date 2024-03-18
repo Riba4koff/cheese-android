@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 
 class InputPhoneViewModel(
@@ -66,13 +66,13 @@ class InputPhoneViewModel(
                 resourceState.onLoading { isLoading ->
                     setLoading(isLoading)
                 }.onError { error ->
-                    if (error is InputPhoneUIError) {
+                    if (error is InputPhoneAppError) {
                         _mutableStateFlow.update { state ->
                             state.copy(error = error)
                         }
                     } else {
                         _mutableStateFlow.update { state ->
-                            state.copy(error = InputPhoneUIError.UnknownError())
+                            state.copy(error = InputPhoneAppError.UnknownError())
                         }
                     }
                 }.onSuccess { callIsSuccess ->
@@ -82,11 +82,11 @@ class InputPhoneViewModel(
                         )
 
                         false -> _mutableStateFlow.update { state ->
-                            state.copy(error = InputPhoneUIError.MakeCallError())
+                            state.copy(error = InputPhoneAppError.MakeCallError())
                         }
 
                         else -> _mutableStateFlow.update { state ->
-                            state.copy(error = InputPhoneUIError.UnknownError())
+                            state.copy(error = InputPhoneAppError.UnknownError())
                         }
                     }
                 }
@@ -103,21 +103,21 @@ class InputPhoneViewModel(
         return !phoneNumber.matches(phoneNumberRegex)
     }
 
-    fun onError(uiError: UIError) {
-        when (uiError as InputPhoneUIError) {
-            is InputPhoneUIError.ServerError -> {
+    fun onError(appError: AppError) {
+        when (appError as InputPhoneAppError) {
+            is InputPhoneAppError.ServerError -> {
                 _mutableStateFlow.update { state ->
                     state.copy(error = null)
                 }
             }
 
-            is InputPhoneUIError.MakeCallError -> {
+            is InputPhoneAppError.MakeCallError -> {
                 _mutableStateFlow.update { state ->
                     state.copy(error = null)
                 }
             }
 
-            is InputPhoneUIError.UnknownError -> {
+            is InputPhoneAppError.UnknownError -> {
                 _mutableStateFlow.update { state ->
                     state.copy(error = null)
                 }

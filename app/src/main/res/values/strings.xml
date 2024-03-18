@@ -42,4 +42,12 @@
     <string name="empty_cart_title">В корзине пусто</string>
     <string name="empty_cart_description">Перед тем, как оформить заказ\nЗаполните корзину продуктами</string>
     <string name="go_to_shopping">Перейти к покупкам</string>
+    <string name="authorize_to_start_shopping">Авторизуйтесь, чтобы начать покупки</string>
+    <string name="add">Добавить</string>
+    <string name="delivery_address">Адрес доставки</string>
+    <string name="receiver">Получатель</string>
+    <string name="input_credentials_of_receiver">Введите ФИО получателя</string>
+    <string name="comment_not_necessary">Комментарий (Не обязательно)</string>
+    <string name="comment">Комментарий</string>
+    <string name="checkout_order">Оформить заказ</string>
 </resources>

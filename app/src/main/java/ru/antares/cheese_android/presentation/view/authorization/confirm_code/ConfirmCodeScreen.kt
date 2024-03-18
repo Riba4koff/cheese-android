@@ -43,7 +43,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.navigation.util.Screen
@@ -79,7 +79,7 @@ fun ConfirmCodeScreen(
     navController: NavController,
     state: ConfirmCodeState,
     onEvent: (ConfirmCodeEvent) -> Unit,
-    onError: (UIError) -> Unit,
+    onError: (AppError) -> Unit,
     navigationEvents: Flow<ConfirmCodeNavigationEvent>,
 ) {
     ObserveAsNavigationEvents(flow = navigationEvents) { event ->
@@ -95,7 +95,7 @@ fun ConfirmCodeScreen(
         }
     }
 
-    val error: MutableState<UIError?> = remember { mutableStateOf(null) }
+    val error: MutableState<AppError?> = remember { mutableStateOf(null) }
 
     LaunchedEffect(state.error) {
         error.value = state.error

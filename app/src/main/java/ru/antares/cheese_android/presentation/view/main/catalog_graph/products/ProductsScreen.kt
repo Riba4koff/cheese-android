@@ -65,12 +65,11 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.clickable
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.domain.models.ProductModel
 import ru.antares.cheese_android.onClick
 import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
-import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTopBarWrapper
 import ru.antares.cheese_android.presentation.models.ProductUIModel
@@ -140,7 +139,7 @@ fun ProductsScreen(
     state: ProductsState,
     onEvent: (ProductsEvent) -> Unit,
     onNavigationEvent: (ProductsNavigationEvent) -> Unit,
-    onError: (UIError) -> Unit
+    onError: (AppError) -> Unit
 ) {
     CheeseTopBarWrapper(
         topBarContent = {
@@ -246,7 +245,7 @@ fun ProductsScreen(
             }
         }
 
-        val error: MutableState<UIError?> = remember { mutableStateOf(null) }
+        val error: MutableState<AppError?> = remember { mutableStateOf(null) }
 
         LaunchedEffect(state.error) {
             error.value = state.error

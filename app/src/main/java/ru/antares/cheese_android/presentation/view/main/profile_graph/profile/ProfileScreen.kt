@@ -2,7 +2,6 @@
 
 package ru.antares.cheese_android.presentation.view.main.profile_graph.profile
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -12,7 +11,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,13 +26,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -45,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -57,9 +49,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
-import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.topbars.CheeseTopAppBar
 import ru.antares.cheese_android.presentation.navigation.util.Screen
@@ -92,7 +83,7 @@ fun ProfileScreen(
     state: ProfileState,
     navigationEvents: Flow<ProfileNavigationEvent>,
     onEvent: (ProfileEvent) -> Unit,
-    onError: (UIError) -> Unit,
+    onError: (AppError) -> Unit,
     onNavigationEvent: (ProfileNavigationEvent) -> Unit,
     globalNavController: NavController,
     profileNavController: NavController
@@ -137,7 +128,7 @@ fun ProfileScreen(
         onEvent(ProfileEvent.LoadProfile)
     }
 
-    val error: MutableState<UIError?> = remember { mutableStateOf(null) }
+    val error: MutableState<AppError?> = remember { mutableStateOf(null) }
 
     LaunchedEffect(state.error) {
         error.value = state.error

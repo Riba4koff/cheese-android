@@ -2,14 +2,14 @@ package ru.antares.cheese_android.presentation.view.main.profile_graph.personal_
 
 import androidx.compose.runtime.Immutable
 import arrow.optics.optics
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 
 
 @optics
 @Immutable
 data class PersonalDataState(
     val uiState: PersonalDataLoadingState = PersonalDataLoadingState.LOADING,
-    val error: UIError? = null,
+    val error: AppError? = null,
     val surname: String = "",
     val name: String = "",
     val patronymic: String = "",

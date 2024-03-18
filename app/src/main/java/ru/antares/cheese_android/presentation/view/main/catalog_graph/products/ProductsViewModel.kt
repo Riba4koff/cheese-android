@@ -15,14 +15,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.domain.models.ProductModel
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.models.toUIModels
 import ru.antares.cheese_android.domain.repository.ICartRepository
 import ru.antares.cheese_android.domain.repository.IProductsRepository
 import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
 import ru.antares.cheese_android.presentation.models.ProductUIModel
-import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.CartUIError
 
 /**
  * ProductsViewModel.kt
@@ -150,9 +148,9 @@ class ProductsViewModel(
         }
     }
 
-    fun onError(error: UIError) = viewModelScope.launch {
+    fun onError(error: AppError) = viewModelScope.launch {
         when (error) {
-            is ProductsUIError.LoadingError -> {
+            is ProductsAppError.LoadingError -> {
                 loadNextPage(state.value.currentPage, state.value.pageSize)
             }
             else -> {

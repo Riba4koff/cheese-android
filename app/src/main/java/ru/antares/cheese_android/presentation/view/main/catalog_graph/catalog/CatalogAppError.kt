@@ -1,17 +1,17 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog
 
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 
-sealed interface CatalogUIError : UIError {
+sealed interface CatalogAppError : AppError {
     data class Loading(
         override val message: String = "Ошибка при загрузке категорий"
-    ) : CatalogUIError
+    ) : CatalogAppError
 
     data class UnknownError(
         override val message: String = "Неизвестная ошибка"
-    ) : CatalogUIError
+    ) : CatalogAppError
 
     data class Updating(
         override val message: String = "Ошибка при обновлении категорий"
-    ) : CatalogUIError
+    ) : CatalogAppError
 }

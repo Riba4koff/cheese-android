@@ -13,7 +13,7 @@ import ru.antares.cheese_android.data.remote.services.cart.UpdateCartRequest
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.repository.ICartRepository
-import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.CartUIError
+import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.CartAppError
 
 /**
  * CartRepository.kt
@@ -67,14 +67,12 @@ class CartRepository(
             }.onFailure { error ->
                 if (error.code == 401) {
                     cartLocalStorage.clear()
-                    emit(ResourceState.Error(CartUIError.UnauthorizedError()))
+                    emit(ResourceState.Error(CartAppError.UnauthorizedError()))
                 } else {
-                    emit(ResourceState.Error(CartUIError.LoadCartError()))
+                    emit(ResourceState.Error(CartAppError.LoadCartError()))
                 }
                 return@onFailure
             }.onSuccess { response ->
-                cartLocalStorage.clear()
-
                 val cartEntities = response.result.map { cartProductDTO ->
                     CartEntity(
                         amount = cartProductDTO.amount,
@@ -117,9 +115,9 @@ class CartRepository(
                 )
             }.onFailure { error ->
                 if (error.code == 401) {
-                    emit(ResourceState.Error(CartUIError.UnauthorizedError()))
+                    emit(ResourceState.Error(CartAppError.UnauthorizedError()))
                 } else {
-                    emit(ResourceState.Error(CartUIError.IncrementProductError()))
+                    emit(ResourceState.Error(CartAppError.IncrementProductError()))
                 }
                 return@onFailure
             }.onSuccess { success ->
@@ -127,7 +125,7 @@ class CartRepository(
                     cartLocalStorage.increment(currentAmount, productID)
                     emit(ResourceState.Success(success))
                 } else {
-                    emit(ResourceState.Error(CartUIError.IncrementProductError()))
+                    emit(ResourceState.Error(CartAppError.IncrementProductError()))
                 }
                 return@onSuccess
             }
@@ -155,9 +153,9 @@ class CartRepository(
                 }.onFailure { error ->
                     if (error.code == 401) {
                         cartLocalStorage.clear()
-                        emit(ResourceState.Error(CartUIError.UnauthorizedError()))
+                        emit(ResourceState.Error(CartAppError.UnauthorizedError()))
                     } else {
-                        emit(ResourceState.Error(CartUIError.DecrementProductError()))
+                        emit(ResourceState.Error(CartAppError.DecrementProductError()))
                     }
                     return@onFailure
                 }.onSuccess { success ->
@@ -165,7 +163,7 @@ class CartRepository(
                         cartLocalStorage.decrement(currentAmount, productID)
                         emit(ResourceState.Success(success))
                     } else {
-                        emit(ResourceState.Error(CartUIError.DecrementProductError()))
+                        emit(ResourceState.Error(CartAppError.DecrementProductError()))
                     }
                     return@onSuccess
                 }
@@ -177,9 +175,9 @@ class CartRepository(
                 }.onFailure { error ->
                     if (error.code == 401) {
                         cartLocalStorage.clear()
-                        emit(ResourceState.Error(CartUIError.UnauthorizedError()))
+                        emit(ResourceState.Error(CartAppError.UnauthorizedError()))
                     } else {
-                        emit(ResourceState.Error(CartUIError.DeleteProductError()))
+                        emit(ResourceState.Error(CartAppError.DeleteProductError()))
                     }
                     return@onFailure
                 }.onSuccess { success ->
@@ -187,7 +185,7 @@ class CartRepository(
                         cartLocalStorage.delete(productID)
                         emit(ResourceState.Success(success))
                     } else {
-                        emit(ResourceState.Error(CartUIError.DeleteProductError()))
+                        emit(ResourceState.Error(CartAppError.DeleteProductError()))
                     }
                     return@onSuccess
                 }
@@ -206,9 +204,9 @@ class CartRepository(
         }.onFailure { error ->
             if (error.code == 401) {
                 cartLocalStorage.clear()
-                emit(ResourceState.Error(CartUIError.UnauthorizedError()))
+                emit(ResourceState.Error(CartAppError.UnauthorizedError()))
             } else {
-                emit(ResourceState.Error(CartUIError.DeleteProductError()))
+                emit(ResourceState.Error(CartAppError.DeleteProductError()))
             }
             return@onFailure
         }.onSuccess { success ->
@@ -216,7 +214,7 @@ class CartRepository(
                 cartLocalStorage.delete(productID)
                 emit(ResourceState.Success(success))
             } else {
-                emit(ResourceState.Error(CartUIError.DeleteProductError()))
+                emit(ResourceState.Error(CartAppError.DeleteProductError()))
             }
             return@onSuccess
         }
@@ -233,14 +231,14 @@ class CartRepository(
                     cartService.clear()
                 }
             }.onFailure { error ->
-                emit(ResourceState.Error(CartUIError.ClearError()))
+                emit(ResourceState.Error(CartAppError.ClearError()))
                 return@onFailure
             }.onSuccess { success ->
                 if (success) {
                     cartLocalStorage.clear()
                     emit(ResourceState.Success(success))
                 } else {
-                    emit(ResourceState.Error(CartUIError.ClearError()))
+                    emit(ResourceState.Error(CartAppError.ClearError()))
                 }
                 return@onSuccess
             }

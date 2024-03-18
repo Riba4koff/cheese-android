@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.optics.copy
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,14 +12,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.antares.cheese_android.data.local.datastore.token.AuthorizationDataStore
-import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState
 import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.repository.main.CartRepository
-import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.domain.models.CartProductModel
-import ru.antares.cheese_android.domain.models.CategoryModel
-import ru.antares.cheese_android.domain.models.ProductModel
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
 
 /**
@@ -110,29 +104,29 @@ class CartViewModel(
         _navigationEvents.send(event)
     }
 
-    fun onError(error: UIError) {
+    fun onError(error: AppError) {
         when (error) {
-            is CartUIError.ClearError -> {
+            is CartAppError.ClearError -> {
                 /* TODO() ... */
             }
 
-            is CartUIError.DecrementProductError -> {
+            is CartAppError.DecrementProductError -> {
                 /* TODO() ... */
             }
 
-            is CartUIError.DeleteProductError -> {
+            is CartAppError.DeleteProductError -> {
                 /* TODO() ... */
             }
 
-            is CartUIError.IncrementProductError -> {
+            is CartAppError.IncrementProductError -> {
                 /* TODO() ... */
             }
 
-            is CartUIError.LoadCartError -> {
+            is CartAppError.LoadCartError -> {
                 /* TODO() ... */
             }
 
-            is CartUIError.UnauthorizedError -> {
+            is CartAppError.UnauthorizedError -> {
                 /* TODO() ... */
             }
         }

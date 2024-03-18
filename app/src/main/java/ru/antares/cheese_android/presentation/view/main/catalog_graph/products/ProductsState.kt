@@ -2,7 +2,7 @@ package ru.antares.cheese_android.presentation.view.main.catalog_graph.products
 
 import androidx.compose.runtime.Immutable
 import arrow.optics.optics
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.presentation.models.ProductUIModel
 
 /**
@@ -17,7 +17,7 @@ import ru.antares.cheese_android.presentation.models.ProductUIModel
 data class ProductsState(
     val loading: Boolean = true,
     val products: List<ProductUIModel> = emptyList(),
-    val error: UIError? = null,
+    val error: AppError? = null,
     val loadingNextPage: Boolean = true,
     val endReached: Boolean = false,
     val currentPage: Int = 0,

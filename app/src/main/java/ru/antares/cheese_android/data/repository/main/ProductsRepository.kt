@@ -6,9 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import ru.antares.cheese_android.data.local.room.dao.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
-import ru.antares.cheese_android.data.local.room.dao.products.ProductsDao
-import ru.antares.cheese_android.data.local.room.dao.products.ProductsLocalStorage
-import ru.antares.cheese_android.data.remote.dto.toEntity
 import ru.antares.cheese_android.data.remote.dto.toProductModel
 import ru.antares.cheese_android.data.remote.dto.toProductModels
 import ru.antares.cheese_android.data.remote.models.Pagination
@@ -18,7 +15,7 @@ import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPaginat
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.models.ProductModel
 import ru.antares.cheese_android.domain.repository.IProductsRepository
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailUIError
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailAppError
 
 /**
  * @author Pavel Rybakov
@@ -105,7 +102,7 @@ class ProductsRepository(
             return@onSuccess
         }.onFailure { error ->
             Log.d(GET_PRODUCT_ERROR_TAG, error.toString())
-            emit(ResourceState.Error(ProductDetailUIError.LoadingError()))
+            emit(ResourceState.Error(ProductDetailAppError.LoadingError()))
             return@onFailure
         }
 

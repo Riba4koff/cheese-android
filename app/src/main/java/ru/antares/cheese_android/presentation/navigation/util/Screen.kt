@@ -82,6 +82,11 @@ sealed class Screen(
         override val route: String = "CART_NAVIGATION_GRAPH"
 
         data object Cart : Screen(route = "CartScreen")
+        /**
+         * ROUTE: CheckoutOrderScreen
+         * URL: CheckoutOrderScreen/total_cost
+         * */
+        data object CheckoutOrder: Screen(route = "CheckoutOrderScreen", "total_cost")
         // Screens ...
     }
 

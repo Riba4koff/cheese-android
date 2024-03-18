@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.remote.services.main.profile.request.UpdateProfileRequest
 import ru.antares.cheese_android.data.remote.services.main.profile.response.Attachment
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.repository.IProfileRepository
 import ru.antares.cheese_android.domain.usecases.personal_data.GetUserFromDSInfoUseCase
 import ru.antares.cheese_android.domain.validators.CredentialsTextFieldValidator
@@ -52,13 +52,13 @@ class PersonalDataViewModel(
         }
     }
 
-    fun onError(uiError: UIError) {
-        when (uiError as PersonalDataUIError) {
-            is PersonalDataUIError.UnknownError -> {
+    fun onError(appError: AppError) {
+        when (appError as PersonalDataAppError) {
+            is PersonalDataAppError.UnknownError -> {
                 /* TODO: some handle of error */
             }
 
-            is PersonalDataUIError.UpdateProfile -> {
+            is PersonalDataAppError.UpdateProfile -> {
                 /* TODO: handling profile update error */
                 initialize()
             }

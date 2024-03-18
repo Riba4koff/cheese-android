@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalAnimationApi::class)
+@file:OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 
 package ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data
 
@@ -25,9 +25,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -54,7 +63,7 @@ import kotlinx.coroutines.launch
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.PhoneVisualTransformation
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.validators.ValidationTextFieldResult
 import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
@@ -92,7 +101,7 @@ fun PersonalDataPreview() {
 fun PersonalDataScreen(
     state: PersonalDataState,
     onEvent: (PersonalDataEvent) -> Unit,
-    onError: (UIError) -> Unit,
+    onError: (AppError) -> Unit,
     navController: NavController,
     navigationEvents: Flow<PersonalDataNavigationEvent>
 ) {
@@ -104,35 +113,34 @@ fun PersonalDataScreen(
         }
     }
 
-    val topBarBackButtonSize = 32.dp
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+        state = rememberTopAppBarState()
+    )
 
-    val error: MutableState<UIError?> = remember { mutableStateOf(null) }
-
-    CheeseTopBarWrapper(
-        topBarContent = {
-            IconButton(
-                modifier = Modifier
-                    .padding(start = CheeseTheme.paddings.smallest)
-                    .size(topBarBackButtonSize)
-                    .align(Alignment.CenterStart),
-                onClick = {
-                    navController.popBackStack()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                    contentDescription = null
-                )
-            }
-
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = stringResource(id = R.string.personal_data_title),
-                style = CheeseTheme.typography.common16Medium
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.personal_data_title),
+                        style = CheeseTheme.typography.common16Semibold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = null
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior
             )
         }
-    ) {
+    ) { paddingValues ->
         AnimatedContent(
+            modifier = Modifier.padding(paddingValues),
             targetState = state.uiState,
             label = "Personal data animated content",
             transitionSpec = {
@@ -199,11 +207,6 @@ private fun PersonalDataContent(
             .padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.medium)
     ) {
-
-        Spacer(modifier = Modifier.height(CheeseTheme.paddings.small))
-
-        /*Title(stringResource(id = R.string.personal_data_title))*/
-
         PersonalDataTextField(
             title = stringResource(R.string.surname),
             value = state.surname,
@@ -369,7 +372,7 @@ private fun Title(title: String) {
     Column {
         Text(
             text = title,
-            style = CheeseTheme.typography.common20Bold
+            style = CheeseTheme.typography.common24Bold
         )
     }
 }

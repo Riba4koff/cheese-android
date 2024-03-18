@@ -13,8 +13,8 @@ import ru.antares.cheese_android.data.remote.services.main.profile.response.Prof
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.repository.IProfileRepository
-import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataUIError
-import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileUIError
+import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataAppError
+import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileAppError
 
 /**
  * @author Pavel Rybakov
@@ -34,7 +34,7 @@ class ProfileRepository(
             val data = response.body()?.data
 
             if (data == null) {
-                emit(ResourceState.Error(error = ProfileUIError.LoadProfileError()))
+                emit(ResourceState.Error(error = ProfileAppError.LoadProfileError()))
                 return@flow
             } else {
                 emit(ResourceState.Success(data = data))
@@ -42,10 +42,10 @@ class ProfileRepository(
             }
         } else {
             if (response.code() == 401) {
-                emit(ResourceState.Error(ProfileUIError.UnauthorizedError()))
+                emit(ResourceState.Error(ProfileAppError.UnauthorizedError()))
                 return@flow
             } else {
-                emit(ResourceState.Error(error = ProfileUIError.LoadProfileError()))
+                emit(ResourceState.Error(error = ProfileAppError.LoadProfileError()))
                 return@flow
             }
         }
@@ -83,13 +83,13 @@ class ProfileRepository(
 
             localUpdateProfileResult.onFailure { errorMessage ->
                 Log.d("UPDATE_PROFILE_ERROR", errorMessage)
-                emit(ResourceState.Error(PersonalDataUIError.UpdateProfile()))
+                emit(ResourceState.Error(PersonalDataAppError.UpdateProfile()))
             }.onSuccess {
                 emit(ResourceState.Success(Unit))
             }
         }.onFailure { error ->
             Log.d("UPDATE_PROFILE_ERROR", error.message)
-            emit(ResourceState.Error(PersonalDataUIError.UnknownError()))
+            emit(ResourceState.Error(PersonalDataAppError.UnknownError()))
         }
     }
 

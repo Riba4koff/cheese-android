@@ -15,7 +15,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.TransformableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,21 +30,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -56,9 +47,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -75,18 +63,15 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.clickable
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.models.CartProductModel
 import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.domain.models.ProductModel
 import ru.antares.cheese_android.presentation.components.ErrorAlertDialog
-import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
-import ru.antares.cheese_android.presentation.components.shaker.ShakeConfig
 import ru.antares.cheese_android.presentation.components.swipe.SwipeToDeleteContainer
 import ru.antares.cheese_android.presentation.components.topbars.CheeseTopAppBar
-import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.presentation.util.parsePrice
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
@@ -144,9 +129,9 @@ fun CartScreen(
     state: CartState,
     onEvent: (CartEvent) -> Unit,
     onNavigationEvent: (CartNavigationEvent) -> Unit,
-    onError: (UIError) -> Unit
+    onError: (AppError) -> Unit
 ) {
-    val error: MutableState<UIError?> = remember { mutableStateOf(null) }
+    val error: MutableState<AppError?> = remember { mutableStateOf(null) }
 
     LaunchedEffect(state.error) {
         error.value = state.error
@@ -191,7 +176,7 @@ fun CartScreen(
 fun UnauthorizedContent() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(
-            text = "Авторизуйтесь, чтобы начать покупки",
+            text = stringResource(R.string.authorize_to_start_shopping),
             style = CheeseTheme.typography.common16Semibold,
             color = CheeseTheme.colors.gray
         )
@@ -218,7 +203,8 @@ private fun CartContent(
                 ) {
                     LazyColumn(
                         contentPadding = PaddingValues(
-                            horizontal = CheeseTheme.paddings.medium
+                            horizontal = CheeseTheme.paddings.medium,
+                            vertical = CheeseTheme.paddings.medium
                         ),
                         verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.medium)
                     ) {
@@ -309,7 +295,7 @@ private fun CartContent(
                                 .padding(horizontal = CheeseTheme.paddings.medium),
                             text = stringResource(R.string.go_checkout_order)
                         ) {
-                            onNavigationEvent(CartNavigationEvent.ToCheckoutOrder)
+                            onNavigationEvent(CartNavigationEvent.ToCheckoutOrder(state.totalCost))
                         }
                     }
 

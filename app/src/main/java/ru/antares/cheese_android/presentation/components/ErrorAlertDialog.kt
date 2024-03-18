@@ -16,13 +16,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileUIError
+import ru.antares.cheese_android.domain.errors.AppError
+import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileAppError
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Composable
 fun ErrorAlertDialog(
-    error: UIError,
+    error: AppError,
     confirmText: String = "OK",
     onDismissRequest: () -> Unit,
 ) {
@@ -81,7 +81,7 @@ fun ErrorAlertDialog(
 @Composable
 fun ErrorAlertDialogPreview() {
     CheeseTheme {
-        ErrorAlertDialog(error = ProfileUIError.LogoutError("")) {
+        ErrorAlertDialog(error = ProfileAppError.LogoutError("")) {
             
         }
     }

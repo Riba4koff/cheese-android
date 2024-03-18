@@ -17,5 +17,5 @@ data class CatalogState(
     val amountOfPages: Int = 0,
     val amountOfAll: Int = 0,
     val isLoadingNextPage: Boolean = true,
-    val error: CatalogUIError? = null
+    val error: CatalogAppError? = null
 ) { companion object }

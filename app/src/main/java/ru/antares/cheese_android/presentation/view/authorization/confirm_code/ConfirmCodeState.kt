@@ -8,6 +8,6 @@ data class ConfirmCodeState(
     val codeIsWrong: Boolean = false,
     val code: String = "",
     val timer: Int = 5,
-    val error: ConfirmCodeUIError? = null,
+    val error: ConfirmCodeAppError? = null,
     val canMakeCallAgain: Boolean = false
 )

@@ -1,21 +1,21 @@
 package ru.antares.cheese_android.presentation.view.authorization.confirm_code
 
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 
-sealed interface ConfirmCodeUIError : UIError {
+sealed interface ConfirmCodeAppError : AppError {
     data class WrongCodeError(
         override val message: String = "Неверный код подтверждения"
-    ) : ConfirmCodeUIError
+    ) : ConfirmCodeAppError
 
     data class ServerError(
         override val message: String = "Что-то с сервером...\nПопробуйте позже"
-    ) : ConfirmCodeUIError
+    ) : ConfirmCodeAppError
 
     data class UnknownError(
         override val message: String = "Неизвестная ошибка"
-    ): ConfirmCodeUIError
+    ): ConfirmCodeAppError
 
     data class MakeCallAgainError(
         override val message: String = "Не удалось совершить звонок"
-    ): ConfirmCodeUIError
+    ): ConfirmCodeAppError
 }

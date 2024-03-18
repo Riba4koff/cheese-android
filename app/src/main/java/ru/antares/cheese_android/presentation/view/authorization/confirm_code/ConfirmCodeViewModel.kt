@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.remote.services.auth.dto.DeviceDTO
 import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 
 class ConfirmCodeViewModel(
@@ -65,21 +65,21 @@ class ConfirmCodeViewModel(
         events.send(event)
     }
 
-    fun onError(uiError: UIError) {
-        when (uiError as ConfirmCodeUIError) {
-            is ConfirmCodeUIError.WrongCodeError -> {
+    fun onError(appError: AppError) {
+        when (appError as ConfirmCodeAppError) {
+            is ConfirmCodeAppError.WrongCodeError -> {
                 /* TODO: ... */
             }
 
-            is ConfirmCodeUIError.ServerError -> {
+            is ConfirmCodeAppError.ServerError -> {
                 /* TODO: ... */
             }
 
-            is ConfirmCodeUIError.UnknownError -> {
+            is ConfirmCodeAppError.UnknownError -> {
                 /* TODO: ... */
             }
 
-            is ConfirmCodeUIError.MakeCallAgainError -> {
+            is ConfirmCodeAppError.MakeCallAgainError -> {
                 /* TODO: ... */
             }
         }
@@ -93,14 +93,14 @@ class ConfirmCodeViewModel(
                 when (successCall) {
                     true -> startTimer()
                     false -> _mutableStateFlow.update { state ->
-                        state.copy(error = ConfirmCodeUIError.MakeCallAgainError())
+                        state.copy(error = ConfirmCodeAppError.MakeCallAgainError())
                     }
                     else -> _mutableStateFlow.update { state ->
-                        state.copy(error = ConfirmCodeUIError.UnknownError())
+                        state.copy(error = ConfirmCodeAppError.UnknownError())
                     }
                 }
             }.onError { error ->
-                if (error is ConfirmCodeUIError) {
+                if (error is ConfirmCodeAppError) {
                     _mutableStateFlow.update { state ->
                         state.copy(error = error)
                     }
@@ -124,13 +124,13 @@ class ConfirmCodeViewModel(
             resourceState.onLoading { isLoading ->
                 setLoading(isLoading)
             }.onError { error ->
-                if (error is ConfirmCodeUIError) {
+                if (error is ConfirmCodeAppError) {
                     _mutableStateFlow.update { state ->
                         state.copy(error = error)
                     }
                 } else {
                     _mutableStateFlow.update { state ->
-                        state.copy(error = ConfirmCodeUIError.UnknownError())
+                        state.copy(error = ConfirmCodeAppError.UnknownError())
                     }
                 }
             }.onSuccess { _ ->

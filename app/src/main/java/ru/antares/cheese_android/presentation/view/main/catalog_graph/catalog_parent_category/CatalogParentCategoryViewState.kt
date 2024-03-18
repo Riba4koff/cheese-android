@@ -1,7 +1,7 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category
 
 import arrow.optics.optics
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.models.CategoryModel
 import javax.annotation.concurrent.Immutable
 
@@ -13,7 +13,7 @@ sealed interface CatalogParentCategoryViewState {
     ) : CatalogParentCategoryViewState
 
     data class Error(
-        val error: CatalogParentCategoryUIError,
+        val error: CatalogParentCategoryAppError,
         override val key: CatalogParentCategoryViewStateKey = CatalogParentCategoryViewStateKey.Error
     ) : CatalogParentCategoryViewState
 
@@ -38,5 +38,5 @@ data class CatalogParentCategoryState(
     val childCategories: List<CategoryModel> = emptyList(),
     val loadingNextPage: Boolean = false,
     val currentPage: Int = 0,
-    val error: UIError? = null,
+    val error: AppError? = null,
 ) { companion object }

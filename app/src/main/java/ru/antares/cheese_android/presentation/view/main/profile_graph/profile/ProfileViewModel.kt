@@ -21,7 +21,7 @@ import ru.antares.cheese_android.data.local.datastore.user.IUserDataStore
 import ru.antares.cheese_android.data.local.datastore.user.User
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
 import ru.antares.cheese_android.data.repository.main.ProfileRepository
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 
 
 class ProfileViewModel(
@@ -74,11 +74,11 @@ class ProfileViewModel(
         }
     }
 
-    fun onError(uiError: UIError) = viewModelScope.launch {
-        when (uiError as ProfileUIError) {
-            is ProfileUIError.LoadProfileError -> loadProfileV2()
-            is ProfileUIError.LogoutError -> logout()
-            is ProfileUIError.UnauthorizedError -> { tokenService.logout() }
+    fun onError(appError: AppError) = viewModelScope.launch {
+        when (appError as ProfileAppError) {
+            is ProfileAppError.LoadProfileError -> loadProfileV2()
+            is ProfileAppError.LogoutError -> logout()
+            is ProfileAppError.UnauthorizedError -> { tokenService.logout() }
         }
     }
 
@@ -164,7 +164,7 @@ class ProfileViewModel(
         }.onFailure { error ->
             Log.d("LOGOUT_TAG", error.message)
 
-            val uiError = ProfileUIError.LogoutError()
+            val uiError = ProfileAppError.LogoutError()
 
             _mutableStateFlow.update { state ->
                 state.copy {

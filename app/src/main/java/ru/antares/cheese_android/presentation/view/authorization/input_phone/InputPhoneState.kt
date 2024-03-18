@@ -6,6 +6,6 @@ import androidx.compose.runtime.Immutable
 data class InputPhoneState(
     val phone: String = "",
     val isLoading: Boolean = false,
-    val error: InputPhoneUIError? = null,
+    val error: InputPhoneAppError? = null,
     val phoneIsValid: Boolean = true
 )

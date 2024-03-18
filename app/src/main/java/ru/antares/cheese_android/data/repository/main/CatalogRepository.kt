@@ -14,8 +14,8 @@ import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPaginat
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogUIError
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryUIError
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogAppError
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryAppError
 
 /*
 * Получить категории
@@ -71,7 +71,7 @@ class CatalogRepository(
         if (pairsOfCategory == null) {
             emit(
                 ResourceState.Error(
-                    error = CatalogUIError.Loading()
+                    error = CatalogAppError.Loading()
                 )
             )
         } else {
@@ -106,7 +106,7 @@ class CatalogRepository(
             )
         }.onFailure { error ->
             Log.d("LOAD_CHILD_CATEGORIES_ERROR", error.message)
-            emit(ResourceState.Error(CatalogParentCategoryUIError.Loading()))
+            emit(ResourceState.Error(CatalogParentCategoryAppError.Loading()))
         }
 
         emit(ResourceState.Loading(isLoading = false))

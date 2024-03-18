@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.presentation.view.main.cart_graph.cart
 
-import ru.antares.cheese_android.domain.errors.UIError
+import ru.antares.cheese_android.domain.errors.AppError
 
 /**
  * CartUIError.kt
@@ -9,28 +9,28 @@ import ru.antares.cheese_android.domain.errors.UIError
  * Android studio
  */
 
-sealed interface CartUIError : UIError {
+sealed interface CartAppError : AppError {
     data class LoadCartError(
         override val message: String = "Ошибка при загрузке корзины"
-    ): CartUIError
+    ): CartAppError
 
     data class IncrementProductError(
         override val message: String = "Ошибка при добавлении товара в корзину"
-    ) : CartUIError
+    ) : CartAppError
 
     data class DecrementProductError(
         override val message: String = "Ошибка при удалении товара с корзины"
-    ): CartUIError
+    ): CartAppError
 
     data class DeleteProductError(
         override val message: String = "Ошибка при удалении товара с корзины"
-    ): CartUIError
+    ): CartAppError
 
     data class ClearError(
         override val message: String = "Ошибка при очистке корзины"
-    ): CartUIError
+    ): CartAppError
 
     data class UnauthorizedError(
         override val message: String = "Вы не авторизованы!"
-    ): CartUIError
+    ): CartAppError
 }

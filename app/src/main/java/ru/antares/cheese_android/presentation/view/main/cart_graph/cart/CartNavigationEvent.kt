@@ -7,6 +7,6 @@ package ru.antares.cheese_android.presentation.view.main.cart_graph.cart
  */
 
 sealed interface CartNavigationEvent {
-    data object ToCheckoutOrder: CartNavigationEvent
+    data class ToCheckoutOrder(val totalCost: Double): CartNavigationEvent
     data object NavigateToCatalog : CartNavigationEvent
 }
