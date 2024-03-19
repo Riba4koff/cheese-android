@@ -2,22 +2,16 @@
 
 package ru.antares.cheese_android.presentation.navigation.navhosts
 
+import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -26,10 +20,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
 import ru.antares.cheese_android.presentation.navigation.bottomBar.BottomBar
-import ru.antares.cheese_android.presentation.navigation.bottomBar.BottomBarDestination
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.main.MainViewModel
-import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Composable
 fun BottomBarNavHost(globalNavController: NavHostController) {
@@ -38,8 +30,8 @@ fun BottomBarNavHost(globalNavController: NavHostController) {
     val countInProductsInCart by mainViewModel.countProductsInCart.collectAsStateWithLifecycle()
 
     val navBackStackEntry by bottomBarNavController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
+    val currentDestination = navBackStackEntry?.destination
+    val currentRoute = currentDestination?.route
 
     Scaffold(
         bottomBar = {

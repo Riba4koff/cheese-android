@@ -23,7 +23,6 @@ import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.Pr
 class ProfileRepository(
     private val profileService: ProfileService,
     private val userDS: IUserDataStore,
-    private val tokenService: IAuthorizationDataStore
 ) : IProfileRepository {
     override fun get(): Flow<ResourceState<ProfileResponse>> = flow {
         emit(ResourceState.Loading(isLoading = true))
@@ -55,7 +54,6 @@ class ProfileRepository(
         emit(ResourceState.Loading(isLoading = true))
 
         val networkProfileUpdateResponse = safeNetworkCall {
-            Log.d("UPDATE_PROFILE_REQUEST", request.toString())
             profileService.update(request)
         }
 

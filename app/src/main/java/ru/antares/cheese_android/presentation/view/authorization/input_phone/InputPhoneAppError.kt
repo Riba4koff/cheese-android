@@ -1,5 +1,6 @@
 package ru.antares.cheese_android.presentation.view.authorization.input_phone
 
+import ru.antares.cheese_android.domain.Error
 import ru.antares.cheese_android.domain.errors.AppError
 
 sealed interface InputPhoneAppError : AppError {

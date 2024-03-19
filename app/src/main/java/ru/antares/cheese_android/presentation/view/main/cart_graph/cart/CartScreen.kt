@@ -164,6 +164,14 @@ fun CartScreen(
         }
     }
 
+    AnimatedVisibility(
+        visible = state.cartLoading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        LoadingScreen(modifier = Modifier.clickable { /* DO NOTHING */ })
+    }
+
     error.value?.let {
         ErrorAlertDialog(error = it) {
             error.value = null
@@ -298,14 +306,6 @@ private fun CartContent(
                             onNavigationEvent(CartNavigationEvent.ToCheckoutOrder(state.totalCost))
                         }
                     }
-
-                    AnimatedVisibility(
-                        visible = state.cartLoading,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        LoadingScreen(modifier = Modifier.clickable { /* DO NOTHING */ })
-                    }
                 }
             } else {
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -333,11 +333,6 @@ private fun CartContent(
                             color = CheeseTheme.colors.gray,
                             textAlign = TextAlign.Center
                         )
-                        /*CheeseButton(
-                            shape = CheeseTheme.shapes.small,
-                            text = stringResource(R.string.go_to_shopping),
-                            onClick = navigateToCatalog
-                        )*/
                         Spacer(modifier = Modifier.height(64.dp))
                     }
                 }
