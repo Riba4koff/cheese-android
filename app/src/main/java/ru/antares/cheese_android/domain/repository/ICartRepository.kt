@@ -2,7 +2,6 @@ package ru.antares.cheese_android.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.antares.cheese_android.data.remote.services.cart.BasketResponse
-import ru.antares.cheese_android.data.remote.services.cart.UpdateCartRequest
 import ru.antares.cheese_android.domain.ResourceState
 
 /**

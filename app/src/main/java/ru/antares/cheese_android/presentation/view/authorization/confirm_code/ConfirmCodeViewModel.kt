@@ -35,7 +35,9 @@ class ConfirmCodeViewModel(
 
     init {
         viewModelScope.launch {
-            launch { startTimer() }
+            launch {
+                startTimer()
+            }
             launch {
                 events.receiveAsFlow().collectLatest { event ->
                     when (event) {
@@ -95,6 +97,7 @@ class ConfirmCodeViewModel(
                     false -> _mutableStateFlow.update { state ->
                         state.copy(error = ConfirmCodeAppError.MakeCallAgainError())
                     }
+
                     else -> _mutableStateFlow.update { state ->
                         state.copy(error = ConfirmCodeAppError.UnknownError())
                     }
