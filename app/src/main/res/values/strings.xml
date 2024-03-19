@@ -50,4 +50,7 @@
     <string name="comment_not_necessary">Комментарий (Не обязательно)</string>
     <string name="comment">Комментарий</string>
     <string name="checkout_order">Оформить заказ</string>
+    <string name="products_in_order">Товары в заказе</string>
+    <string name="show_more">Показать еще</string>
+    <string name="hide">Скрыть</string>
 </resources>

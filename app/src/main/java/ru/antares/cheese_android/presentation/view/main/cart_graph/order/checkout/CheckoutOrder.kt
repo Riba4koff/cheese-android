@@ -3,6 +3,7 @@
 package ru.antares.cheese_android.presentation.view.main.cart_graph.order.checkout
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -12,12 +13,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.Edit
@@ -26,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -38,18 +44,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.errors.AppError
+import ru.antares.cheese_android.domain.models.CartProductModel
+import ru.antares.cheese_android.domain.models.CategoryModel
+import ru.antares.cheese_android.domain.models.ProductModel
 import ru.antares.cheese_android.domain.paymentType.PaymentType
 import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
 import ru.antares.cheese_android.presentation.components.shaker.ShakeConfig
@@ -58,6 +72,7 @@ import ru.antares.cheese_android.presentation.components.shaker.rememberShakeCon
 import ru.antares.cheese_android.presentation.components.shaker.shake
 import ru.antares.cheese_android.presentation.components.textfields.CheeseTextField
 import ru.antares.cheese_android.presentation.models.AddressModel
+import ru.antares.cheese_android.presentation.models.ProductUIModel
 import ru.antares.cheese_android.presentation.util.parsePrice
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.vibrate
 import ru.antares.cheese_android.ui.theme.CheeseTheme
@@ -73,7 +88,9 @@ import ru.antares.cheese_android.ui.theme.CheeseTheme
 fun CheckoutOrderScreenPreview() {
     CheeseTheme {
         CheckoutOrderScreen(
-            state = CheckoutOrderState(),
+            state = CheckoutOrderState(
+
+            ),
             onEvent = {
 
             },
@@ -97,6 +114,36 @@ fun PaymentTypePreview() {
             onClick = {
 
             }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun CheckoutOrderPreview() {
+    CheeseTheme {
+        OrderProductView(
+            cartProductModel = CartProductModel(
+                amount = 1,
+                price = 0.0,
+                priceWithDiscount = null,
+                product = ProductModel(
+                    id = "1",
+                    name = "Test",
+                    description = "Test",
+                    price = 0.0,
+                    category = CategoryModel(
+                        id = "1",
+                        name = "Test"
+                    ),
+                    unit = 0,
+                    unitName = "Test",
+                    categoryId = "1",
+                    categories = emptyList(),
+                    recommend = false,
+                    outOfStock = false
+                )
+            )
         )
     }
 }
@@ -135,7 +182,7 @@ fun CheckoutOrderScreen(
                             contentDescription = null
                         )
                     }
-                }, scrollBehavior = scrollBehavior
+                }, scrollBehavior = scrollBehavior,
             )
         },
     ) { paddingValues ->
@@ -167,9 +214,14 @@ private fun CreateOrderScreenContent(
     val context = LocalContext.current
 
     Column(
-        modifier = Modifier.padding(horizontal = CheeseTheme.paddings.medium),
+        modifier = Modifier
+            .padding(
+                horizontal = CheeseTheme.paddings.medium,
+            )
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.medium)
     ) {
+        Spacer(modifier = Modifier)
         Address(
             shakeController = addressShakeController,
             address = state.address,
@@ -182,6 +234,9 @@ private fun CreateOrderScreenContent(
             onReceiverChange = { receiver ->
                 onEvent(CheckoutOrderEvent.OnReceiverChange(receiver))
             }
+        )
+        CheckoutOrderProducts(
+            products = state.products
         )
         PaymentMethod(
             shakeController = paymentShakeController,
@@ -196,6 +251,7 @@ private fun CreateOrderScreenContent(
                 onEvent(CheckoutOrderEvent.OnCommentChange(comment))
             }
         )
+        Spacer(modifier = Modifier.height(128.dp))
     }
     Box(modifier = Modifier.fillMaxSize()) {
         CreateOrderButton(
@@ -485,6 +541,121 @@ private fun CreateOrderButton(
             text = stringResource(R.string.checkout_order)
         ) {
             onClick()
+        }
+    }
+}
+
+@Composable
+private fun CheckoutOrderProducts(
+    products: List<CartProductModel>
+) {
+    var listIsOpen by remember {
+        mutableStateOf(false)
+    }
+    val sizeOfList = if (listIsOpen) products.size else 2
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small)
+    ) {
+        Text(
+            text = stringResource(R.string.products_in_order),
+            style = CheeseTheme.typography.common16Semibold
+        )
+        products.forEachIndexed { index, product ->
+            if (index <= sizeOfList - 1) {
+                OrderProductView(
+                    cartProductModel = product
+                )
+            }
+        }
+        if (products.size > 2) {
+            TextButton(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .height(32.dp),
+                onClick = {
+                    listIsOpen = !listIsOpen
+                }
+            ) {
+                if (!listIsOpen) Text(
+                    text = stringResource(R.string.show_more),
+                    color = CheeseTheme.colors.blue
+                )
+                else Text(
+                    text = stringResource(R.string.hide),
+                    color = CheeseTheme.colors.blue
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun OrderProductView(
+    modifier: Modifier = Modifier,
+    cartProductModel: CartProductModel,
+    backgroundColor: Color = CheeseTheme.colors.white,
+    shape: RoundedCornerShape = CheeseTheme.shapes.medium
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(backgroundColor, shape)
+            .border(1.dp, CheeseTheme.colors.lightGray, shape)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            AsyncImage(
+                modifier = Modifier
+                    .width(140.dp)
+                    .height(90.dp)
+                    .padding(CheeseTheme.paddings.medium)
+                    .clip(CheeseTheme.shapes.small),
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(cartProductModel.product.imageUrl)
+                    .crossfade(true)
+                    .placeholder(R.drawable.product_place_holder)
+                    .build(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = CheeseTheme.paddings.medium),
+                    verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.smallest)
+                ) {
+                    Text(
+                        text = cartProductModel.product.name,
+                        style = CheeseTheme.typography.common16Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = cartProductModel.product.name,
+                        style = CheeseTheme.typography.common14Regular,
+                        color = CheeseTheme.colors.gray
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .padding(end = CheeseTheme.paddings.medium),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = "${parsePrice(cartProductModel.product.price * cartProductModel.amount)}₽",
+                        style = CheeseTheme.typography.common16Medium
+                    )
+                    Text(
+                        text = "${cartProductModel.product.unit * cartProductModel.amount}" + " ${cartProductModel.product.unitName}",
+                        style = CheeseTheme.typography.common14Regular,
+                        color = CheeseTheme.colors.gray
+                    )
+                }
+            }
         }
     }
 }

@@ -4,13 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.paymentType.PaymentType
+import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
 import ru.antares.cheese_android.presentation.models.AddressModel
 
 /**
@@ -20,11 +24,22 @@ import ru.antares.cheese_android.presentation.models.AddressModel
  */
 
 class CheckoutOrderViewModel(
-
+    private val getCartFlowUseCase: GetCartFlowUseCase
 ) : ViewModel() {
     private val _mutableState: MutableStateFlow<CheckoutOrderState> =
         MutableStateFlow(CheckoutOrderState())
-    val state: StateFlow<CheckoutOrderState> = _mutableState.asStateFlow()
+    val state: StateFlow<CheckoutOrderState> = combine(
+        _mutableState,
+        getCartFlowUseCase.productsValue
+    ) { state, products ->
+        state.copy(
+            products = products
+        )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        CheckoutOrderState()
+    )
 
     private val _navigationEvents: Channel<CheckoutOrderNavigationEvent> = Channel()
     val navigationEvents = _navigationEvents.receiveAsFlow()
