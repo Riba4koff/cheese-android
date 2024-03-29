@@ -46,6 +46,7 @@
     <string name="add">Добавить</string>
     <string name="delivery_address">Адрес доставки</string>
     <string name="receiver">Получатель</string>
+    <string name="payment_method">Способ оплаты</string>
     <string name="input_credentials_of_receiver">Введите ФИО получателя</string>
     <string name="comment_not_necessary">Комментарий (Не обязательно)</string>
     <string name="comment">Комментарий</string>
@@ -53,4 +54,5 @@
     <string name="products_in_order">Товары в заказе</string>
     <string name="show_more">Показать еще</string>
     <string name="hide">Скрыть</string>
+    <string name="pay">Оплатить</string>
 </resources>

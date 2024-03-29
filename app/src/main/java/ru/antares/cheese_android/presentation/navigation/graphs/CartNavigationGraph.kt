@@ -14,6 +14,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.CartNavigationEvent
@@ -23,6 +24,9 @@ import ru.antares.cheese_android.presentation.view.main.cart_graph.order.checkou
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.checkout.CheckoutOrderNavigationEvent
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.checkout.CheckoutOrderScreen
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.checkout.CheckoutOrderViewModel
+import ru.antares.cheese_android.presentation.view.main.cart_graph.order.confirm.ConfirmOrderNavigationEvent
+import ru.antares.cheese_android.presentation.view.main.cart_graph.order.confirm.ConfirmOrderScreen
+import ru.antares.cheese_android.presentation.view.main.cart_graph.order.confirm.ConfirmOrderViewModel
 import ru.antares.cheese_android.sharedViewModel
 
 fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
@@ -94,7 +98,14 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
                     }
 
                     is CheckoutOrderNavigationEvent.NavigateToConfirmOrder -> {
-                        cartNavController.navigate(Screen.CartNavigationGraph.CheckoutOrder.url)
+                        cartNavController.navigate(
+                            Screen.CartNavigationGraph.ConfirmOrder.route +
+                                    "/${navigationEvent.addressID}" +
+                                    "/${navigationEvent.receiver.ifEmpty { "Не указан" }}" +
+                                    "/${navigationEvent.paymentMethod.name}" +
+                                    "/${navigationEvent.comment?.ifEmpty { "Не указан" }}" +
+                                    "/${navigationEvent.totalCost}"
+                        )
                     }
 
                     CheckoutOrderNavigationEvent.NavigateToSelectAddress -> {
@@ -109,6 +120,54 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
                 onNavigationEvent = viewModel::onNavigationEvent,
                 onError = viewModel::onError,
                 totalCost = totalCost.toDouble()
+            )
+        }
+
+        composable(
+            route = Screen.CartNavigationGraph.ConfirmOrder.url,
+            enterTransition = {
+                fadeIn(tween(250))
+            },
+            exitTransition = {
+                fadeOut(tween(250))
+            },
+            arguments = listOf(
+                navArgument("address_id") { type = NavType.StringType },
+                navArgument("receiver") { type = NavType.StringType },
+                navArgument("payment_type") { type = NavType.StringType },
+                navArgument("comment") { type = NavType.StringType },
+                navArgument("total_cost") { type = NavType.FloatType },
+            )
+        ) { navBackStackEntry ->
+            val viewModel: ConfirmOrderViewModel = koinViewModel(
+                parameters = {
+                    parametersOf(
+                        navBackStackEntry.arguments?.getString("address_id"),
+                        navBackStackEntry.arguments?.getString("receiver") ?: "null",
+                        navBackStackEntry.arguments?.getString("payment_type"),
+                        navBackStackEntry.arguments?.getString("comment") ?: "null",
+                        navBackStackEntry.arguments?.getFloat("total_cost")
+                    )
+                }
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
+                when (navigationEvent) {
+                    ConfirmOrderNavigationEvent.NavigateBack -> {
+                        cartNavController.popBackStack()
+                    }
+
+                    ConfirmOrderNavigationEvent.NavigateToPay -> {
+                        /* TODO: ... */
+                    }
+                }
+            }
+
+            ConfirmOrderScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                onNavigationEvent = viewModel::onNavigationEvent
             )
         }
     }

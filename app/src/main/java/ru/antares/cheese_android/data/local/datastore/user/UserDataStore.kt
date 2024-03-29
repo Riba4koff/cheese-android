@@ -20,7 +20,9 @@ data class User(
     val birthday: String,
     val verifiedEmail: Boolean,
     val verifiedPhone: Boolean
-)
+) {
+    fun credentials() = "$surname $name $patronymic"
+}
 
 interface IUserDataStore {
     val user: Flow<User>

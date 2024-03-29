@@ -38,3 +38,11 @@ sealed class PaymentType(
         icon = R.drawable.ic_credit_card
     )
 }
+
+fun getPaymentType(name: PaymentType.Type): PaymentType {
+    return when (name) {
+        PaymentType.Type.CASH -> PaymentType.Cash()
+        PaymentType.Type.CARD_TO_COURIER -> PaymentType.CardToCourier()
+        PaymentType.Type.ONLINE -> PaymentType.Online()
+    }
+}

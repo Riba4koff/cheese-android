@@ -3,7 +3,6 @@
 package ru.antares.cheese_android.presentation.view.main.cart_graph.order.checkout
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -72,7 +71,6 @@ import ru.antares.cheese_android.presentation.components.shaker.rememberShakeCon
 import ru.antares.cheese_android.presentation.components.shaker.shake
 import ru.antares.cheese_android.presentation.components.textfields.CheeseTextField
 import ru.antares.cheese_android.presentation.models.AddressModel
-import ru.antares.cheese_android.presentation.models.ProductUIModel
 import ru.antares.cheese_android.presentation.util.parsePrice
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.vibrate
 import ru.antares.cheese_android.ui.theme.CheeseTheme
@@ -89,7 +87,29 @@ fun CheckoutOrderScreenPreview() {
     CheeseTheme {
         CheckoutOrderScreen(
             state = CheckoutOrderState(
-
+                products = listOf(
+                    CartProductModel(
+                        amount = 1,
+                        price = 12500.0,
+                        priceWithDiscount = null,
+                        product = ProductModel(
+                            id = "1",
+                            name = "Мягкий сырМягкий сыр",
+                            description = "Test",
+                            price = 12500.0,
+                            category = CategoryModel(
+                                id = "1",
+                                name = "МягкиеМягкиеМягкиеМягкие"
+                            ),
+                            unit = 100,
+                            unitName = "гр",
+                            categoryId = "1",
+                            categories = emptyList(),
+                            recommend = false,
+                            outOfStock = false
+                        )
+                    )
+                )
             ),
             onEvent = {
 
@@ -125,13 +145,13 @@ fun CheckoutOrderPreview() {
         OrderProductView(
             cartProductModel = CartProductModel(
                 amount = 1,
-                price = 0.0,
+                price = 15000.0,
                 priceWithDiscount = null,
                 product = ProductModel(
                     id = "1",
                     name = "Test",
                     description = "Test",
-                    price = 0.0,
+                    price = 15000.0,
                     category = CategoryModel(
                         id = "1",
                         name = "Test"
@@ -235,7 +255,7 @@ private fun CreateOrderScreenContent(
                 onEvent(CheckoutOrderEvent.OnReceiverChange(receiver))
             }
         )
-        CheckoutOrderProducts(
+        OrderProducts(
             products = state.products
         )
         PaymentMethod(
@@ -260,7 +280,7 @@ private fun CreateOrderScreenContent(
                 .padding(CheeseTheme.paddings.medium),
             totalCost = totalCost,
             onClick = {
-                if (state.address == null) {
+                if (state.address != null) {
                     scope.launch {
                         vibrate(context)
                         addressShakeController.shake(shakeConfig)
@@ -273,10 +293,11 @@ private fun CreateOrderScreenContent(
                 } else {
                     onNavigationEvent(
                         CheckoutOrderNavigationEvent.NavigateToConfirmOrder(
-                            address = state.address,
+                            addressID = "0",
                             receiver = state.receiver,
                             paymentMethod = state.paymentMethod,
-                            comment = state.comment
+                            comment = state.comment,
+                            totalCost = totalCost
                         )
                     )
                 }
@@ -394,7 +415,7 @@ private fun PaymentMethod(
         verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small)
     ) {
         Text(
-            text = stringResource(R.string.receiver),
+            text = stringResource(R.string.payment_method),
             style = CheeseTheme.typography.common16Semibold
         )
         PaymentMethodItem(
@@ -546,45 +567,47 @@ private fun CreateOrderButton(
 }
 
 @Composable
-private fun CheckoutOrderProducts(
-    products: List<CartProductModel>
+fun OrderProducts(
+    products: List<CartProductModel>?
 ) {
-    var listIsOpen by remember {
-        mutableStateOf(false)
-    }
-    val sizeOfList = if (listIsOpen) products.size else 2
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small)
-    ) {
-        Text(
-            text = stringResource(R.string.products_in_order),
-            style = CheeseTheme.typography.common16Semibold
-        )
-        products.forEachIndexed { index, product ->
-            if (index <= sizeOfList - 1) {
-                OrderProductView(
-                    cartProductModel = product
-                )
-            }
+    products?.let {
+        var listIsOpen by remember {
+            mutableStateOf(false)
         }
-        if (products.size > 2) {
-            TextButton(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .height(32.dp),
-                onClick = {
-                    listIsOpen = !listIsOpen
+        val sizeOfList = if (listIsOpen) products.size else 2
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small)
+        ) {
+            Text(
+                text = stringResource(R.string.products_in_order),
+                style = CheeseTheme.typography.common16Semibold
+            )
+            products.forEachIndexed { index, product ->
+                if (index <= sizeOfList - 1) {
+                    OrderProductView(
+                        cartProductModel = product
+                    )
                 }
-            ) {
-                if (!listIsOpen) Text(
-                    text = stringResource(R.string.show_more),
-                    color = CheeseTheme.colors.blue
-                )
-                else Text(
-                    text = stringResource(R.string.hide),
-                    color = CheeseTheme.colors.blue
-                )
+            }
+            if (products.size > 2) {
+                TextButton(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .height(32.dp),
+                    onClick = {
+                        listIsOpen = !listIsOpen
+                    }
+                ) {
+                    if (!listIsOpen) Text(
+                        text = stringResource(R.string.show_more),
+                        color = CheeseTheme.colors.blue
+                    )
+                    else Text(
+                        text = stringResource(R.string.hide),
+                        color = CheeseTheme.colors.blue
+                    )
+                }
             }
         }
     }
@@ -625,6 +648,7 @@ fun OrderProductView(
             ) {
                 Column(
                     modifier = Modifier
+                        .weight(1f)
                         .padding(vertical = CheeseTheme.paddings.medium),
                     verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.smallest)
                 ) {
@@ -635,9 +659,11 @@ fun OrderProductView(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = cartProductModel.product.name,
+                        text = cartProductModel.product.category.name,
                         style = CheeseTheme.typography.common14Regular,
-                        color = CheeseTheme.colors.gray
+                        color = CheeseTheme.colors.gray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 Column(

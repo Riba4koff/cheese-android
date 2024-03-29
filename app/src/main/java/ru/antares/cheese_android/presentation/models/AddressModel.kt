@@ -17,8 +17,8 @@ data class AddressModel(
 ) {
     fun get() = buildString {
         append("$city, $street, $house")
-        apartment?.let { append("/$apartment") }
-        building?.let { append(", $building") }
+        building?.let { append("/$building") }
+        apartment?.let { append(", $apartment") }
         entrance?.let { append(", $entrance") }
         floor?.let { append(", $floor") }
     }

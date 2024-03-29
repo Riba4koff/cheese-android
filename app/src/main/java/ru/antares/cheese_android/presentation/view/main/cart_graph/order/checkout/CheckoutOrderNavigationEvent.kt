@@ -11,10 +11,11 @@ import ru.antares.cheese_android.presentation.models.AddressModel
 
 sealed interface CheckoutOrderNavigationEvent {
     data class NavigateToConfirmOrder(
-        val address: AddressModel,
+        val addressID: String,
         val receiver: String,
         val paymentMethod: PaymentType,
-        val comment: String? = null
+        val totalCost: Double,
+        val comment: String? = null,
     ) : CheckoutOrderNavigationEvent
 
     data object NavigateBack: CheckoutOrderNavigationEvent

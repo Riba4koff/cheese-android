@@ -13,15 +13,23 @@ sealed class Screen(
         parameters.forEach { parameter -> append("/{$parameter}") }
     }
 
+    /**
+     * ROUTE: SplashScreen
+     * URL: SplashScreen
+     * */
     data object SplashScreen : Screen(route = "SplashScreen")
 
     object AuthNavigationGraph : NavigationGraph {
         override val route: String = "AUTH_NAVIGATION_GRAPH"
 
+        /**
+         *  ROUTE: SignInScreen
+         *  URL: SignInScreen
+         * */
         data object InputPhone : Screen(route = "SignInScreen")
 
         /**
-         *  route: ConfirmCodeScreen/{phone}
+         *  ROUTE: ConfirmCodeScreen/{phone}
          * */
         data object ConfirmCode : Screen(route = "ConfirmCodeScreen", "phone")
     }
@@ -29,6 +37,10 @@ sealed class Screen(
     object HomeNavigationGraph : NavigationGraph {
         override val route: String = "HOME_NAVIGATION_GRAPH"
 
+        /**
+         * ROUTE: HomeScreen
+         * URL: HomeScreen
+         * */
         data object Home : Screen(route = "HomeScreen")
         // Screens ...
     }
@@ -49,7 +61,8 @@ sealed class Screen(
          * @param parentID parent category id
          * @param name name of category
          * */
-        data object CatalogParentCategory: Screen(route = "CatalogParentCategoryScreen", "parentID", "name")
+        data object CatalogParentCategory :
+            Screen(route = "CatalogParentCategoryScreen", "parentID", "name")
 
         /**
          * ROUTE: ProductsScreen
@@ -59,7 +72,7 @@ sealed class Screen(
          * @param name name of category
          *
          * */
-        data object Products: Screen(route = "ProductsScreen", "id", "name")
+        data object Products : Screen(route = "ProductsScreen", "id", "name")
 
         /**
          * ROUTE: ProductDetailScreen
@@ -67,13 +80,17 @@ sealed class Screen(
          *
          * @param id product id
          * */
-        data object ProductDetail: Screen("route = ProductDetailScreen", "id")
+        data object ProductDetail : Screen("route = ProductDetailScreen", "id")
         // Screens ...
     }
 
     object CommunityNavigationGraph : NavigationGraph {
         override val route: String = "COMMUNITY_NAVIGATION_GRAPH"
 
+        /**
+         * ROUTE: CommunityScreen
+         * URL: CommunityScreen
+         * */
         data object Community : Screen(route = "CommunityScreen")
         // Screens ...
     }
@@ -81,12 +98,30 @@ sealed class Screen(
     object CartNavigationGraph : NavigationGraph {
         override val route: String = "CART_NAVIGATION_GRAPH"
 
+        /**
+         * ROUTE: CartScreen
+         * URL: CartScreen
+         * */
         data object Cart : Screen(route = "CartScreen")
+
         /**
          * ROUTE: CheckoutOrderScreen
          * URL: CheckoutOrderScreen/total_cost
          * */
-        data object CheckoutOrder: Screen(route = "CheckoutOrderScreen", "total_cost")
+        data object CheckoutOrder : Screen(route = "CheckoutOrderScreen", "total_cost")
+
+        /**
+         * Route: ConfirmOrderScreen
+         * URL: ConfirmOrderScreen/address_id/receiver/payment_type/comment/total_cost
+         * */
+        data object ConfirmOrder : Screen(
+            route = "ConfirmOrderScreen",
+            "address_id",
+            "receiver",
+            "payment_type",
+            "comment",
+            "total_cost"
+        )
         // Screens ...
     }
 
@@ -94,11 +129,11 @@ sealed class Screen(
         override val route: String = "PROFILE_NAVIGATION_GRAPH"
 
         data object Profile : Screen(route = "ProfileScreen")
-        data object PersonalData: Screen(route = "PersonalDataScreen")
-        data object Addresses: Screen(route = "AddressesScreen")
-        data object Orders: Screen(route = "OrdersScreen")
-        data object AboutApp: Screen(route = "PaymentMethodsScreen")
-        data object Tickets: Screen(route = "TicketsScreen")
+        data object PersonalData : Screen(route = "PersonalDataScreen")
+        data object Addresses : Screen(route = "AddressesScreen")
+        data object Orders : Screen(route = "OrdersScreen")
+        data object AboutApp : Screen(route = "PaymentMethodsScreen")
+        data object Tickets : Screen(route = "TicketsScreen")
         // Screens ...
     }
 }
