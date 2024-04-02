@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
+import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 
 class InputPhoneViewModel(
@@ -41,11 +42,7 @@ class InputPhoneViewModel(
                                 phoneIsValid = true
                             )
                         }
-                        if (event.value.length == 10) makeCall()
-                    }
-
-                    InputPhoneEvent.CloseAlertDialog -> _mutableStateFlow.update { state ->
-                        state.copy(error = ErrorState())
+                        if (event.value.length == 10) makeCallV2()
                     }
 
                     InputPhoneEvent.SkipAuthorization -> {
@@ -61,33 +58,42 @@ class InputPhoneViewModel(
         events.send(event)
     }
 
-    private fun makeCall() = viewModelScope.launch(Dispatchers.IO) {
-        setLoading(true)
+    private fun makeCallV2() = viewModelScope.launch {
+        val correctPhone = "+7" + stateFlow.value.phone
 
         val phoneIsValid = isValidPhoneNumber(stateFlow.value.phone)
 
-        _mutableStateFlow.update { state -> state.copy(phoneIsValid = phoneIsValid) }
-
         if (phoneIsValid) {
-            val response = repository.makeCall(phone = "+7"+stateFlow.value.phone)
+            repository.makeCallV2(correctPhone).collectLatest { resourceState ->
+                resourceState.onLoading { isLoading ->
+                    setLoading(isLoading)
+                }.onError { error ->
+                    if (error is InputPhoneUIError) {
+                        _mutableStateFlow.update { state ->
+                            state.copy(error = error)
+                        }
+                    } else {
+                        _mutableStateFlow.update { state ->
+                            state.copy(error = InputPhoneUIError.UnknownError())
+                        }
+                    }
+                }.onSuccess { callIsSuccess ->
+                    when (callIsSuccess) {
+                        true -> _navigationEvents.send(
+                            InputPhoneNavigationEvent.NavigateToConfirmCode(stateFlow.value.phone)
+                        )
 
-            when (response) {
-                is NetworkResponse.Error -> _mutableStateFlow.update { state ->
-                    state.copy(error = ErrorState(isError = true, message = response.message))
-                }
+                        false -> _mutableStateFlow.update { state ->
+                            state.copy(error = InputPhoneUIError.TooMuchCallsError())
+                        }
 
-                is NetworkResponse.Success -> {
-                    val successMakingCall = response.data
-                    if (successMakingCall == true) {
-                        _navigationEvents.send(InputPhoneNavigationEvent.NavigateToConfirmCode(stateFlow.value.phone))
-                    } else _mutableStateFlow.update { state ->
-                        state.copy(error = ErrorState(isError = true, message = "Вы превысили допустимое\nколичество звонков!\n\nПопробуйте позже"))
+                        else -> _mutableStateFlow.update { state ->
+                            state.copy(error = InputPhoneUIError.UnknownError())
+                        }
                     }
                 }
             }
         }
-
-        setLoading(false)
     }
 
     private fun setLoading(value: Boolean) {
@@ -99,7 +105,25 @@ class InputPhoneViewModel(
         return !phoneNumber.matches(phoneNumberRegex)
     }
 
-    private fun mockServerResponse(): NetworkResponse<Boolean?> {
-        return NetworkResponse.Success(true)
+    fun onError(uiError: UIError) {
+        when (uiError as InputPhoneUIError) {
+            is InputPhoneUIError.ServerError -> {
+                _mutableStateFlow.update { state ->
+                    state.copy(error = null)
+                }
+            }
+
+            is InputPhoneUIError.TooMuchCallsError -> {
+                _mutableStateFlow.update { state ->
+                    state.copy(error = null)
+                }
+            }
+
+            is InputPhoneUIError.UnknownError -> {
+                _mutableStateFlow.update { state ->
+                    state.copy(error = null)
+                }
+            }
+        }
     }
 }

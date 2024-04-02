@@ -1,5 +1,11 @@
 package ru.antares.cheese_android.presentation.navigation.graphs
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -7,6 +13,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import org.koin.androidx.compose.getViewModel
+import ru.antares.cheese_android.domain.animations.Animations
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataScreen
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataViewModel
@@ -22,7 +30,11 @@ fun NavGraphBuilder.profileNavigationGraph(
         route = Screen.ProfileNavigationGraph.route,
         startDestination = Screen.ProfileNavigationGraph.Profile.route
     ) {
-        composable(route = Screen.ProfileNavigationGraph.Profile.route) { navBackStackEntry ->
+        composable(
+            enterTransition = Animations.AnimateToRight.enter,
+            exitTransition = Animations.AnimateToRight.exit,
+            route = Screen.ProfileNavigationGraph.Profile.route,
+        ) { navBackStackEntry ->
             val viewModel: ProfileViewModel =
                 navBackStackEntry.sharedViewModel(navController = profileNavController)
             val state by viewModel.state.collectAsStateWithLifecycle()
@@ -33,12 +45,16 @@ fun NavGraphBuilder.profileNavigationGraph(
                 onEvent = viewModel::onEvent,
                 onNavigationEvent = viewModel::onNavigationEvent,
                 globalNavController = globalNavController,
-                profileNavController = profileNavController
+                profileNavController = profileNavController,
+                onError = viewModel::onError
             )
         }
-        composable(route = Screen.ProfileNavigationGraph.PersonalData.route) { navBackStackEntry ->
-            val viewModel: PersonalDataViewModel =
-                navBackStackEntry.sharedViewModel(navController = profileNavController)
+        composable(
+            enterTransition = Animations.AnimateToLeft.enter,
+            exitTransition = Animations.AnimateToLeft.exit,
+            route = Screen.ProfileNavigationGraph.PersonalData.route
+        ) { _ ->
+            val viewModel: PersonalDataViewModel = getViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             PersonalDataScreen(

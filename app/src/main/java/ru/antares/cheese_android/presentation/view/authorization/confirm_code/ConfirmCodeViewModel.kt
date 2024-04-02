@@ -2,7 +2,6 @@ package ru.antares.cheese_android.presentation.view.authorization.confirm_code
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -14,15 +13,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.local.datastore.token.ITokenService
-import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.services.auth.dto.DeviceDTO
 import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
-import ru.antares.cheese_android.data.remote.services.auth.response.MakeCallResponse
-import ru.antares.cheese_android.data.repository.auth.models.DeviceModel
-import ru.antares.cheese_android.data.repository.auth.models.SessionModel
-import ru.antares.cheese_android.data.repository.auth.responses.SendCodeResponse
+import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
-import ru.antares.cheese_android.presentation.view.authorization.input_phone.ErrorState
 
 class ConfirmCodeViewModel(
     private val phone: String,
@@ -45,10 +39,6 @@ class ConfirmCodeViewModel(
             launch {
                 events.receiveAsFlow().collectLatest { event ->
                     when (event) {
-                        ConfirmCodeEvent.CloseAlertDialog -> _mutableStateFlow.update { state ->
-                            state.copy(error = ErrorState())
-                        }
-
                         is ConfirmCodeEvent.OnCodeChange -> {
                             _mutableStateFlow.update { state ->
                                 state.copy(
@@ -59,9 +49,7 @@ class ConfirmCodeViewModel(
                             if (event.value.length == 4) sendCode()
                         }
 
-                        ConfirmCodeEvent.MakeCallAgain -> {
-                            makeCallAgain()
-                        }
+                        ConfirmCodeEvent.MakeCallAgain -> makeCallAgain()
 
                         ConfirmCodeEvent.SkipAuthorization -> {
                             tokenService.skipAuthorization()
@@ -77,79 +65,78 @@ class ConfirmCodeViewModel(
         events.send(event)
     }
 
-    private fun makeCallAgain() = viewModelScope.launch(Dispatchers.IO) {
-        setLoading(true)
-
-        val response = mockMakeCallAgain()
-
-        delay(1000)
-
-        when (response) {
-            is NetworkResponse.Error -> {
-                _mutableStateFlow.update { state ->
-                    state.copy(
-                        error = ErrorState(
-                            isError = true,
-                            message = response.message
-                        )
-                    )
-                }
+    fun onError(uiError: UIError) {
+        when (uiError as ConfirmCodeUIError) {
+            is ConfirmCodeUIError.WrongCodeError -> {
+                /* TODO: ... */
             }
 
-            is NetworkResponse.Success -> {
-                val successCall = response.data.data
+            is ConfirmCodeUIError.ServerError -> {
+                /* TODO: ... */
+            }
 
-                if (successCall) {
-                    startTimer()
-                } else _mutableStateFlow.update { state ->
-                    state.copy(
-                        error = ErrorState(
-                            isError = true,
-                            message = "Не удалось совершить звонок."
-                        )
-                    )
+            is ConfirmCodeUIError.UnknownError -> {
+                /* TODO: ... */
+            }
+
+            is ConfirmCodeUIError.MakeCallAgainError -> {
+                /* TODO: ... */
+            }
+        }
+    }
+
+    private fun makeCallAgain() = viewModelScope.launch {
+        repository.makeCallV2(phone).collectLatest { resourceState ->
+            resourceState.onLoading { isLoading ->
+                setLoading(isLoading)
+            }.onSuccess { successCall ->
+                when (successCall) {
+                    true -> startTimer()
+                    false -> _mutableStateFlow.update { state ->
+                        state.copy(error = ConfirmCodeUIError.MakeCallAgainError())
+                    }
+                    else -> _mutableStateFlow.update { state ->
+                        state.copy(error = ConfirmCodeUIError.UnknownError())
+                    }
+                }
+            }.onError { error ->
+                if (error is ConfirmCodeUIError) {
+                    _mutableStateFlow.update { state ->
+                        state.copy(error = error)
+                    }
                 }
             }
         }
-
-        setLoading(false)
     }
 
-    private fun sendCode() = viewModelScope.launch(Dispatchers.IO) {
-        setLoading(true)
-
-        delay(1000L)
-
-        when (val response = repository.sendCode(
-            phone = phone,
-            request = SendCodeRequest(
+    private fun sendCode() = viewModelScope.launch {
+        repository.sendCodeV2(
+            phone, request = SendCodeRequest(
                 code = stateFlow.value.code.toInt(),
                 device = DeviceDTO(
-                    firmware = "",
-                    firebaseToken = "",
                     id = null,
+                    firebaseToken = "",
+                    firmware = "",
                     version = ""
                 )
             )
-        )) {
-            is NetworkResponse.Error -> {
-                _mutableStateFlow.update { state ->
-                    state.copy(
-                        error = ErrorState(
-                            isError = true,
-                            message = response.message
-                        ),
-                        codeIsWrong = true
-                    )
+        ).collectLatest { resourceState ->
+            resourceState.onLoading { isLoading ->
+                setLoading(isLoading)
+            }.onError { error ->
+                if (error is ConfirmCodeUIError) {
+                    _mutableStateFlow.update { state ->
+                        state.copy(error = error)
+                    }
+                } else {
+                    _mutableStateFlow.update { state ->
+                        state.copy(error = ConfirmCodeUIError.UnknownError())
+                    }
                 }
-            }
-
-            is NetworkResponse.Success -> {
+            }.onSuccess { _ ->
                 _navigationEvents.send(ConfirmCodeNavigationEvent.NavigateToHomeScreen)
             }
         }
-
-        setLoading(false)
     }
 
     private fun startTimer() = viewModelScope.launch {
@@ -164,33 +151,6 @@ class ConfirmCodeViewModel(
                 )
             }
         } while (stateFlow.value.timer >= 0)
-    }
-
-    private fun mockSendCodeCall(): NetworkResponse<SendCodeResponse> {
-        return if (stateFlow.value.code == "6428") NetworkResponse.Success(
-            data = SendCodeResponse(
-                token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBdWRpZW5jZSIsImlzcyI6IkNoZWVzZU1vYmlsZSIsIlNFU1NJT05fSUQiOiI4ZmUzN2Y1Zi04MjQzLTQxMjMtOGM1ZC04MjZiYmM0Njk5NmIifQ.4LmPnn3UI7cMPSZIFqS50zt1X0CluU1UwSFy6-BTnhs",
-                sessionModel = SessionModel(
-                    authorizationType = "",
-                    authorizedObject = "",
-                    device = DeviceModel(
-                        firebaseToken = "",
-                        firmware = "",
-                        id = null,
-                        version = ""
-                    ),
-                    deviceId = "",
-                    start = "",
-                    finish = "",
-                    id = "",
-                    opened = false
-                )
-            )
-        ) else NetworkResponse.Error("Неправильный код подтверждения")
-    }
-
-    private fun mockMakeCallAgain(): NetworkResponse<MakeCallResponse> {
-        return NetworkResponse.Success(data = MakeCallResponse(true))
     }
 
     private fun setLoading(value: Boolean) {

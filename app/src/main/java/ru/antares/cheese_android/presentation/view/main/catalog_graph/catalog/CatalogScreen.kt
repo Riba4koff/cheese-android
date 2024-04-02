@@ -2,7 +2,6 @@
 
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -12,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,8 +29,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -41,46 +39,19 @@ import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.errors.UIError
-import ru.antares.cheese_android.domain.models.uiModels.catalog.CategoryUIModel
+import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.screens.ErrorScreen
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTitleWrapper
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.ui.theme.CheeseTheme
-import java.util.UUID
-
-internal class CatalogScreenPreviewProvider : PreviewParameterProvider<CatalogViewState> {
-    override val values: Sequence<CatalogViewState> = sequenceOf(
-        CatalogViewState.Loading(),
-        CatalogViewState.Success(
-            categories = (0..4).map { id ->
-                CategoryUIModel(
-                    id = UUID.randomUUID().toString(),
-                    name = "Название категории $id",
-                    position = id
-                )
-            }, isLoadingNextPage = true, listOfCategoryPairs = listOf(
-                Pair(
-                    CategoryUIModel(name = "Название категории"), listOf(
-                        CategoryUIModel(name = "Название категории"),
-                        CategoryUIModel(name = "Название категории"),
-                        CategoryUIModel(name = "Название категории"),
-                        CategoryUIModel(name = "Название категории"),
-                        CategoryUIModel(name = "Название категории"),
-                    )
-                )
-            )
-        ),
-        CatalogViewState.Error(error = CatalogUIError.Loading("Не удалось загрузить каталог")),
-    )
-}
 
 @Preview
 @Composable
 fun CategoryItemPreview() {
     CheeseTheme {
-        CategoryItemView(category = CategoryUIModel(name = "Сырная тарелка с кусочками винограда"),
+        CategoryItemView(category = CategoryModel(name = "Сырная тарелка с кусочками винограда"),
             onCategoryClick = {
 
             })
@@ -89,11 +60,9 @@ fun CategoryItemPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun CatalogScreenPreview(
-    @PreviewParameter(CatalogScreenPreviewProvider::class) state: CatalogViewState
-) {
+fun CatalogScreenPreview() {
     CheeseTheme {
-        CatalogScreen(state = state, onError = {
+        CatalogScreen(state = CatalogState(), onError = {
 
         }, onEvent = {
 
@@ -104,7 +73,7 @@ fun CatalogScreenPreview(
 @Composable
 fun CatalogScreen(
     navController: NavController,
-    state: CatalogViewState,
+    state: CatalogState,
     onError: (UIError) -> Unit,
     onEvent: (CatalogEvent) -> Unit,
     navigationEvents: Flow<CatalogNavigationEvent>
@@ -123,22 +92,31 @@ fun CatalogScreen(
 
     val (search, onSearchChange) = remember { mutableStateOf("") }
 
-    CheeseTitleWrapper(title = stringResource(R.string.catalog_title),
+    CheeseTitleWrapper(
+        title = stringResource(R.string.catalog_title),
         searchValue = search,
         onSearchChange = onSearchChange,
         enableClearButton = true,
         onSearch = { searchValue ->
-
-        }) {
-        AnimatedContent(targetState = state,
+            /*TODO: logic of search*/
+        }
+    ) {
+        AnimatedContent(
+            targetState = state.uiState,
             label = "Catalog screen animated content",
             transitionSpec = { fadeIn(tween(200)).togetherWith(fadeOut(tween(200))) },
-            contentKey = { it.key }) { uiState ->
+        ) { uiState ->
             when (uiState) {
-                is CatalogViewState.Error -> ErrorScreen(error = uiState.error, retry = onError)
-                is CatalogViewState.Loading -> LoadingScreen(modifier = Modifier)
-                is CatalogViewState.Success -> CatalogScreenContent(
-                    state = uiState, onEvent = onEvent, search = search
+                CatalogUIState.ERROR -> state.error?.let { catalogUIError ->
+                    ErrorScreen(
+                        error = catalogUIError,
+                        onError = onError
+                    )
+                }
+
+                CatalogUIState.LOADING -> LoadingScreen(modifier = Modifier)
+                CatalogUIState.SUCCESS -> CatalogScreenContent(
+                    state = state, onEvent = onEvent, search = search
                 )
             }
         }
@@ -147,7 +125,7 @@ fun CatalogScreen(
 
 @Composable
 private fun CatalogScreenContent(
-    state: CatalogViewState.Success, onEvent: (CatalogEvent) -> Unit, search: String
+    state: CatalogState, onEvent: (CatalogEvent) -> Unit, search: String
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -177,10 +155,10 @@ private fun CatalogScreenContent(
 
 @Composable
 fun PairCategoryView(
-    parent: CategoryUIModel,
-    child: List<CategoryUIModel>,
-    onCategoryClick: (CategoryUIModel) -> Unit,
-    openParentCategory: (CategoryUIModel) -> Unit
+    parent: CategoryModel,
+    child: List<CategoryModel>,
+    onCategoryClick: (CategoryModel) -> Unit,
+    openParentCategory: (CategoryModel) -> Unit
 ) {
     Column {
         Row(
@@ -224,8 +202,8 @@ fun PairCategoryView(
 @Composable
 fun CategoryItemView(
     modifier: Modifier = Modifier,
-    category: CategoryUIModel,
-    onCategoryClick: (CategoryUIModel) -> Unit
+    category: CategoryModel,
+    onCategoryClick: (CategoryModel) -> Unit
 ) {
     val gradientColor = arrayOf(
         0.0f to Color.Transparent,
@@ -294,8 +272,8 @@ private fun LoadingCategoryItemView(modifier: Modifier = Modifier, isLoading: Bo
 @Composable
 fun MoreCategoryItemView(
     modifier: Modifier = Modifier,
-    category: CategoryUIModel,
-    onClick: (CategoryUIModel) -> Unit
+    category: CategoryModel,
+    onClick: (CategoryModel) -> Unit
 ) {
     val gradientColor = arrayOf(
         0.0f to Color.Transparent,

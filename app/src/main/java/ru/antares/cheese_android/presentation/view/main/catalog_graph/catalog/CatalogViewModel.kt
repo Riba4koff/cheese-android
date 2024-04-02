@@ -2,23 +2,27 @@ package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.optics.copy
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.errors.UIError
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 
 class CatalogViewModel(
     private val repository: ICatalogRepository,
 ) : ViewModel() {
-    private val _mutableStateFlow: MutableStateFlow<CatalogViewState> =
-        MutableStateFlow(CatalogViewState.Loading())
-    val state: StateFlow<CatalogViewState> =
-        _mutableStateFlow.asStateFlow()
+    private val _mutableStateFlow: MutableStateFlow<CatalogState> =
+        MutableStateFlow(CatalogState())
+    val state: StateFlow<CatalogState> = _mutableStateFlow.asStateFlow()
 
     init {
         load(null, null)
@@ -53,7 +57,7 @@ class CatalogViewModel(
     }
 
     fun onError(error: UIError) {
-        when (error as CatalogUIError) {
+        when (error) {
             is CatalogUIError.Loading -> {
                 /** handle loading error */
                 load(null, null)
@@ -62,14 +66,39 @@ class CatalogViewModel(
             is CatalogUIError.Updating -> {
                 /** handle updating error */
             }
+
+            is CatalogUIError.UnknownError -> {
+                /** handle unknown error */
+            }
         }
     }
 
-    private suspend fun emitState(newState: CatalogViewState) {
-        _mutableStateFlow.emit(newState)
-    }
-
-    private fun load(page: Int?, pageSize: Int?) = viewModelScope.launch {
-        repository.getListOfCategoryPairs(page, pageSize).collect(_mutableStateFlow)
+    private fun load(page: Int?, pageSize: Int?) = viewModelScope.launch(Dispatchers.IO) {
+        repository.getListOfCategoryPairs(page, pageSize).collectLatest { resource ->
+            resource.onLoading { isLoading ->
+                if (isLoading) {
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            CatalogState.uiState set CatalogUIState.LOADING
+                        }
+                    }
+                }
+            }.onError { error ->
+                _mutableStateFlow.update { state ->
+                    state.copy {
+                        CatalogState.error set if (error is CatalogUIError) error
+                        else CatalogUIError.UnknownError()
+                        CatalogState.uiState set CatalogUIState.ERROR
+                    }
+                }
+            }.onSuccess { pairOfCategories ->
+                _mutableStateFlow.update { state ->
+                    state.copy {
+                        CatalogState.listOfCategoryPairs set pairOfCategories
+                        CatalogState.uiState set CatalogUIState.SUCCESS
+                    }
+                }
+            }
+        }
     }
 }

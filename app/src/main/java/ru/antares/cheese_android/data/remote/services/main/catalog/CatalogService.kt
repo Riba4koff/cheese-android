@@ -5,7 +5,11 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import ru.antares.cheese_android.data.remote.models.CheeseNetworkResponse
 import ru.antares.cheese_android.data.remote.models.Pagination
-import ru.antares.cheese_android.data.remote.services.main.catalog.models.CategoryDTO
+import ru.antares.cheese_android.data.remote.dto.CategoryDTO
+
+/**
+ * @author Pavel Rybakov
+ * */
 
 interface CatalogService {
     @GET("store/categories")

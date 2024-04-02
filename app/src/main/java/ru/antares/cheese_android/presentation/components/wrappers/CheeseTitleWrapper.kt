@@ -38,7 +38,7 @@ fun CheeseTitleWrapper(
             onSearchChange?.let {
                 CheeseSearchTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    search = onSearch,
+                    search = { onSearch(searchValue) },
                     value = searchValue,
                     onValueChange = it,
                     enableClearButton = enableClearButton

@@ -5,5 +5,5 @@ import ru.antares.cheese_android.domain.errors.UIError
 sealed interface ProfileEvent {
     data object Logout: ProfileEvent
     data object DeleteAccount: ProfileEvent
-    data class Retry(val uiError: UIError): ProfileEvent
+    data object LoadProfile: ProfileEvent
 }

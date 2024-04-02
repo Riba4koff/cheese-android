@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.antares.cheese_android.R
@@ -21,16 +22,17 @@ import ru.antares.cheese_android.ui.theme.CheeseTheme
 fun ErrorScreen(
     modifier: Modifier = Modifier,
     error: UIError,
-    retry: (UIError) -> Unit
+    onError: (UIError) -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = error.message,
                 style = CheeseTheme.typography.common12Light,
-                color = CheeseTheme.colors.gray
+                color = CheeseTheme.colors.gray,
+                textAlign = TextAlign.Center
             )
-            TextButton(modifier = Modifier.height(32.dp), onClick = { retry(error) }) {
+            TextButton(modifier = Modifier.height(32.dp), onClick = { onError(error) }) {
                 Text(
                     text = stringResource(R.string.retry),
                     style = CheeseTheme.typography.common14Light,
@@ -46,6 +48,6 @@ fun ErrorScreen(
 fun ErrorScreenPreview() {
     CheeseTheme {
         ErrorScreen(modifier = Modifier,
-            error = PersonalDataUIError.SomeError("Хз"), retry = {})
+            error = PersonalDataUIError.UnknownError("Хз"), onError = {})
     }
 }

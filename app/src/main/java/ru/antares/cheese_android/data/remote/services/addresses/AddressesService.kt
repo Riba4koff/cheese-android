@@ -10,10 +10,14 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.models.CheeseNetworkResponse
-import ru.antares.cheese_android.data.remote.services.addresses.dto.AddressDTO
+import ru.antares.cheese_android.data.remote.dto.AddressDTO
 import ru.antares.cheese_android.data.remote.services.addresses.request.CreateAddressRequest
 import ru.antares.cheese_android.data.remote.services.addresses.request.UpdateAddressRequest
 import ru.antares.cheese_android.data.remote.services.addresses.response.DeleteAddressResponse
+
+/**
+ * @author Pavel Rybakov
+ * */
 
 interface AddressesService {
     @GET("addresses")

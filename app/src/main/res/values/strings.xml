@@ -31,4 +31,15 @@
     <string name="incorrect_phone_number">Неккоректный номер телефона</string>
     <string name="incorrect_email">Неккоректная почта</string>
     <string name="more_categories">Еще\nКатегории</string>
+    <string name="date_of_birth_can_only_be_changed_once">Дату рождения можно изменить только 1 раз</string>
+    <string name="not_available">Нет в наличии</string>
+    <string name="buy">Купить</string>
+    <string name="description">Описание</string>
+    <string name="products_recommendations">Рекомендации</string>
+    <string name="add_to_cart">Добавить в корзину</string>
+    <string name="go_checkout_order">Перейти к оформлению</string>
+    <string name="total">Итого</string>
+    <string name="empty_cart_title">В корзине пусто</string>
+    <string name="empty_cart_description">Перед тем, как оформить заказ\nЗаполните корзину продуктами</string>
+    <string name="go_to_shopping">Перейти к покупкам</string>
 </resources>

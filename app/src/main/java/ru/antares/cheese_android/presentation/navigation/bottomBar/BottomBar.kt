@@ -28,28 +28,27 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.antares.cheese_android.presentation.navigation.util.Screen
-import ru.antares.cheese_android.ui.theme.AndroidCheeseTheme
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewBottomBar() {
     CheeseTheme {
-        BottomBar(navController = rememberNavController(), countInCart = 1)
+        BottomBar(navigate = {
+
+        }, countInCart = 1, currentRoute = null)
     }
 }
 
 @Composable
 fun BottomBar(
-    navController: NavController,
+    navigate: (BottomBarDestination) -> Unit,
     countInCart: Int,
+    currentRoute: String?
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
     val heightBottomBar = 52.dp
 
     NavigationBar(
@@ -58,7 +57,7 @@ fun BottomBar(
         windowInsets = WindowInsets.mandatorySystemGestures
     ) {
         BottomBarRow {
-            BottomBarDestinations.entries.forEach { destination ->
+            BottomBarDestination.entries.forEach { destination ->
                 val (pressed, onPressedChange) = remember { mutableStateOf(false) }
                 val scale by animateFloatAsState(
                     targetValue = if (pressed) 0.85f else 1f,
@@ -69,15 +68,7 @@ fun BottomBar(
                     modifier = Modifier
                         .pointerInput(Unit) {
                             detectTapGestures(onTap = {
-                                navController.navigate(destination.route) {
-                                    navController.graph.startDestinationRoute?.let { route ->
-                                        popUpTo(route) {
-                                            saveState = true
-                                        }
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
+                                navigate(destination)
                             }, onPress = {
                                 onPressedChange(true)
                                 tryAwaitRelease()
@@ -102,12 +93,13 @@ fun BottomBar(
 
 @Composable
 private fun SelectedPageBackground(
-    destination: BottomBarDestinations,
+    destination: BottomBarDestination,
     currentRoute: String?,
 ) {
     val animateBackgroundOfBottomBarButtonBackground by animateColorAsState(
         targetValue = if (destination.route == currentRoute) CheeseTheme.colors.accent
-        else CheeseTheme.colors.primary, label = "Animation of changing  of background bottom bar button"
+        else CheeseTheme.colors.primary,
+        label = "Animation of changing  of background bottom bar button"
     )
     val iconSize = 64.dp
     Box(
@@ -131,7 +123,7 @@ private fun SelectedPageBackground(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BottomBarButtonBadgedBox(
-    destination: BottomBarDestinations,
+    destination: BottomBarDestination,
     countInCart: Int,
 ) {
     Box(
@@ -141,12 +133,16 @@ private fun BottomBarButtonBadgedBox(
             .height(44.dp)
     ) {
         BadgedBox(
-            modifier = Modifier.size(13.dp),
+            modifier = Modifier.size(15.dp),
             badge = {
-                if (destination.route == Screen.CartNavigationGraph.route && countInCart > 0) Badge(
-                    modifier = Modifier.offset((26).dp, 0.dp)
-                ) {
-                    Text("$countInCart", fontSize = 9.sp)
+                if (destination.route == Screen.CartNavigationGraph.route && countInCart > 0) {
+                    Badge(
+                        modifier = Modifier
+                            .offset((26).dp, 0.dp)
+                            .align(Alignment.Center)
+                    ) {
+                        Text("$countInCart", fontSize = 10.sp)
+                    }
                 }
             }
         ) { /* NOTHING*/ }

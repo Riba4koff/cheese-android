@@ -3,6 +3,7 @@ package ru.antares.cheese_android.presentation.view.main.profile_graph.profile
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.optics.copy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -11,31 +12,27 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState.AUTHORIZED
-import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState.NOT_AUTHORIZED
-import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState.SKIPPED
 import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.local.datastore.user.IUserDataStore
 import ru.antares.cheese_android.data.local.datastore.user.User
-import ru.antares.cheese_android.data.remote.models.NetworkResponse
-import ru.antares.cheese_android.data.remote.services.main.profile.response.ProfileResponse
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
-import ru.antares.cheese_android.data.repository.main.profile.ProfileRepository
+import ru.antares.cheese_android.data.repository.main.ProfileRepository
 import ru.antares.cheese_android.domain.errors.UIError
+
 
 class ProfileViewModel(
     private val tokenService: ITokenService,
     private val authorizationRepository: AuthorizationRepository,
     private val profileRepository: ProfileRepository,
-    private val userDataStore: IUserDataStore
+    private val userDataStore: IUserDataStore,
 ) : ViewModel() {
-    private val events: Channel<ProfileEvent> = Channel()
-
-    private val _mutableStateFlow: MutableStateFlow<ProfileViewState> =
-        MutableStateFlow(ProfileViewState.LoadingState())
-    val state: StateFlow<ProfileViewState> = _mutableStateFlow.asStateFlow()
+    private val _mutableStateFlow: MutableStateFlow<ProfileState> =
+        MutableStateFlow(ProfileState())
+    val state: StateFlow<ProfileState> = _mutableStateFlow.asStateFlow()
 
     private val _navigationEvents: Channel<ProfileNavigationEvent> = Channel()
     val navigationEvents: Flow<ProfileNavigationEvent> = _navigationEvents.receiveAsFlow()
@@ -43,111 +40,138 @@ class ProfileViewModel(
     init {
         viewModelScope.launch {
             launch {
-                tokenService.authorizedState.collectLatest { authorized ->
-                    when (authorized) {
-                        AUTHORIZED -> {
-                            loadProfile()
-                            userDataStore.user.collectLatest { user ->
-                                _mutableStateFlow.emit(
-                                    ProfileViewState.AuthorizedState(
-                                        surname = user.surname,
-                                        name = user.name,
-                                        patronymic = user.patronymic
-                                    )
-                                )
-                            }
+                userDataStore.user.collectLatest { user ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            ProfileState.surname set user.surname
+                            ProfileState.name set user.name
+                            ProfileState.patronymic set user.patronymic
                         }
-
-                        NOT_AUTHORIZED, SKIPPED -> _mutableStateFlow.emit(ProfileViewState.NonAuthorizedState())
                     }
                 }
             }
             launch {
-                events.receiveAsFlow().collectLatest { event ->
-                    when (event) {
-                        is ProfileEvent.Retry -> onError(event.uiError)
-                        ProfileEvent.Logout -> logout()
-                        ProfileEvent.DeleteAccount -> deleteAccount()
+                tokenService.authorizedState.collectLatest { authState ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            ProfileState.isAuthorized set (authState == AUTHORIZED)
+                        }
                     }
                 }
             }
         }
     }
 
-    private fun onError(uiError: UIError) = viewModelScope.launch {
-        when (uiError as ProfileUIError) {
-            is ProfileUIError.LoadProfileError -> loadProfile()
-            is ProfileUIError.LogoutError -> logout()
+
+    fun onEvent(event: ProfileEvent) = viewModelScope.launch {
+        when (event) {
+            ProfileEvent.Logout -> logout()
+            ProfileEvent.DeleteAccount -> {
+                /* TODO: delete account logic */
+            }
+
+            ProfileEvent.LoadProfile -> loadProfileV2()
         }
     }
 
-    fun onEvent(event: ProfileEvent) = viewModelScope.launch {
-        events.send(event)
+    fun onError(uiError: UIError) = viewModelScope.launch {
+        when (uiError as ProfileUIError) {
+            is ProfileUIError.LoadProfileError -> loadProfileV2()
+            is ProfileUIError.LogoutError -> logout()
+            is ProfileUIError.UnauthorizedError -> { tokenService.logout() }
+        }
     }
 
     fun onNavigationEvent(navigationEvent: ProfileNavigationEvent) = viewModelScope.launch {
         _navigationEvents.send(navigationEvent)
     }
 
-    private suspend fun loadProfile() {
-        if (state.value !is ProfileViewState.LoadingState) {
-            _mutableStateFlow.emit(ProfileViewState.LoadingState())
-        }
+    private suspend fun loadProfileV2() {
+        if (state.value.isAuthorized && state.value.profileLoaded.not()) {
+            profileRepository.get().collect { resource ->
+                resource.onSuccess { response ->
+                    val emailAttachment = response.attachments.firstOrNull {
+                        it.typeName == "EMAIL"
+                    }.takeIf { it != null }
 
-        when (
-            val response: NetworkResponse<ProfileResponse> =
-                withContext(Dispatchers.IO) { profileRepository.get() }
-        ) {
-            is NetworkResponse.Error -> {
-                val uiError =
-                    ProfileUIError.LoadProfileError(message = "Не удалось загрузить профиль")
-                ProfileViewState.ErrorState(uiError)
+                    val phoneAttachment = response.attachments.firstOrNull {
+                        it.typeName == "PHONE"
+                    }.takeIf { it != null }
+
+                    userDataStore.save(
+                        user = User(
+                            surname = response.surname,
+                            name = response.firstname,
+                            patronymic = response.patronymic,
+                            email = emailAttachment?.value ?: "",
+                            phone = phoneAttachment?.value ?: "",
+                            birthday = response.birthday,
+                            verifiedPhone = phoneAttachment?.verified ?: false,
+                            verifiedEmail = phoneAttachment?.verified ?: false
+                        )
+                    ).onFailure { message ->
+                        Log.d("SAVE_RROFILE", message)
+                    }
+
+                    withContext(Dispatchers.Main.immediate) {
+                        _mutableStateFlow.update { state ->
+                            state.copy {
+                                ProfileState.profileLoaded set true
+                            }
+                        }
+                    }
+                }.onError { error ->
+                    withContext(Dispatchers.Main.immediate) {
+                        _mutableStateFlow.update { state ->
+                            state.copy {
+                                ProfileState.error set error
+                                ProfileState.isLoading set false
+                            }
+                        }
+                    }
+                }.onLoading { isLoading ->
+                    withContext(Dispatchers.Main.immediate) {
+                        _mutableStateFlow.update { state ->
+                            state.copy {
+                                ProfileState.isLoading set isLoading
+                            }
+                        }
+                    }
+                }
             }
-
-            is NetworkResponse.Success -> {
-
-                val emailAttachment = response.data.attachments.firstOrNull {
-                    it.typeName == "EMAIL"
-                }.takeIf { it != null }
-
-                val phoneAttachment = response.data.attachments.firstOrNull {
-                    it.typeName == "PHONE"
-                }.takeIf { it != null }
-
-                userDataStore.save(
-                    user = User(
-                        surname = response.data.surname,
-                        name = response.data.firstname,
-                        patronymic = response.data.patronymic,
-                        email = emailAttachment?.value ?: "",
-                        phone = phoneAttachment?.value ?: "",
-                        birthday = response.data.birthday,
-                        verifiedPhone = phoneAttachment?.verified ?: false,
-                        verifiedEmail = phoneAttachment?.verified ?: false
-                    )
-                ).onFailure { message ->
-                    Log.d("SAVE_RROFILE", message)
+        } else {
+            withContext(Dispatchers.Main.immediate) {
+                _mutableStateFlow.update { state ->
+                    state.copy {
+                        ProfileState.isLoading set false
+                    }
                 }
             }
         }
     }
 
     private suspend fun logout() {
-        _mutableStateFlow.emit(ProfileViewState.LoadingState())
-
-        when (authorizationRepository.logout()) {
-            is NetworkResponse.Error -> {
-                val error = ProfileUIError.LogoutError(message = "Не удалось выйти из аккаунта")
-                _mutableStateFlow.emit(ProfileViewState.ErrorState(error))
-            }
-
-            is NetworkResponse.Success -> {
-                _navigationEvents.send(ProfileNavigationEvent.Logout)
+        _mutableStateFlow.update { state ->
+            state.copy {
+                ProfileState.isLoading set true
             }
         }
-    }
 
-    private fun deleteAccount() = viewModelScope.launch {
-        // TODO: - delete account logic
+        authorizationRepository.logout().onSuccess { successNetworkLogout ->
+            if (successNetworkLogout == true) {
+                _navigationEvents.send(ProfileNavigationEvent.Logout)
+            }
+        }.onFailure { error ->
+            Log.d("LOGOUT_TAG", error.message)
+
+            val uiError = ProfileUIError.LogoutError()
+
+            _mutableStateFlow.update { state ->
+                state.copy {
+                    ProfileState.error set uiError
+                    ProfileState.isLoading set false
+                }
+            }
+        }
     }
 }

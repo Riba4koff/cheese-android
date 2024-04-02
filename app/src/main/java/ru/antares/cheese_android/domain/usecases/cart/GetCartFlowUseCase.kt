@@ -1,0 +1,37 @@
+package ru.antares.cheese_android.domain.usecases.cart
+
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import ru.antares.cheese_android.data.local.room.dao.cart.CartDao
+import ru.antares.cheese_android.data.local.room.dao.cart.CartEntity
+import ru.antares.cheese_android.data.local.room.dao.products.ProductsLocalStorage
+import ru.antares.cheese_android.domain.models.CartProductModel
+
+/**
+ * GetCartFlowUseCase.kt
+ * @author Павел
+ * Created by on 23.02.2024 at 15:23
+ * Android studio
+ */
+
+class GetCartFlowUseCase(
+    private val cartDao: CartDao,
+    private val productsLocalStorage: ProductsLocalStorage
+) {
+    val value: Flow<List<CartEntity>> = cartDao.subscribeCartFlow()
+
+    val productsValue: Flow<List<CartProductModel>> =
+        cartDao.subscribeCartFlow().combine(productsLocalStorage.products()) { cart, products ->
+            products.mapNotNull { product ->
+                val amount = cart.find { it.productID == product.id }?.amount
+                amount?.let {
+                    CartProductModel(
+                        amount = it,
+                        price = product.price,
+                        priceWithDiscount = null,
+                        product = product
+                    )
+                }
+            }
+        }
+}

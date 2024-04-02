@@ -14,15 +14,21 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.remote.services.addresses.AddressesService
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
+import ru.antares.cheese_android.data.remote.services.cart.CartService
 import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService
+import ru.antares.cheese_android.data.remote.services.main.products.ProductsService
 import ru.antares.cheese_android.data.remote.services.main.profile.ProfileService
 import ru.antares.cheese_android.data.remote.services.main.profile.response.Attachment
 import ru.antares.cheese_android.data.remote.services.main.profile.response.AttachmentAdapter
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
+import ru.antares.cheese_android.data.repository.main.CartRepository
+import ru.antares.cheese_android.data.repository.main.ProductsRepository
+import ru.antares.cheese_android.data.repository.main.ProfileRepository
 import ru.antares.cheese_android.data.repository.main.catalog.CatalogRepository
-import ru.antares.cheese_android.data.repository.main.profile.ProfileRepository
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
+import ru.antares.cheese_android.domain.repository.ICartRepository
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
+import ru.antares.cheese_android.domain.repository.IProductsRepository
 import ru.antares.cheese_android.domain.repository.IProfileRepository
 import java.util.concurrent.TimeUnit
 
@@ -48,6 +54,8 @@ private val repositoryModule = module {
     singleOf(::AuthorizationRepository) { bind<IAuthorizationRepository>() }
     singleOf(::ProfileRepository) { bind<IProfileRepository>() }
     singleOf(::CatalogRepository) { bind<ICatalogRepository>() }
+    singleOf(::ProductsRepository) { bind<IProductsRepository>() }
+    singleOf(::CartRepository) { bind<ICartRepository>() }
 }
 
 private val servicesModule = module {
@@ -55,23 +63,27 @@ private val servicesModule = module {
     single { provideProfileService(get()) }
     single { provideAddressesService(get()) }
     single { provideCatalogService(get()) }
+    single { provideProductsService(get()) }
+    single { provideCartService(get()) }
 }
 
-private fun provideAuthorizationService(retrofit: Retrofit): AuthorizationService {
-    return retrofit.create(AuthorizationService::class.java)
-}
+private fun provideAuthorizationService(retrofit: Retrofit): AuthorizationService =
+    retrofit.create(AuthorizationService::class.java)
 
-private fun provideProfileService(retrofit: Retrofit): ProfileService {
-    return retrofit.create(ProfileService::class.java)
-}
+private fun provideProfileService(retrofit: Retrofit): ProfileService =
+    retrofit.create(ProfileService::class.java)
 
-private fun provideAddressesService(retrofit: Retrofit): AddressesService {
-    return retrofit.create(AddressesService::class.java)
-}
+private fun provideAddressesService(retrofit: Retrofit): AddressesService =
+    retrofit.create(AddressesService::class.java)
 
-private fun provideCatalogService(retrofit: Retrofit): CatalogService {
-    return retrofit.create(CatalogService::class.java)
-}
+private fun provideCatalogService(retrofit: Retrofit): CatalogService =
+    retrofit.create(CatalogService::class.java)
+
+private fun provideProductsService(retrofit: Retrofit): ProductsService =
+    retrofit.create(ProductsService::class.java)
+
+private fun provideCartService(retrofit: Retrofit): CartService =
+    retrofit.create(CartService::class.java)
 
 private fun provideOkHttpClient(tokenService: ITokenService): OkHttpClient {
     val httpLoggingInterceptor = HttpLoggingInterceptor()
