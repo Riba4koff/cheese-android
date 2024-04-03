@@ -55,4 +55,9 @@
     <string name="show_more">Показать еще</string>
     <string name="hide">Скрыть</string>
     <string name="pay">Оплатить</string>
+
+    <string name="server_error">Ошибка сервера</string>
+    <string name="no_internet_error">Отсутствует подключение к интернету</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="load_posts_error">Произошла ошибка при загрузке постов</string>
 </resources>

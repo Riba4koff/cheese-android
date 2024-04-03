@@ -18,7 +18,7 @@ class CommunityServiceHandler(
         size: Int?,
         page: Int?,
         sort: String?
-    ): CheeseResult<GetCommunityError, Pagination<PostDTO>> = try {
+    ): CheeseResult<CommunityError, Pagination<PostDTO>> = try {
         val response = service.get(size, page, sort)
         
         when (response.code()) {
@@ -28,26 +28,26 @@ class CommunityServiceHandler(
                 if (data != null) {
                     CheeseResult.Success(data)
                 } else {
-                    CheeseResult.Error(GetCommunityError.LOAD_ERROR)
+                    CheeseResult.Error(CommunityError.LOAD_ERROR)
                 }
             }
             in 500..599 -> {
-                CheeseResult.Error(GetCommunityError.SERVER_ERROR)
+                CheeseResult.Error(CommunityError.SERVER_ERROR)
             }
             else -> {
-                CheeseResult.Error(GetCommunityError.UNKNOWN_ERROR)
+                CheeseResult.Error(CommunityError.UNKNOWN_ERROR)
             }
         }
     } catch (e: UnknownHostException) {
-        CheeseResult.Error(GetCommunityError.NO_INTERNET_ERROR)
+        CheeseResult.Error(CommunityError.NO_INTERNET_ERROR)
     } catch (e: Exception) {
         e.printStackTrace()
-        CheeseResult.Error(GetCommunityError.UNKNOWN_ERROR)
+        CheeseResult.Error(CommunityError.UNKNOWN_ERROR)
     }
 
     suspend fun get(
         id: String
-    ): CheeseResult<GetCommunityError, PostDTO> = try {
+    ): CheeseResult<CommunityError, PostDTO> = try {
         val response = service.get(id)
 
         when (response.code()) {
@@ -57,20 +57,20 @@ class CommunityServiceHandler(
                 if (data != null) {
                     CheeseResult.Success(data)
                 } else {
-                    CheeseResult.Error(GetCommunityError.LOAD_ERROR)
+                    CheeseResult.Error(CommunityError.LOAD_ERROR)
                 }
             }
             in 500..599 -> {
-                CheeseResult.Error(GetCommunityError.SERVER_ERROR)
+                CheeseResult.Error(CommunityError.SERVER_ERROR)
             }
             else -> {
-                CheeseResult.Error(GetCommunityError.UNKNOWN_ERROR)
+                CheeseResult.Error(CommunityError.UNKNOWN_ERROR)
             }
         }
     } catch (e: UnknownHostException) {
-        CheeseResult.Error(GetCommunityError.NO_INTERNET_ERROR)
+        CheeseResult.Error(CommunityError.NO_INTERNET_ERROR)
     } catch (e: Exception) {
         e.printStackTrace()
-        CheeseResult.Error(GetCommunityError.UNKNOWN_ERROR)
+        CheeseResult.Error(CommunityError.UNKNOWN_ERROR)
     }
 }

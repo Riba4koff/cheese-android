@@ -17,7 +17,5 @@ data class InnerPostModel(
     val subtitle: String,
     val description: String,
     val createdAt: String,
-    val categories: List<CategoryModel>,
-    val category: CategoryModel,
     val products: List<ProductModel>,
 )

@@ -3,6 +3,7 @@ package ru.antares.cheese_android.data.remote.services.community
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 import ru.antares.cheese_android.data.remote.models.CheeseNetworkResponse
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.services.community.dto.PostDTO
@@ -26,9 +27,9 @@ interface CommunityService {
      * */
     @GET("posts")
     suspend fun get(
-        size: Int? = null,
-        page: Int? = null,
-        sort: String? = null
+        @Query("size") size: Int? = null,
+        @Query("page") page: Int? = null,
+        @Query("sortByColumn") sort: String? = null
     ): Response<CheeseNetworkResponse<Pagination<PostDTO>>>
 
     /**

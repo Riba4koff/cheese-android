@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.flow
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.models.map
 import ru.antares.cheese_android.data.remote.services.community.CommunityServiceHandler
-import ru.antares.cheese_android.data.remote.services.community.GetCommunityError
+import ru.antares.cheese_android.data.remote.services.community.CommunityError
 import ru.antares.cheese_android.data.remote.services.community.dto.PostDTO
 import ru.antares.cheese_android.domain.models.community.PostModel
 import ru.antares.cheese_android.domain.repository.ICommunityRepository
@@ -24,7 +24,7 @@ class CommunityRepository(
         page: Int?,
         size: Int?,
         sort: String?
-    ): Flow<CheeseResult<GetCommunityError, Pagination<PostModel>>> = flow {
+    ): Flow<CheeseResult<CommunityError, Pagination<PostModel>>> = flow {
         emit(CheeseResult.Loading(isLoading = true))
 
         handler.get(size, page, sort).onError { error ->
@@ -36,7 +36,7 @@ class CommunityRepository(
         emit(CheeseResult.Loading(isLoading = false))
     }
 
-    override suspend fun get(id: String): Flow<CheeseResult<GetCommunityError, PostModel>> = flow {
+    override suspend fun get(id: String): Flow<CheeseResult<CommunityError, PostModel>> = flow {
         emit(CheeseResult.Loading(isLoading = true))
 
         handler.get(id).onError { error ->

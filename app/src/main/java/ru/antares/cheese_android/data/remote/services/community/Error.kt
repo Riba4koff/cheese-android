@@ -8,7 +8,7 @@ import ru.antares.cheese_android.domain.result.CheeseError
  * Android Studio
  */
 
-enum class GetCommunityError: CheeseError {
+enum class CommunityError: CheeseError {
     SERVER_ERROR,
     NO_INTERNET_ERROR,
     UNKNOWN_ERROR,

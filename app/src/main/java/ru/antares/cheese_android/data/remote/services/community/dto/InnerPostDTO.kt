@@ -10,8 +10,6 @@ data class InnerPostDTO(
     val subtitle: String,
     val description: String,
     val createdAt: String,
-    val categories: List<CategoryDTO>,
-    val category: CategoryDTO,
     val products: List<ProductDTO>,
 ) {
     fun toModel() = InnerPostModel(
@@ -20,8 +18,6 @@ data class InnerPostDTO(
         subtitle = subtitle,
         description = description,
         createdAt = createdAt,
-        categories = categories.map { it.toModel() },
-        category = category.toModel(),
         products = products.map { it.toModel() }
     )
 }

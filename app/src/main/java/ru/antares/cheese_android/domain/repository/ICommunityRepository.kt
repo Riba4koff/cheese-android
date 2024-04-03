@@ -2,7 +2,7 @@ package ru.antares.cheese_android.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.antares.cheese_android.data.remote.models.Pagination
-import ru.antares.cheese_android.data.remote.services.community.GetCommunityError
+import ru.antares.cheese_android.data.remote.services.community.CommunityError
 import ru.antares.cheese_android.domain.models.community.PostModel
 import ru.antares.cheese_android.domain.result.CheeseResult
 
@@ -17,9 +17,9 @@ interface ICommunityRepository {
         page: Int? = null,
         size: Int? = null,
         sort: String? = null
-    ): Flow<CheeseResult<GetCommunityError, Pagination<PostModel>>>
+    ): Flow<CheeseResult<CommunityError, Pagination<PostModel>>>
 
     suspend fun get(
         id: String
-    ): Flow<CheeseResult<GetCommunityError, PostModel>>
+    ): Flow<CheeseResult<CommunityError, PostModel>>
 }
