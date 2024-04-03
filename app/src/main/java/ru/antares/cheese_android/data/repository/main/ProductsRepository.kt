@@ -6,16 +6,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import ru.antares.cheese_android.data.local.room.dao.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
-import ru.antares.cheese_android.data.remote.dto.toProductModel
-import ru.antares.cheese_android.data.remote.dto.toProductModels
+import ru.antares.cheese_android.data.remote.dto.ProductDTO
 import ru.antares.cheese_android.data.remote.models.Pagination
+import ru.antares.cheese_android.data.remote.models.map
 import ru.antares.cheese_android.data.remote.services.main.products.ProductsService
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.models.ProductModel
 import ru.antares.cheese_android.domain.repository.IProductsRepository
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailAppError
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailUIError
 
 /**
  * @author Pavel Rybakov
@@ -56,23 +56,15 @@ class ProductsRepository(
                 size = size,
                 sortByColumn = sortByColumn
             )
-        }.onSuccess { pagination ->
-            val products = pagination.result
-            val categories = pagination.result.map { it.category }
+        }.onSuccess { data: Pagination<ProductDTO> ->
+            val products = data.result
+            val categories = data.result.map { it.category }
 
             productsLocalStorage.insert(products)
             categoriesLocalStorage.insert(categories)
 
             emit(
-                ResourceState.Success(
-                    Pagination(
-                        result = pagination.result.toProductModels(),
-                        sizeResult = pagination.sizeResult,
-                        page = pagination.page,
-                        amountOfPages = pagination.amountOfPages,
-                        amountOfAll = pagination.amountOfAll
-                    )
-                )
+                ResourceState.Success(data.map { it.toModel() })
             )
 
             return@onSuccess
@@ -97,12 +89,12 @@ class ProductsRepository(
         delay(300)
 
         safeNetworkCall { productsService.getProductByID(productID = id) }.onSuccess { productDTO ->
-            val productUIModel = productDTO.toProductModel()
+            val productUIModel = productDTO.toModel()
             emit(ResourceState.Success(productUIModel))
             return@onSuccess
         }.onFailure { error ->
             Log.d(GET_PRODUCT_ERROR_TAG, error.toString())
-            emit(ResourceState.Error(ProductDetailAppError.LoadingError()))
+            emit(ResourceState.Error(ProductDetailUIError.LoadingError()))
             return@onFailure
         }
 

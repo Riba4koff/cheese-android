@@ -45,7 +45,7 @@ class AuthorizationServiceUnitTest {
     @Test
     fun testMakeCallTest() = runBlocking {
         val phone = "+79116132860"
-        val response = authService.makeCall(phone)
+        val response = authService.call(phone)
 
         assertNotNull(response)
     }
@@ -86,7 +86,7 @@ class AuthorizationServiceUnitTest {
                     version = ""
                 )
             )
-        val response = authService.sendCode(phone, sendCodeRequest)
+        val response = authService.code(phone, sendCodeRequest)
 
         assertEquals(expectedResponse, response)
     }

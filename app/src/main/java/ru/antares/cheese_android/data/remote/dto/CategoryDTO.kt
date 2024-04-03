@@ -8,17 +8,14 @@ data class CategoryDTO(
     val name: String,
     val position: Int,
     val parentID: String? = null
-)
-
-fun CategoryDTO.toEntity() = CategoryEntity(
-    id, name, position, parentID
-)
-
-fun CategoryDTO.toCategoryModel() = CategoryModel(
-    id = id,
-    name = name,
-    position = position,
-    parentID = parentID
-)
-
-fun List<CategoryDTO>.toCategoryModels() = this.map { it.toCategoryModel() }
+) {
+    fun toModel() = CategoryModel(
+        id = id,
+        name = name,
+        position = position,
+        parentID = parentID
+    )
+    fun toEntity() = CategoryEntity(
+        id, name, position, parentID
+    )
+}

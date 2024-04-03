@@ -25,7 +25,7 @@ class AuthorizationRepository(
 
         emit(ResourceState.Success(true))*/
 
-        val response = safeNetworkCall { authorizationService.makeCall(phone) }
+        val response = safeNetworkCall { authorizationService.call(phone) }
 
         response.onFailure { error ->
             when (error.code) {
@@ -50,7 +50,7 @@ class AuthorizationRepository(
     ): Flow<ResourceState<Unit>> = flow {
         emit(ResourceState.Loading(isLoading = true))
 
-        val sendCodeResponse = safeNetworkCall { authorizationService.sendCode(phone, request) }
+        val sendCodeResponse = safeNetworkCall { authorizationService.code(phone, request) }
 
         sendCodeResponse.onFailure { error ->
             if (error.code in 500..599) {

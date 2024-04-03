@@ -7,3 +7,13 @@ data class Pagination<T>(
     val amountOfPages: Int,
     val amountOfAll: Int,
 )
+
+fun <A, B> Pagination<A>.map(block: (A) -> B) = Pagination(
+    result = result.map {
+        block(it)
+    },
+    sizeResult = sizeResult,
+    page = page,
+    amountOfPages = amountOfPages,
+    amountOfAll = amountOfAll
+)
