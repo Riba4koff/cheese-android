@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.repository.main
+package ru.antares.cheese_android.data.repository.main.catalog
 
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
@@ -13,8 +13,21 @@ import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPaginat
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogUIError
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryUIError
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogAppError
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryAppError
+
+/*
+* Получить категории
+*
+* Если запрос на получение родительских категорий выполнен неудачно ->
+* -> Вернуть ошибку о том, что не удалось загрузить категории
+*
+* Если запрос на получение родительских категорий выполнен успешно ->
+* -> Записать данные в базу -> Получить дочерние категории родительских категорий ->
+* -> смапить их к типу List<Pair<CategoryUIModel, List<CategoryUIModel>>>, где левый тип - это
+*  родительская категория, а правый тип - дочерние категории -> записать в базу дочерние категории ->
+* вернуть список полученных данных
+* */
 
 /**
  * @author Pavel Rybakov
@@ -22,7 +35,7 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_pa
 
 class CatalogRepository(
     private val service: CatalogService,
-    private val categoresLocalStorage: ICategoriesLocalStorage
+    private val categoriesLocalStorage: ICategoriesLocalStorage
 ) : ICatalogRepository {
 
     /**
@@ -57,7 +70,7 @@ class CatalogRepository(
         if (pairsOfCategory == null) {
             emit(
                 ResourceState.Error(
-                    error = CatalogUIError.Loading()
+                    error = CatalogAppError.Loading()
                 )
             )
         } else {
@@ -74,14 +87,19 @@ class CatalogRepository(
 
         safeNetworkCallWithPagination {
             service.get(parentID = parentID, hasParent = true, page = page, pageSize = pageSize)
-        }.onSuccess { data: Pagination<CategoryDTO> ->
-            val categories = data.result
+        }.onSuccess { pagination ->
+            val categories = pagination.result
 
-            categoresLocalStorage.insert(categories)
+            categoriesLocalStorage.insert(categories)
 
-            emit(ResourceState.Success(data = data.map { it.toModel() }))
+            emit(
+                ResourceState.Success(
+                    data = pagination.map { it.toModel() }
+                )
+            )
         }.onFailure { error ->
-            emit(ResourceState.Error(CatalogParentCategoryUIError.Loading()))
+            Log.d("LOAD_CHILD_CATEGORIES_ERROR", error.message)
+            emit(ResourceState.Error(CatalogParentCategoryAppError.Loading()))
         }
 
         emit(ResourceState.Loading(isLoading = false))
@@ -97,7 +115,7 @@ class CatalogRepository(
         }.onSuccess { pagination ->
             val categories = pagination.result
 
-            categoresLocalStorage.insert(categories)
+            categoriesLocalStorage.insert(categories)
         }
     }
 
@@ -113,7 +131,7 @@ class CatalogRepository(
         }.onSuccess { pagination ->
             val categories = pagination.result
 
-            categoresLocalStorage.insert(categories)
+            categoriesLocalStorage.insert(categories)
         }
     }
 }

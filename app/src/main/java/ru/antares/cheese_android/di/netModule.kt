@@ -12,7 +12,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.antares.cheese_android.data.local.datastore.token.ITokenService
+import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.remote.services.addresses.AddressesService
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
 import ru.antares.cheese_android.data.remote.services.cart.CartService
@@ -32,7 +32,7 @@ import ru.antares.cheese_android.data.repository.main.CartRepository
 import ru.antares.cheese_android.data.repository.main.CommunityRepository
 import ru.antares.cheese_android.data.repository.main.ProductsRepository
 import ru.antares.cheese_android.data.repository.main.ProfileRepository
-import ru.antares.cheese_android.data.repository.main.CatalogRepository
+import ru.antares.cheese_android.data.repository.main.catalog.CatalogRepository
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 import ru.antares.cheese_android.domain.repository.ICartRepository
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
@@ -108,7 +108,7 @@ private fun provideCommunityService(retrofit: Retrofit): CommunityService =
 private fun provideCartService(retrofit: Retrofit): CartService =
     retrofit.create(CartService::class.java)
 
-private fun provideOkHttpClient(tokenService: ITokenService): OkHttpClient {
+private fun provideOkHttpClient(tokenService: IAuthorizationDataStore): OkHttpClient {
     val httpLoggingInterceptor = HttpLoggingInterceptor()
     httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
 

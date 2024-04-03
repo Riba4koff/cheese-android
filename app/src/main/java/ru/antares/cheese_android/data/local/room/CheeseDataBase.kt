@@ -21,7 +21,7 @@ import ru.antares.cheese_android.data.local.room.dao.products.ProductsDao
         CartEntity::class,
         ProductEntity::class
     ],
-    version = 2,
+    version = 7,
     exportSchema = false
 )
 abstract class CheeseDataBase : RoomDatabase() {

@@ -67,18 +67,6 @@ class CartViewModel(
                     }
                 }
             }
-            /*authorizationDataStore.authorizedState.collectLatest { authState ->
-                if (authState == AuthorizedState.AUTHORIZED) {
-
-                } else {
-                    _mutableStateFlow.update { state ->
-                        state.copy {
-                            CartState.loading set false
-                            CartState.authorized set false
-                        }
-                    }
-                }
-            }*/
         }
     }
 

@@ -1,7 +1,9 @@
 package ru.antares.cheese_android.data.local.room.dao.products
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.local.room.dao.catalog.CategoriesDao
 import ru.antares.cheese_android.data.local.room.dao.catalog.toCategoryUIModel
 import ru.antares.cheese_android.data.remote.dto.ProductDTO
@@ -17,6 +19,7 @@ import ru.antares.cheese_android.domain.models.ProductModel
 interface IProductsLocalStorage {
     fun products(): Flow<List<ProductModel>>
     suspend fun insert(products: List<ProductDTO>)
+    suspend fun clear()
 }
 
 class ProductsLocalStorage(
@@ -48,5 +51,9 @@ class ProductsLocalStorage(
             val productEntity = dto.toEntity()
             productsDao.insert(productEntity)
         }
+    }
+
+    override suspend fun clear() = withContext(Dispatchers.IO){
+        productsDao.clear()
     }
 }

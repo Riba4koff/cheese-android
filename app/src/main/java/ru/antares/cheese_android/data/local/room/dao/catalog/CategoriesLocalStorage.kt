@@ -8,6 +8,7 @@ import ru.antares.cheese_android.data.remote.dto.CategoryDTO
 interface ICategoriesLocalStorage {
     suspend fun subscribeToCategoriesFlow(): Flow<List<CategoryEntity>>
     suspend fun insert(categories: List<CategoryDTO>)
+    suspend fun clear()
 }
 
 class CategoriesLocalStorage(
@@ -19,5 +20,9 @@ class CategoriesLocalStorage(
         categories.forEach { category ->
             categoriesDao.insert(category.toEntity())
         }
+    }
+
+    override suspend fun clear() = withContext(Dispatchers.IO){
+        categoriesDao.clear()
     }
 }

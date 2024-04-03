@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.local.room.dao.cart.CartEntity
 import ru.antares.cheese_android.data.local.room.dao.cart.ICartLocalStorage
+import ru.antares.cheese_android.data.local.room.dao.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
 import ru.antares.cheese_android.data.remote.services.cart.BasketResponse
 import ru.antares.cheese_android.data.remote.services.cart.CartService
@@ -25,7 +26,8 @@ import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.CartAppE
 class CartRepository(
     private val cartService: CartService,
     private val cartLocalStorage: ICartLocalStorage,
-    private val productsLocalStorage: IProductsLocalStorage
+    private val productsLocalStorage: IProductsLocalStorage,
+    private val categoriesLocalStorage: ICategoriesLocalStorage
 ) : ICartRepository {
     override suspend fun updateLocalCart() {
         safeNetworkCall {
@@ -42,10 +44,10 @@ class CartRepository(
                 )
             }
 
-            val products = response.result.map { cartProductDTO ->
-                cartProductDTO.product
-            }
+            val products = response.result.map { it.product }
+            val categories = products.map { it.category }
 
+            categoriesLocalStorage.insert(categories)
             productsLocalStorage.insert(products)
 
             cartEntities.forEach { entity ->
@@ -80,10 +82,10 @@ class CartRepository(
                     )
                 }
 
-                val products = response.result.map { cartProductDTO ->
-                    cartProductDTO.product
-                }
+                val products = response.result.map { it.product }
+                val categories = products.map { it.category }
 
+                categoriesLocalStorage.insert(categories)
                 productsLocalStorage.insert(products)
 
                 cartEntities.forEach { entity ->

@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import ru.antares.cheese_android.data.local.room.dao.cart.CartEntity
 import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
 
 /**
@@ -19,7 +20,7 @@ import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
         ForeignKey(
             entity = CategoryEntity::class,
             parentColumns = ["id"],
-            childColumns = ["categoryId"]
+            childColumns = ["categoryId"],
         )
     ]
 )

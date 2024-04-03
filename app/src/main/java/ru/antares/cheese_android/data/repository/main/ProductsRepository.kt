@@ -15,7 +15,7 @@ import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPaginat
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.models.ProductModel
 import ru.antares.cheese_android.domain.repository.IProductsRepository
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailUIError
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsAppError
 
 /**
  * @author Pavel Rybakov
@@ -94,7 +94,7 @@ class ProductsRepository(
             return@onSuccess
         }.onFailure { error ->
             Log.d(GET_PRODUCT_ERROR_TAG, error.toString())
-            emit(ResourceState.Error(ProductDetailUIError.LoadingError()))
+            emit(ResourceState.Error(ProductsAppError.LoadingError()))
             return@onFailure
         }
 
