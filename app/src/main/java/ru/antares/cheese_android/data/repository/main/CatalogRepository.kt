@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.repository.main.catalog
+package ru.antares.cheese_android.data.repository.main
 
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
@@ -8,27 +8,13 @@ import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService
 import ru.antares.cheese_android.data.remote.dto.CategoryDTO
-import ru.antares.cheese_android.data.remote.dto.toCategoryModel
-import ru.antares.cheese_android.data.remote.dto.toCategoryModels
+import ru.antares.cheese_android.data.remote.models.map
 import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogUIError
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryUIError
-
-/*
-* Получить категории
-*
-* Если запрос на получение родительских категорий выполнен неудачно ->
-* -> Вернуть ошибку о том, что не удалось загрузить категории
-*
-* Если запрос на получение родительских категорий выполнен успешно ->
-* -> Записать данные в базу -> Получить дочерние категории родительских категорий ->
-* -> смапить их к типу List<Pair<CategoryUIModel, List<CategoryUIModel>>>, где левый тип - это
-*  родительская категория, а правый тип - дочерние категории -> записать в базу дочерние категории ->
-* вернуть список полученных данных
-* */
 
 /**
  * @author Pavel Rybakov
@@ -58,11 +44,11 @@ class CatalogRepository(
                 childCategories(categoryDTO.id)
                     .getOrNull()
                     ?.result
-                    ?.toCategoryModels()
+                    ?.map { it.toModel() }
                     ?: emptyList()
 
             if (childCategories.isNotEmpty()) {
-                categoryDTO.toCategoryModel() to childCategories
+                categoryDTO.toModel() to childCategories
             } else {
                 null
             }
@@ -88,24 +74,13 @@ class CatalogRepository(
 
         safeNetworkCallWithPagination {
             service.get(parentID = parentID, hasParent = true, page = page, pageSize = pageSize)
-        }.onSuccess { pagination ->
-            val categories = pagination.result
+        }.onSuccess { data: Pagination<CategoryDTO> ->
+            val categories = data.result
 
             categoresLocalStorage.insert(categories)
 
-            emit(
-                ResourceState.Success(
-                    data = Pagination(
-                        result = pagination.result.toCategoryModels(),
-                        sizeResult = pagination.sizeResult,
-                        page = pagination.page,
-                        amountOfAll = pagination.amountOfAll,
-                        amountOfPages = pagination.amountOfPages
-                    )
-                )
-            )
+            emit(ResourceState.Success(data = data.map { it.toModel() }))
         }.onFailure { error ->
-            Log.d("LOAD_CHILD_CATEGORIES_ERROR", error.message)
             emit(ResourceState.Error(CatalogParentCategoryUIError.Loading()))
         }
 

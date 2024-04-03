@@ -9,9 +9,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.local.datastore.token.AuthorizedState
 import ru.antares.cheese_android.data.local.datastore.token.ITokenService
+import ru.antares.cheese_android.data.repository.main.CartRepository
 
 class SplashScreenViewModel(
-    private val tokenService: ITokenService
+    private val tokenService: ITokenService,
 ): ViewModel() {
     private val _userAuthorizedState: MutableStateFlow<SplashScreenState> =
         MutableStateFlow(SplashScreenState.LOADING)
@@ -20,10 +21,12 @@ class SplashScreenViewModel(
 
     init {
         viewModelScope.launch {
-            tokenService.authorizedState.map { authState ->
-                if (authState == AuthorizedState.AUTHORIZED || authState == AuthorizedState.SKIPPED) SplashScreenState.NAVIGATE_TO_HOME_SCREEN
-                else SplashScreenState.NAVIGATE_TO_AUTHORIZE
-            }.collect(_userAuthorizedState)
+            launch {
+                tokenService.authorizedState.map { authState ->
+                    if (authState == AuthorizedState.AUTHORIZED || authState == AuthorizedState.SKIPPED) SplashScreenState.NAVIGATE_TO_HOME_SCREEN
+                    else SplashScreenState.NAVIGATE_TO_AUTHORIZE
+                }.collect(_userAuthorizedState)
+            }
         }
     }
 }

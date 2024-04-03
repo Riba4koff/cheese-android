@@ -15,32 +15,30 @@ data class ProductDTO(
     val recommend: Boolean,
     val outOfStock: Boolean,
     val unitName: String
-)
+) {
+    fun toModel() = ProductModel(
+        id = id,
+        name = name,
+        price = price,
+        description = description,
+        unit = unit,
+        unitName = unitName,
+        categoryId = categoryId,
+        recommend = recommend,
+        outOfStock = outOfStock,
+        category = category.toModel(),
+        categories = categories.map { it.toModel() }
+    )
 
-fun ProductDTO.toEntity() = ProductEntity(
-    id = id,
-    name = name,
-    price = price,
-    description = description,
-    unit = unit,
-    unitName = unitName,
-    categoryId = categoryId,
-    recommend = recommend,
-    outOfStock = outOfStock,
-)
-
-fun ProductDTO.toProductModel() = ProductModel(
-    id = id,
-    name = name,
-    price = price,
-    description = description,
-    unit = unit,
-    unitName = unitName,
-    categoryId = categoryId,
-    recommend = recommend,
-    outOfStock = outOfStock,
-    category = category.toCategoryModel(),
-    categories = categories.toCategoryModels()
-)
-
-fun List<ProductDTO>.toProductModels() = this.map { dto -> dto.toProductModel() }
+    fun toEntity() = ProductEntity(
+        id = id,
+        name = name,
+        price = price,
+        description = description,
+        unit = unit,
+        unitName = unitName,
+        categoryId = categoryId,
+        recommend = recommend,
+        outOfStock = outOfStock,
+    )
+}

@@ -14,14 +14,34 @@ import ru.antares.cheese_android.data.remote.services.main.profile.response.Prof
  * */
 
 interface ProfileService {
+    /**
+     * GET
+     * auth/profile
+     *
+     * @return [Response]<[CheeseNetworkResponse]<[ProfileResponse]>
+     * */
     @GET("auth/profile")
     suspend fun get(): Response<CheeseNetworkResponse<ProfileResponse>>
 
+    /**
+     * PUT
+     * auth/profile
+     *
+     * @param [request] Update profile request
+     *
+     * @return [Response]<[CheeseNetworkResponse]<[ProfileResponse]>
+     * */
     @PUT("auth/profile")
     suspend fun update(
         @Body request: UpdateProfileRequest
     ): Response<CheeseNetworkResponse<ProfileResponse>>
 
+    /**
+     * DELETE
+     * auth/profile
+     *
+     * @return [Response]<[CheeseNetworkResponse]<[Boolean]?>>
+     * */
     @DELETE("auth/profile")
     suspend fun delete(): Response<CheeseNetworkResponse<Boolean?>>
 }

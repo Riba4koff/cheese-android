@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -15,19 +16,27 @@ import ru.antares.cheese_android.data.local.datastore.token.ITokenService
 import ru.antares.cheese_android.data.remote.services.addresses.AddressesService
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
 import ru.antares.cheese_android.data.remote.services.cart.CartService
+import ru.antares.cheese_android.data.remote.services.cart.CartServiceHandler
+import ru.antares.cheese_android.data.remote.services.community.CommunityService
+import ru.antares.cheese_android.data.remote.services.community.CommunityServiceHandler
 import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService
+import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogServiceHandler
 import ru.antares.cheese_android.data.remote.services.main.products.ProductsService
+import ru.antares.cheese_android.data.remote.services.main.products.ProductsServiceHandler
 import ru.antares.cheese_android.data.remote.services.main.profile.ProfileService
+import ru.antares.cheese_android.data.remote.services.main.profile.ProfileServiceHandler
 import ru.antares.cheese_android.data.remote.services.main.profile.response.Attachment
 import ru.antares.cheese_android.data.remote.services.main.profile.response.AttachmentAdapter
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
 import ru.antares.cheese_android.data.repository.main.CartRepository
+import ru.antares.cheese_android.data.repository.main.CommunityRepository
 import ru.antares.cheese_android.data.repository.main.ProductsRepository
 import ru.antares.cheese_android.data.repository.main.ProfileRepository
-import ru.antares.cheese_android.data.repository.main.catalog.CatalogRepository
+import ru.antares.cheese_android.data.repository.main.CatalogRepository
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 import ru.antares.cheese_android.domain.repository.ICartRepository
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
+import ru.antares.cheese_android.domain.repository.ICommunityRepository
 import ru.antares.cheese_android.domain.repository.IProductsRepository
 import ru.antares.cheese_android.domain.repository.IProfileRepository
 import java.util.concurrent.TimeUnit
@@ -39,7 +48,8 @@ val netModule: List<Module>
         retrofitModule,
         okHttpModule,
         repositoryModule,
-        servicesModule
+        servicesModule,
+        serviceHandlerModule
     )
 
 private val retrofitModule = module {
@@ -56,6 +66,7 @@ private val repositoryModule = module {
     singleOf(::CatalogRepository) { bind<ICatalogRepository>() }
     singleOf(::ProductsRepository) { bind<IProductsRepository>() }
     singleOf(::CartRepository) { bind<ICartRepository>() }
+    singleOf(::CommunityRepository) { bind<ICommunityRepository>() }
 }
 
 private val servicesModule = module {
@@ -65,6 +76,15 @@ private val servicesModule = module {
     single { provideCatalogService(get()) }
     single { provideProductsService(get()) }
     single { provideCartService(get()) }
+    single { provideCommunityService(get()) }
+}
+
+private val serviceHandlerModule = module {
+    factoryOf(::CommunityServiceHandler)
+    factoryOf(::CartServiceHandler)
+    factoryOf(::ProfileServiceHandler)
+    factoryOf(::CatalogServiceHandler)
+    factoryOf(::ProductsServiceHandler)
 }
 
 private fun provideAuthorizationService(retrofit: Retrofit): AuthorizationService =
@@ -81,6 +101,9 @@ private fun provideCatalogService(retrofit: Retrofit): CatalogService =
 
 private fun provideProductsService(retrofit: Retrofit): ProductsService =
     retrofit.create(ProductsService::class.java)
+
+private fun provideCommunityService(retrofit: Retrofit): CommunityService =
+    retrofit.create(CommunityService::class.java)
 
 private fun provideCartService(retrofit: Retrofit): CartService =
     retrofit.create(CartService::class.java)

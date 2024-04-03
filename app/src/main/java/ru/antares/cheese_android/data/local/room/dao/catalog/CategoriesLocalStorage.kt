@@ -4,7 +4,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.remote.dto.CategoryDTO
-import ru.antares.cheese_android.data.remote.dto.toEntity
 
 interface ICategoriesLocalStorage {
     suspend fun subscribeToCategoriesFlow(): Flow<List<CategoryEntity>>
