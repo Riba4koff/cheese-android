@@ -285,41 +285,55 @@ fun MoreCategoryItemView(
         0.8f to Color.Black.copy(0.8f),
         1.0f to Color.Black.copy(1f)
     )
+    val (pressed, onPressedChange) = remember { mutableStateOf(false) }
+    val animatedScale by animateFloatAsState(
+        targetValue = if (pressed) 0.98f else 1f,
+        label = "Category view pressed animated scale"
+    )
+    val animatedAlpha by animateFloatAsState(
+        targetValue = if (pressed) 0.6f else 1f,
+        label = "Category view pressed animated alpha"
+    )
 
-    Card(modifier = modifier
-        .height(270.dp)
-        .width(160.dp)
-        .padding(2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        onClick = {
-            onClick(category)
-        }) {
-        Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier
+            .height(270.dp)
+            .width(160.dp)
+            .padding(2.dp)
+            .clickable(
+                scale = animatedScale,
+                onPressedChange,
+                onClick = {
+                    onClick(category)
+                }
+            )
+            .clip(CheeseTheme.shapes.small)
+            .alpha(animatedAlpha)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(8.dp)
+        ) {
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = ImageRequest.Builder(LocalContext.current).data(category.imageLink)
+                    .crossfade(true).build(),
+                contentDescription = "Category image",
+                contentScale = ContentScale.Crop
+            )
+            // Vertical black gradient
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .blur(8.dp)
-            ) {
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = ImageRequest.Builder(LocalContext.current).data(category.imageLink)
-                        .crossfade(true).build(),
-                    contentDescription = "Category image",
-                    contentScale = ContentScale.Crop
-                )
-                // Vertical black gradient
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Brush.verticalGradient(colorStops = gradientColor))
-                )
-            }
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = stringResource(R.string.more_categories),
-                style = CheeseTheme.typography.common18Bold,
-                color = CheeseTheme.colors.white
+                    .background(Brush.verticalGradient(colorStops = gradientColor))
             )
         }
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = stringResource(R.string.more_categories),
+            style = CheeseTheme.typography.common18Bold,
+            color = CheeseTheme.colors.white
+        )
     }
 }
