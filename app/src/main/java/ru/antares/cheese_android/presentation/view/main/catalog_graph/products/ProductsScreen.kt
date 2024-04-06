@@ -236,9 +236,6 @@ fun ProductsScreen(
                                     )
                                 }
                             }
-                            item {
-
-                            }
                         }
                     }
                 }

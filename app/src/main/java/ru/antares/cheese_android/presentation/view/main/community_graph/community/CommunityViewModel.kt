@@ -3,6 +3,7 @@ package ru.antares.cheese_android.presentation.view.main.community_graph.communi
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.optics.copy
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +32,7 @@ class CommunityViewModel(
 
     init {
         viewModelScope.launch {
-            onEvent(CommunityEvent.LoadNextPage(null, null))
+            onEvent(CommunityEvent.LoadNextPage(0, 16))
         }
     }
 
@@ -45,23 +46,33 @@ class CommunityViewModel(
         }
     }
 
-    private fun loadNextPage(page: Int?, size: Int?) = viewModelScope.launch {
+    private fun loadNextPage(
+        page: Int,
+        size: Int
+    ) = viewModelScope.launch {
         repository.get(
             page = page,
             size = size,
             hasActivity = true
-        ).collectLatest { result ->
-            result.onLoading { loading ->
-                _mutableState.update { it.copy(loading = loading) }
+        ).collectLatest { receivingPosts ->
+            receivingPosts.onLoading { loadingNextPage ->
+                _mutableState.update { state ->
+                    state.copy {
+                        CommunityScreenState.loadingNextPage set loadingNextPage
+                    }
+                }
             }.onError { error ->
                 Log.d("CommunityViewModel", error.toString())
             }.onSuccess { pagination ->
                 val posts = pagination.result
 
                 _mutableState.update { state ->
-                    state.copy(
-                        posts = posts
-                    )
+                    state.copy {
+                        CommunityScreenState.loading set false
+                        CommunityScreenState.posts set (state.posts?.plus(posts) ?: posts)
+                        CommunityScreenState.currentPage set pagination.page
+                        CommunityScreenState.endReached set (pagination.sizeResult <= size && pagination.amountOfPages - 1 == page)
+                    }
                 }
             }
         }

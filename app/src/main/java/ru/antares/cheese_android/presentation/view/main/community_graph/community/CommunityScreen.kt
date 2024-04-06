@@ -6,8 +6,10 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -20,13 +22,11 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
@@ -34,7 +34,6 @@ import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,6 +67,7 @@ import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.textfields.CheeseSearchTextField
 import ru.antares.cheese_android.presentation.components.topbars.CheeseTopAppBar
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsEvent
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Preview(showBackground = true)
@@ -78,7 +78,7 @@ fun CommunityScreenPreview() {
             onEvent = {},
             onNavigationEvent = {},
             state = CommunityScreenState(
-                posts = (1..5).map {
+                posts = (1..2).map {
                     PostModel(
                         id = "$it",
                         title = "title",
@@ -105,7 +105,8 @@ fun CommunityScreenPreview() {
                         products = emptyList(),
                         posts = emptyList(),
                     )
-                }
+                },
+                loadingNextPage = true
             )
         )
     }
@@ -156,13 +157,14 @@ fun CommunityScreen(
     state: CommunityScreenState
 ) {
     val listState = rememberLazyListState()
-    val canScrollBackward = remember { derivedStateOf { listState.canScrollBackward } }
+    val floatingActionButtonIsVisible =
+        remember { derivedStateOf { listState.firstVisibleItemIndex == 1 } }
     val coroutineScope = rememberCoroutineScope()
 
     CheeseTopAppBar(
         floatingActionButton = {
             AnimatedVisibility(
-                visible = canScrollBackward.value,
+                visible = floatingActionButtonIsVisible.value,
                 enter = fadeIn(tween(128)),
                 exit = fadeOut(tween(128))
             ) {
@@ -200,6 +202,7 @@ fun CommunityScreen(
                 CommunityScreenContent(
                     lazyColumnState = listState,
                     onNavigationEvent = onNavigationEvent,
+                    onEvent = onEvent,
                     state = state
                 )
             }
@@ -210,6 +213,7 @@ fun CommunityScreen(
 @Composable
 private fun CommunityScreenContent(
     lazyColumnState: LazyListState,
+    onEvent: (CommunityEvent) -> Unit,
     onNavigationEvent: (CommunityNavigationEvent) -> Unit,
     state: CommunityScreenState
 ) {
@@ -243,18 +247,32 @@ private fun CommunityScreenContent(
                     onValueChange = onSearchChange
                 )
             }
-            items(
+            itemsIndexed(
                 items = posts,
-                key = { it.id }
-            ) { post ->
+                key = { _, it -> it.id }
+            ) { index, post ->
                 CommunityItemView(
                     modifier = Modifier
-                        .animateItemPlacement(animationSpec = tween(254)),
+                        .animateItemPlacement(animationSpec = tween(256)),
                     model = post,
                     onClick = { model ->
                         onNavigationEvent(CommunityNavigationEvent.NavigateToPost(model))
                     }
                 )
+                if (index >= posts.size - 1 && !state.loadingNextPage && !state.endReached) onEvent(
+                    CommunityEvent.LoadNextPage(
+                        page = state.currentPage + 1, size = state.pageSize
+                    )
+                )
+            }
+            item {
+                AnimatedVisibility(
+                    visible = state.loadingNextPage && !state.endReached,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    LoadingNextPageItemView(Modifier.animateItemPlacement(tween(256)))
+                }
             }
         }
     }
@@ -367,5 +385,23 @@ private fun CommunityItemView(
                 }
             }
         }
+    }
+}
+
+
+@Composable
+private fun LoadingNextPageItemView(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .aspectRatio(328f / 223f)
+            .clip(CheeseTheme.shapes.medium)
+            .background(color = CheeseTheme.colors.lightGray)
+    ) {
+        LoadingIndicator(
+            isLoading = true,
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 }

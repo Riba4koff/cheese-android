@@ -128,6 +128,7 @@ private fun CatalogScreenContent(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(vertical = CheeseTheme.paddings.medium)
     ) {
         items(state.listOfCategoryPairs) { (parent, child) ->
             PairCategoryView(

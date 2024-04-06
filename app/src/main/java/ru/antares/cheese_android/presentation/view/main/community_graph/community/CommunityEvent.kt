@@ -9,5 +9,5 @@ import ru.antares.cheese_android.domain.models.community.PostModel
  */
 
 sealed interface CommunityEvent {
-    data class LoadNextPage(val page: Int?, val size: Int?) : CommunityEvent
+    data class LoadNextPage(val page: Int, val size: Int) : CommunityEvent
 }
