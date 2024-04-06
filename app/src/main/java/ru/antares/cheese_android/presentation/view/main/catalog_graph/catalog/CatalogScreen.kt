@@ -3,6 +3,7 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,11 +17,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.*
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -37,6 +41,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.R
+import ru.antares.cheese_android.clickable
 import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.presentation.components.LoadingIndicator
@@ -136,13 +141,6 @@ private fun CatalogScreenContent(
                 }
             )
         }
-        // TODO: - loading for pagination
-        /*item {
-            LoadingIndicator(
-                isLoading = state.isLoadingNextPage,
-                showBackground = false
-            )
-        }*/
     }
 }
 
@@ -204,42 +202,54 @@ fun CategoryItemView(
         0.8f to Color.Black.copy(0.8f),
         1.0f to Color.Black.copy(1f)
     )
+    val (pressed, onPressedChange) = remember { mutableStateOf(false) }
+    val animatedScale by animateFloatAsState(
+        targetValue = if (pressed) 0.98f else 1f,
+        label = "Category view pressed animated scale"
+    )
+    val animatedAlpha by animateFloatAsState(
+        targetValue = if (pressed) 0.6f else 1f,
+        label = "Category view pressed animated alpha"
+    )
 
-    Card(modifier = modifier
-        .height(270.dp)
-        .width(160.dp)
-        .padding(2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        onClick = {
-            onCategoryClick(category)
-        }) {
+    Box(
+        modifier = modifier
+            .height(270.dp)
+            .width(160.dp)
+            .padding(2.dp)
+            .clickable(
+                scale = animatedScale,
+                onPressedChange,
+                onClick = {
+                    onCategoryClick(category)
+                }
+            )
+            .clip(CheeseTheme.shapes.small)
+            .alpha(animatedAlpha)
+    ) {
+        AsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = ImageRequest.Builder(LocalContext.current).data(category.imageLink)
+                .crossfade(true).build(),
+            contentDescription = "Category image",
+            contentScale = ContentScale.Crop
+        )
         Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            AsyncImage(
-                modifier = Modifier.fillMaxSize(),
-                model = ImageRequest.Builder(LocalContext.current).data(category.imageLink)
-                    .crossfade(true).build(),
-                contentDescription = "Category image",
-                contentScale = ContentScale.Crop
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Brush.verticalGradient(colorStops = gradientColor))
-            )
-            Text(
-                text = category.name,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 16.dp, bottom = 16.dp)
-                    .fillMaxWidth(0.8f),
-                style = CheeseTheme.typography.common16Medium,
-                color = CheeseTheme.colors.white,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Brush.verticalGradient(colorStops = gradientColor))
+        )
+        Text(
+            text = category.name,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 16.dp, bottom = 16.dp)
+                .fillMaxWidth(0.8f),
+            style = CheeseTheme.typography.common16Medium,
+            color = CheeseTheme.colors.white,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 

@@ -46,7 +46,11 @@ class CommunityViewModel(
     }
 
     private fun loadNextPage(page: Int?, size: Int?) = viewModelScope.launch {
-        repository.get(page, size).collectLatest { result ->
+        repository.get(
+            page = page,
+            size = size,
+            hasActivity = true
+        ).collectLatest { result ->
             result.onLoading { loading ->
                 _mutableState.update { it.copy(loading = loading) }
             }.onError { error ->

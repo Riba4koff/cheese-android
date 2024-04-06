@@ -29,7 +29,8 @@ interface CommunityService {
     suspend fun get(
         @Query("size") size: Int? = null,
         @Query("page") page: Int? = null,
-        @Query("sortByColumn") sort: String? = null
+        @Query("sortByColumn") sort: String? = null,
+        @Query("hasActivity") hasActivity: Boolean? = null
     ): Response<CheeseNetworkResponse<Pagination<PostDTO>>>
 
     /**

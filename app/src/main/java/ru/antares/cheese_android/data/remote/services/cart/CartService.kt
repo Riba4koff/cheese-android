@@ -18,7 +18,8 @@ import ru.antares.cheese_android.data.remote.models.CheeseNetworkResponse
 interface CartService {
 
     /**
-     * GET: cart of user
+     * GET
+     * api/v1/basket
      *
      * @return [Response]<[CheeseNetworkResponse]<[BasketResponse]>>
      */
@@ -26,7 +27,8 @@ interface CartService {
     suspend fun get(): Response<CheeseNetworkResponse<BasketResponse>>
 
     /**
-     * POST: update product in cart
+     * POST
+     * api/v1/basket
      *
      * @param [request]
      *
@@ -38,7 +40,8 @@ interface CartService {
     ): Response<CheeseNetworkResponse<Boolean>>
 
     /**
-     * DELETE: remove product with all count from cart
+     * DELETE
+     * api/v1/basket/products/{productID}
      *
      * @param productID
      *
@@ -50,7 +53,8 @@ interface CartService {
     ): Response<CheeseNetworkResponse<Boolean>>
 
     /**
-     * DELETE: clear cart
+     * DELETE
+     * api/v1/basket
      *
      * @return [Response]<[CheeseNetworkResponse]<[Boolean]>>
      * */

@@ -23,11 +23,12 @@ class CommunityRepository(
     override suspend fun get(
         page: Int?,
         size: Int?,
-        sort: String?
+        sort: String?,
+        hasActivity: Boolean?
     ): Flow<CheeseResult<CommunityError, Pagination<PostModel>>> = flow {
         emit(CheeseResult.Loading(isLoading = true))
 
-        handler.get(size, page, sort).onError { error ->
+        handler.get(size, page, sort, hasActivity).onError { error ->
             emit(CheeseResult.Error(error))
         }.onSuccess { data: Pagination<PostDTO> ->
             emit(CheeseResult.Success(data.map { it.toModel() }))

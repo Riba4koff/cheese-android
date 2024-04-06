@@ -6,9 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 /**
- * @author pavelrybakov
- * Created 29.03.2024 at 15:52
- * Android Studio
+ * UiText.kt
+ * @author Павел
+ * Created by on 02.04.2024 at 19:30
+ * Android studio
  */
 
 sealed class UiText {

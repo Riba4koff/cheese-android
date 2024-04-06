@@ -18,4 +18,6 @@ data class PostModel(
     val activityModel: ActivityModel?,
     val products: List<ProductModel>,
     val posts: List<InnerPostModel>?
-)
+) {
+    val imageURL = "https://mobile-backend.cheese.asg-demo.ru/api/v1/posts/$id/image"
+}

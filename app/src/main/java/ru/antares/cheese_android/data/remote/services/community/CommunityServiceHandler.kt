@@ -17,9 +17,10 @@ class CommunityServiceHandler(
     suspend fun get(
         size: Int?,
         page: Int?,
-        sort: String?
+        sort: String?,
+        hasActivity: Boolean?
     ): CheeseResult<CommunityError, Pagination<PostDTO>> = try {
-        val response = service.get(size, page, sort)
+        val response = service.get(size, page, sort, hasActivity)
         
         when (response.code()) {
             in 200..299 -> {

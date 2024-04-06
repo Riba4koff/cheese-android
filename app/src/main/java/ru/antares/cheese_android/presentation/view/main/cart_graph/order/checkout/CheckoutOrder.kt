@@ -228,7 +228,7 @@ private fun CreateOrderScreenContent(
     val paymentShakeController = rememberShakeController()
     val shakeConfig = ShakeConfig(
         iterations = 10,
-        translateX = -2f
+        translateX = -3f
     )
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -280,7 +280,7 @@ private fun CreateOrderScreenContent(
                 .padding(CheeseTheme.paddings.medium),
             totalCost = totalCost,
             onClick = {
-                if (state.address != null) {
+                if (state.address == null) {
                     scope.launch {
                         vibrate(context)
                         addressShakeController.shake(shakeConfig)
@@ -415,12 +415,12 @@ private fun PaymentMethod(
         verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small)
     ) {
         Text(
+            modifier = Modifier
+                .shake(shakeController),
             text = stringResource(R.string.payment_method),
             style = CheeseTheme.typography.common16Semibold
         )
         PaymentMethodItem(
-            modifier = Modifier
-                .shake(shakeController),
             paymentType = PaymentType.Cash(),
             onClick = { type ->
                 onPaymentTypeChange(type)
@@ -429,8 +429,6 @@ private fun PaymentMethod(
             else CheeseTheme.colors.gray.copy(0.1f)
         )
         PaymentMethodItem(
-            modifier = Modifier
-                .shake(shakeController),
             paymentType = PaymentType.CardToCourier(),
             onClick = { type ->
                 onPaymentTypeChange(type)

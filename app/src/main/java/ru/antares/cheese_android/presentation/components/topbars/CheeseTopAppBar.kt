@@ -27,6 +27,7 @@ import ru.antares.cheese_android.ui.theme.CheeseTheme
 @Composable
 fun CheeseTopAppBar(
     title: String,
+    floatingActionButton: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -35,6 +36,9 @@ fun CheeseTopAppBar(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        floatingActionButton = {
+            floatingActionButton?.let { it() }
+        },
         topBar = {
             TopAppBar(
                 title = {

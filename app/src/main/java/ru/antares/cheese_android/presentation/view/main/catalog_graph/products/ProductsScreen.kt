@@ -278,22 +278,29 @@ fun ProductView(
     removeFromCart: (ProductUIModel) -> Unit,
 ) {
     val (pressed, onPressedChange) = remember { mutableStateOf(false) }
-    val productAnimatedValue by animateFloatAsState(
-        targetValue = if (pressed) 0.96f else 1f, label = "Product view animated scale"
+    val productAnimatedScale by animateFloatAsState(
+        targetValue = if (pressed) 0.98f else 1f,
+        label = "Product view animated scale"
+    )
+    val productAnimatedAlpha by animateFloatAsState(
+        targetValue = if (pressed) 0.6f else 1f,
+        label = "Product view animated scale"
     )
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(3f / 2f)
-            .clickable(scale = productAnimatedValue, onPressedChange = onPressedChange, onClick = {
-                onClick(product)
-            })
+            .clickable(
+                scale = productAnimatedScale,
+                onPressedChange = onPressedChange,
+                onClick = { onClick(product) }
+            )
             .border(
                 border = BorderStroke(0.5.dp, CheeseTheme.colors.gray.copy(0.3f)),
                 shape = CheeseTheme.shapes.medium
             )
-            .alpha(productAnimatedValue)
+            .alpha(productAnimatedAlpha)
             .clip(CheeseTheme.shapes.medium),
         contentAlignment = Alignment.Center
     ) {

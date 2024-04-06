@@ -16,7 +16,8 @@ interface ICommunityRepository {
     suspend fun get(
         page: Int? = null,
         size: Int? = null,
-        sort: String? = null
+        sort: String? = null,
+        hasActivity: Boolean? = null
     ): Flow<CheeseResult<CommunityError, Pagination<PostModel>>>
 
     suspend fun get(
