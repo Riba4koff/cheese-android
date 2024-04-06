@@ -136,4 +136,9 @@ dependencies {
     implementation(libs.arrow.core)
     implementation(libs.arrow.optics)
     ksp(libs.arrow.optics.ksp.plugin)
+    // endregion
+
+    // region - kotlinx.datetime
+    implementation(libs.kotlinx.datetime)
+    // endregion
 }

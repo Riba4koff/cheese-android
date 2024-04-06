@@ -171,7 +171,12 @@ fun NavGraphBuilder.catalogNavigationGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 onNavigationEvent = viewModel::onNavigationEvent,
-                onError = viewModel::onError
+                onError = viewModel::onError,
+                navigateToProduct = { product ->
+                    viewModel.onNavigationEvent(
+                        ProductDetailNavigationEvent.NavigateToProduct(product.value.id)
+                    )
+                }
             )
         }
     }

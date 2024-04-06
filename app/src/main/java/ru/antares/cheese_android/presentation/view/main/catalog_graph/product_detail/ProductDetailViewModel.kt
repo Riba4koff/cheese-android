@@ -40,7 +40,7 @@ class ProductDetailViewModel(
         MutableStateFlow(ProductDetailViewState())
     val state: StateFlow<ProductDetailViewState> = combine(
         _mutableStateFlow,
-        getCartFlowUseCase.value
+        getCartFlowUseCase.entitites
     ) { state, cart ->
         val countInCart = cart.find { it.productID == state.product?.value?.id }?.amount ?: 0
 

@@ -92,6 +92,23 @@ sealed class Screen(
          * URL: CommunityScreen
          * */
         data object Community : Screen(route = "CommunityScreen")
+
+        /**
+         * ROUTE: CommunityDetailScreen
+         * URL: CommunityDetailScreen/id
+         *
+         * @param id post id
+         * */
+        data object CommunityActivityScreen : Screen(route = "CommunityActivityScreen", "id")
+
+        /**
+         * ROUTE: CommunityPostScreen
+         * URL: CommunityPostScreen/id
+         *
+         * @param id post id
+         * */
+        data object CommunityPostScreen : Screen(route = "CommunityPostScreen", "id")
+        data object ProductDetailScreen : Screen(route = "ProductDetailScreen", "id")
         // Screens ...
     }
 

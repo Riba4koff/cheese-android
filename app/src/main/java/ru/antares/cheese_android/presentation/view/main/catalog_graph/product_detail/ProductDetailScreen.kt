@@ -157,6 +157,9 @@ fun ProductDetailScreenPreview() {
             },
             onNavigationEvent = {
 
+            },
+            navigateToProduct = {
+
             }
         )
     }
@@ -167,7 +170,8 @@ fun ProductDetailScreen(
     state: ProductDetailViewState,
     onEvent: (ProductDetailEvent) -> Unit,
     onNavigationEvent: (ProductDetailNavigationEvent) -> Unit,
-    onError: (AppError) -> Unit
+    onError: (AppError) -> Unit,
+    navigateToProduct: (ProductUIModel) -> Unit
 ) {
     CheeseTopBarWrapper(
         topBarContent = {
@@ -210,6 +214,7 @@ fun ProductDetailScreen(
                     state = state,
                     onEvent = onEvent,
                     onNavigationEvent = onNavigationEvent,
+                    navigateToProduct = navigateToProduct
                 )
             }
         }
@@ -241,6 +246,7 @@ fun ProductDetailScreenContent(
     state: ProductDetailViewState,
     onEvent: (ProductDetailEvent) -> Unit,
     onNavigationEvent: (ProductDetailNavigationEvent) -> Unit,
+    navigateToProduct: (ProductUIModel) -> Unit
 ) {
     state.product?.let { product ->
         Box(
@@ -351,11 +357,7 @@ fun ProductDetailScreenContent(
                             .padding(bottom = CheeseTheme.paddings.small),
                         product = model,
                         onClick = { recommendation ->
-                            onNavigationEvent(
-                                ProductDetailNavigationEvent.NavigateToProduct(
-                                    recommendation.value.id
-                                )
-                            )
+                            navigateToProduct(recommendation)
                         },
                         addToCart = { product ->
                             onEvent(ProductDetailEvent.AddProductToCart(product))

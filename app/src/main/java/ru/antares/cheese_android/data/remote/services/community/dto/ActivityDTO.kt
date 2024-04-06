@@ -16,7 +16,7 @@ data class ActivityDTO(
     val latitude: Double,
     val address: String,
     val addressDescription: String,
-    val ticketPrice: String,
+    val ticketPrice: Double,
     val amountOfTicket: Int,
     val ticketsLeft: Int
 ) {

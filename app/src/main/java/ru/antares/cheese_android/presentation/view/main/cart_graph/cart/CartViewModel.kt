@@ -37,7 +37,7 @@ class CartViewModel(
     init {
         viewModelScope.launch {
             launch {
-                getCartFlowUseCase.productsValue.collectLatest { products ->
+                getCartFlowUseCase.products.collectLatest { products ->
                     _mutableStateFlow.update { state ->
                         state.copy {
                             CartState.products set products

@@ -60,4 +60,5 @@
     <string name="no_internet_error">Отсутствует подключение к интернету</string>
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="load_posts_error">Произошла ошибка при загрузке постов</string>
+    <string name="products">Продукты</string>
 </resources>

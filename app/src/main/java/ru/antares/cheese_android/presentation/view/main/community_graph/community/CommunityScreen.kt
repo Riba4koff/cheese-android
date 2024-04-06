@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -67,7 +66,6 @@ import ru.antares.cheese_android.presentation.components.LoadingIndicator
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.textfields.CheeseSearchTextField
 import ru.antares.cheese_android.presentation.components.topbars.CheeseTopAppBar
-import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsEvent
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Preview(showBackground = true)
@@ -78,16 +76,17 @@ fun CommunityScreenPreview() {
             onEvent = {},
             onNavigationEvent = {},
             state = CommunityScreenState(
-                posts = (1..2).map {
+                loading = false,
+                posts = listOf(
                     PostModel(
-                        id = "$it",
+                        id = "1",
                         title = "title",
                         description = "description",
                         subtitle = "subtitle",
                         createdAt = "createdAt",
                         publishedAt = "publishedAt",
                         activityModel = ActivityModel(
-                            id = "$it",
+                            id = "1",
                             event = EventModel(
                                 id = "1",
                                 title = "Сырная тусовка",
@@ -98,14 +97,25 @@ fun CommunityScreenPreview() {
                             latitude = 0.0,
                             address = "Ломоносова 16. ТЦ Мармелад",
                             addressDescription = "",
-                            ticketPrice = "",
+                            ticketPrice = 15000.0,
                             amountOfTicket = 0,
                             ticketsLeft = 0
                         ),
                         products = emptyList(),
                         posts = emptyList(),
+                    ),
+                    PostModel(
+                        id = "2",
+                        title = "title",
+                        description = "description",
+                        subtitle = "subtitle",
+                        createdAt = "createdAt",
+                        publishedAt = "publishedAt",
+                        activityModel = null,
+                        products = emptyList(),
+                        posts = emptyList(),
                     )
-                },
+                ),
                 loadingNextPage = true
             )
         )
@@ -114,36 +124,50 @@ fun CommunityScreenPreview() {
 
 @Preview
 @Composable
-fun CommunityItemViewPreview() {
+fun ActivityItemViewPreview() {
     CheeseTheme {
-        CommunityItemView(
-            model = PostModel(
+        ActivityItemView(
+            imageUrl = "",
+            postID = "",
+            model = ActivityModel(
                 id = "1",
-                title = "title",
+                event = EventModel(
+                    id = "1",
+                    title = "Сырная тусовка",
+                    description = "description",
+                ),
+                startFrom = "04.08.2023 20:00",
+                longitude = 0.0,
+                latitude = 0.0,
+                address = "Ломоносова 16. ТЦ Мармелад",
+                addressDescription = "",
+                ticketPrice = 15000.0,
+                amountOfTicket = 0,
+                ticketsLeft = 0
+            ),
+            onClickToPost = {
+
+            }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PostItemViewPreview() {
+    CheeseTheme {
+        PostItemView(
+            post = PostModel(
+                id = "1",
+                title = "Вкусные завтраки с сыром",
                 description = "description",
-                subtitle = "subtitle",
+                subtitle = "Чем и как нарезать сыр?",
                 createdAt = "createdAt",
                 publishedAt = "publishedAt",
-                activityModel = ActivityModel(
-                    id = "1",
-                    event = EventModel(
-                        id = "1",
-                        title = "Сырная тусовка",
-                        description = "description",
-                    ),
-                    startFrom = "04.08.2023 20:00",
-                    longitude = 0.0,
-                    latitude = 0.0,
-                    address = "Ломоносова 16. ТЦ Мармелад",
-                    addressDescription = "",
-                    ticketPrice = "",
-                    amountOfTicket = 0,
-                    ticketsLeft = 0
-                ),
+                activityModel = null,
                 products = emptyList(),
                 posts = emptyList(),
-            ),
-            onClick = {
+            ), onClickToPost = {
 
             }
         )
@@ -225,7 +249,9 @@ private fun CommunityScreenContent(
             onSearchChange(search)
             posts = state.posts?.filter {
                 it.activityModel?.event?.title?.lowercase()?.trim()
-                    ?.contains(search.trim().lowercase()) ?: false
+                    ?.contains(search.trim().lowercase()) ?: false ||
+                        it.title.lowercase().trim().contains(search.trim().lowercase()) ||
+                        it.subtitle.lowercase().trim().contains(search.trim().lowercase())
             }
         }
     }
@@ -250,15 +276,28 @@ private fun CommunityScreenContent(
             itemsIndexed(
                 items = posts,
                 key = { _, it -> it.id }
-            ) { index, post ->
-                CommunityItemView(
-                    modifier = Modifier
-                        .animateItemPlacement(animationSpec = tween(256)),
-                    model = post,
-                    onClick = { model ->
-                        onNavigationEvent(CommunityNavigationEvent.NavigateToPost(model))
-                    }
-                )
+            ) { index, item ->
+                if (item.activityModel != null) {
+                    ActivityItemView(
+                        modifier = Modifier
+                            .animateItemPlacement(animationSpec = tween(256)),
+                        postID = item.id,
+                        model = item.activityModel,
+                        imageUrl = item.imageURL,
+                        onClickToPost = { id ->
+                            onNavigationEvent(CommunityNavigationEvent.NavigateToActivity(id))
+                        }
+                    )
+                } else {
+                    PostItemView(
+                        modifier = Modifier
+                            .animateItemPlacement(animationSpec = tween(256)),
+                        post = item,
+                        onClickToPost = { post ->
+                            onNavigationEvent(CommunityNavigationEvent.NavigateToPost(post.id))
+                        }
+                    )
+                }
                 if (index >= posts.size - 1 && !state.loadingNextPage && !state.endReached) onEvent(
                     CommunityEvent.LoadNextPage(
                         page = state.currentPage + 1, size = state.pageSize
@@ -279,10 +318,12 @@ private fun CommunityScreenContent(
 }
 
 @Composable
-private fun CommunityItemView(
+private fun ActivityItemView(
     modifier: Modifier = Modifier,
-    model: PostModel,
-    onClick: (PostModel) -> Unit
+    postID: String,
+    model: ActivityModel,
+    imageUrl: String,
+    onClickToPost: (postID: String) -> Unit,
 ) {
     val (pressed, onPressedChange) = remember { mutableStateOf(false) }
     val communityAnimatedScale by animateFloatAsState(
@@ -298,91 +339,168 @@ private fun CommunityItemView(
         1f to Color.Black
     )
 
-    model.activityModel?.let {
-        Box(
-            modifier = modifier
-                .aspectRatio(328f / 223f)
-                .clickable(
-                    scale = communityAnimatedScale,
-                    onPressedChange = onPressedChange,
-                    onClick = {
-                        onClick(model)
-                    }
-                )
-                .clip(CheeseTheme.shapes.medium)
-                .alpha(communityAnimatedAlpha),
-        ) {
-            AsyncImage(
-                modifier = Modifier
-                    .fillMaxSize(),
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(model.imageURL)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = null,
-                contentScale = ContentScale.Crop
+    Box(
+        modifier = modifier
+            .aspectRatio(328f / 223f)
+            .clickable(
+                scale = communityAnimatedScale,
+                onPressedChange = onPressedChange,
+                onClick = {
+                    onClickToPost(postID)
+                }
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(brush = Brush.verticalGradient(colorStops = verticalBlackGradient))
+            .clip(CheeseTheme.shapes.medium)
+            .alpha(communityAnimatedAlpha),
+    ) {
+        AsyncImage(
+            modifier = Modifier
+                .fillMaxSize(),
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
+            contentDescription = null,
+            contentScale = ContentScale.Crop
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(brush = Brush.verticalGradient(colorStops = verticalBlackGradient))
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomStart)
+                .padding(CheeseTheme.paddings.medium),
+            verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small)
+        ) {
+            Text(
+                text = model.event.title,
+                style = CheeseTheme.typography.common20Semibold,
+                color = CheeseTheme.colors.white
             )
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomStart)
-                    .padding(CheeseTheme.paddings.medium),
-                verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small)
+                verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.smallest)
             ) {
-                Text(
-                    text = model.activityModel.event.title,
-                    style = CheeseTheme.typography.common20Semibold,
-                    color = CheeseTheme.colors.white
-                )
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.smallest)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.LocationOn,
-                            contentDescription = null,
-                            tint = CheeseTheme.colors.accent
-                        )
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = model.activityModel.address,
-                            style = CheeseTheme.typography.common12Medium,
-                            color = CheeseTheme.colors.white,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.DateRange,
-                            contentDescription = null,
-                            tint = CheeseTheme.colors.accent
-                        )
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = model.activityModel.startFrom,
-                            style = CheeseTheme.typography.common12Medium,
-                            color = CheeseTheme.colors.white,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Outlined.LocationOn,
+                        contentDescription = null,
+                        tint = CheeseTheme.colors.accent
+                    )
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = model.address,
+                        style = CheeseTheme.typography.common12Medium,
+                        color = CheeseTheme.colors.white,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.small),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.DateRange,
+                        contentDescription = null,
+                        tint = CheeseTheme.colors.accent
+                    )
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = model.startFrom,
+                        style = CheeseTheme.typography.common12Medium,
+                        color = CheeseTheme.colors.white,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PostItemView(
+    modifier: Modifier = Modifier,
+    post: PostModel,
+    onClickToPost: (PostModel) -> Unit
+) {
+    val (pressed, onPressedChange) = remember { mutableStateOf(false) }
+    val communityAnimatedScale by animateFloatAsState(
+        targetValue = if (pressed) 0.98f else 1f,
+        label = "Community view pressed animated scale"
+    )
+    val communityAnimatedAlpha by animateFloatAsState(
+        targetValue = if (pressed) 0.6f else 1f,
+        label = "Community view animated alpha"
+    )
+    val verticalBlackGradient = arrayOf(
+        0f to Color.Transparent,
+        1f to Color.Black
+    )
+
+    Box(
+        modifier = modifier
+            .aspectRatio(328f / 223f)
+            .clickable(
+                scale = communityAnimatedScale,
+                onPressedChange = onPressedChange,
+                onClick = {
+                    onClickToPost(post)
+                }
+            )
+            .clip(CheeseTheme.shapes.medium)
+            .alpha(communityAnimatedAlpha),
+    ) {
+        AsyncImage(
+            modifier = Modifier
+                .fillMaxSize(),
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(post.imageURL)
+                .crossfade(true)
+                .build(),
+            contentDescription = null,
+            contentScale = ContentScale.Crop
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(brush = Brush.verticalGradient(colorStops = verticalBlackGradient))
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomStart)
+                .padding(CheeseTheme.paddings.medium),
+            verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.smallest)
+        ) {
+            Row {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = post.title,
+                    style = CheeseTheme.typography.common20Semibold,
+                    color = CheeseTheme.colors.white,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Row {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = post.description,
+                    style = CheeseTheme.typography.common12Regular,
+                    color = CheeseTheme.colors.white,
+                    maxLines = 4,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }

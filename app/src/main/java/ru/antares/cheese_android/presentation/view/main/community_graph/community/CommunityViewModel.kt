@@ -6,12 +6,17 @@ import androidx.lifecycle.viewModelScope
 import arrow.optics.copy
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.antares.cheese_android.domain.TimestampParser
+import ru.antares.cheese_android.domain.models.community.ActivityModel
 import ru.antares.cheese_android.domain.repository.ICommunityRepository
 
 /**
@@ -21,11 +26,26 @@ import ru.antares.cheese_android.domain.repository.ICommunityRepository
  */
 
 class CommunityViewModel(
-    private val repository: ICommunityRepository
+    private val repository: ICommunityRepository,
+    private val parser: TimestampParser
 ) : ViewModel() {
     private val _mutableState: MutableStateFlow<CommunityScreenState> =
         MutableStateFlow(CommunityScreenState())
-    val state: StateFlow<CommunityScreenState> = _mutableState.asStateFlow()
+    val state: StateFlow<CommunityScreenState> = _mutableState.map { state ->
+        state.copy {
+            CommunityScreenState.posts set (state.posts?.map {
+                it.copy(
+                    activityModel = it.activityModel?.copy(
+                        startFrom = parser(it.activityModel.startFrom)
+                    )
+                )
+            } ?: emptyList())
+        }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        CommunityScreenState()
+    )
 
     private val _navigationEvents = Channel<CommunityNavigationEvent>()
     val navigationEvents = _navigationEvents.receiveAsFlow()
@@ -52,8 +72,7 @@ class CommunityViewModel(
     ) = viewModelScope.launch {
         repository.get(
             page = page,
-            size = size,
-            hasActivity = true
+            size = size
         ).collectLatest { receivingPosts ->
             receivingPosts.onLoading { loadingNextPage ->
                 _mutableState.update { state ->

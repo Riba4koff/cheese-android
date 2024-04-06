@@ -43,13 +43,15 @@ class ProductsViewModel(
         MutableStateFlow(ProductsState())
     val state: StateFlow<ProductsState> = combine(
         _mutableStateFlow,
-        getCartFlowUseCase.value
+        getCartFlowUseCase.entitites
     ) { state, cart ->
         state.copy(
             products = state.products.map { product ->
-                val productAmount = cart.find { it.productID == product.value.id }?.amount
-                if (productAmount != null) product.copy(countInCart = productAmount)
-                else product
+                product.copy(
+                    countInCart = cart.find { entity ->
+                        entity.productID == product.value.id
+                    }?.amount ?: 0
+                )
             }
         )
     }.stateIn(
@@ -128,31 +130,34 @@ class ProductsViewModel(
         }
     }
 
-    private fun removeProductFromCart(product: ProductUIModel) = viewModelScope.launch(Dispatchers.IO) {
-        if (!state.value.loadingCart) {
-            cartRepo.decrement(product.countInCart, product.value.id).collectLatest { resource ->
-                resource.onLoading { isLoading ->
-                    _mutableStateFlow.update { state ->
-                        state.copy {
-                            ProductsState.loadingCart set isLoading
+    private fun removeProductFromCart(product: ProductUIModel) =
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!state.value.loadingCart) {
+                cartRepo.decrement(product.countInCart, product.value.id)
+                    .collectLatest { resource ->
+                        resource.onLoading { isLoading ->
+                            _mutableStateFlow.update { state ->
+                                state.copy {
+                                    ProductsState.loadingCart set isLoading
+                                }
+                            }
+                        }.onError { error ->
+                            _mutableStateFlow.update { state ->
+                                state.copy {
+                                    ProductsState.error set error
+                                }
+                            }
                         }
                     }
-                }.onError { error ->
-                    _mutableStateFlow.update { state ->
-                        state.copy {
-                            ProductsState.error set error
-                        }
-                    }
-                }
             }
         }
-    }
 
     fun onError(error: AppError) = viewModelScope.launch {
         when (error) {
             is ProductsAppError.LoadingError -> {
                 loadNextPage(state.value.currentPage, state.value.pageSize)
             }
+
             else -> {
                 _mutableStateFlow.update { state ->
                     state.copy(error = null)

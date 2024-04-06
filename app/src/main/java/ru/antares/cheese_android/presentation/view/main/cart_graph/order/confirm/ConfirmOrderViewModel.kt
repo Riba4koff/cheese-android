@@ -7,7 +7,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -37,7 +36,7 @@ class ConfirmOrderViewModel(
     private val _mutableState: MutableStateFlow<ConfirmOrderState> =
         MutableStateFlow(ConfirmOrderState())
     val state: StateFlow<ConfirmOrderState> =
-        _mutableState.combine(cartFlowUseCase.productsValue) { state, cart ->
+        _mutableState.combine(cartFlowUseCase.products) { state, cart ->
             state.copy(products = cart)
         }.stateIn(
             viewModelScope,

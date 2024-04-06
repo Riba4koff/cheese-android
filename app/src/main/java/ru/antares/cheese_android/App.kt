@@ -9,6 +9,7 @@ import org.koin.core.logger.Level.INFO
 import org.koin.core.logger.Level.WARNING
 import ru.antares.cheese_android.di.localModule
 import ru.antares.cheese_android.di.netModule
+import ru.antares.cheese_android.di.parser_module
 import ru.antares.cheese_android.di.useCaseModule
 import ru.antares.cheese_android.di.validatorsModule
 import ru.antares.cheese_android.di.viewModelsModule
@@ -26,6 +27,7 @@ class App : Application() {
             modules(viewModelsModule)
             modules(useCaseModule)
             modules(validatorsModule)
+            modules(parser_module)
         }
     }
 }

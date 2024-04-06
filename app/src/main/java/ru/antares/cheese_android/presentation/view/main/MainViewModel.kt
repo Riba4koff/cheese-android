@@ -30,7 +30,7 @@ class MainViewModel(
                 cartRepository.updateLocalCart()
             }
             launch {
-                getCartFlowUseCase.value.collectLatest { cart ->
+                getCartFlowUseCase.entitites.collectLatest { cart ->
                     _countProductsInCart.emit(cart.size)
                 }
             }

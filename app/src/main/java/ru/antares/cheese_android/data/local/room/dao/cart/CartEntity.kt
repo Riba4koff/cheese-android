@@ -19,7 +19,7 @@ import ru.antares.cheese_android.data.local.room.dao.products.ProductEntity
         ForeignKey(
             entity = ProductEntity::class,
             parentColumns = ["id"],
-            childColumns = ["productID"],
+            childColumns = ["productID"]
         )
     ]
 )

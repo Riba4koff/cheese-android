@@ -6,7 +6,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -15,7 +14,6 @@ import kotlinx.coroutines.launch
 import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.paymentType.PaymentType
 import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
-import ru.antares.cheese_android.presentation.models.AddressModel
 
 /**
  * @author pavelrybakov
@@ -30,7 +28,7 @@ class CheckoutOrderViewModel(
         MutableStateFlow(CheckoutOrderState())
     val state: StateFlow<CheckoutOrderState> = combine(
         _mutableState,
-        getCartFlowUseCase.productsValue
+        getCartFlowUseCase.products
     ) { state, products ->
         state.copy(
             products = products

@@ -18,9 +18,9 @@ class GetCartFlowUseCase(
     private val cartDao: CartDao,
     private val productsLocalStorage: ProductsLocalStorage
 ) {
-    val value: Flow<List<CartEntity>> = cartDao.subscribeCartFlow()
+    val entitites: Flow<List<CartEntity>> = cartDao.subscribeCartFlow()
 
-    val productsValue: Flow<List<CartProductModel>> =
+    val products: Flow<List<CartProductModel>> =
         cartDao.subscribeCartFlow().combine(productsLocalStorage.products()) { cart, products ->
             products.mapNotNull { product ->
                 val amount = cart.find { it.productID == product.id }?.amount
