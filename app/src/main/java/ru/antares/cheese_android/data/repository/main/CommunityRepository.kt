@@ -47,8 +47,8 @@ class CommunityRepository(
         handler.get(id).onError { error ->
             emit(CheeseResult.Error(error))
         }.onSuccess { post ->
-            productsLocalStorage.insert(post.products)
             categoriesLocalStorage.insert(post.products.map { it.category })
+            productsLocalStorage.insert(post.products)
             emit(CheeseResult.Success(data = post.toModel()))
         }
 
