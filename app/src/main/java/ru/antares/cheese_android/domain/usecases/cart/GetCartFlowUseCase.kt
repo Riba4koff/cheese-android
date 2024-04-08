@@ -2,9 +2,9 @@ package ru.antares.cheese_android.domain.usecases.cart
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import ru.antares.cheese_android.data.local.room.dao.cart.CartDao
-import ru.antares.cheese_android.data.local.room.dao.cart.CartEntity
-import ru.antares.cheese_android.data.local.room.dao.products.ProductsLocalStorage
+import ru.antares.cheese_android.data.local.room.cart.CartDao
+import ru.antares.cheese_android.data.local.room.cart.CartEntity
+import ru.antares.cheese_android.data.local.room.products.ProductsLocalStorage
 import ru.antares.cheese_android.domain.models.CartProductModel
 
 /**

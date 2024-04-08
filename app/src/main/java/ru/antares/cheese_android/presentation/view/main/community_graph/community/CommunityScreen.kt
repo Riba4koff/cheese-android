@@ -181,8 +181,9 @@ fun CommunityScreen(
     state: CommunityScreenState
 ) {
     val listState = rememberLazyListState()
-    val floatingActionButtonIsVisible =
-        remember { derivedStateOf { listState.firstVisibleItemIndex == 1 } }
+    val floatingActionButtonIsVisible = remember {
+        derivedStateOf { listState.firstVisibleItemIndex >= 1 }
+    }
     val coroutineScope = rememberCoroutineScope()
 
     CheeseTopAppBar(

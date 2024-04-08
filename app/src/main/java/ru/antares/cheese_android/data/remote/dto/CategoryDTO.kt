@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.data.remote.dto
 
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
+import ru.antares.cheese_android.data.local.room.catalog.CategoryEntity
 import ru.antares.cheese_android.domain.models.CategoryModel
 
 data class CategoryDTO(

@@ -4,8 +4,8 @@ import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import ru.antares.cheese_android.data.local.room.dao.catalog.ICategoriesLocalStorage
-import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
+import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
+import ru.antares.cheese_android.data.local.room.products.IProductsLocalStorage
 import ru.antares.cheese_android.data.remote.dto.ProductDTO
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.models.map

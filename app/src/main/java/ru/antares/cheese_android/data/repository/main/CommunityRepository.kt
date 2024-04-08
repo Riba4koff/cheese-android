@@ -2,7 +2,8 @@ package ru.antares.cheese_android.data.repository.main
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
+import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
+import ru.antares.cheese_android.data.local.room.products.IProductsLocalStorage
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.models.map
 import ru.antares.cheese_android.data.remote.services.community.CommunityServiceHandler
@@ -20,7 +21,8 @@ import ru.antares.cheese_android.domain.result.CheeseResult
 
 class CommunityRepository(
     private val handler: CommunityServiceHandler,
-    private val productsLocalStorage: IProductsLocalStorage
+    private val productsLocalStorage: IProductsLocalStorage,
+    private val categoriesLocalStorage: ICategoriesLocalStorage
 ) : ICommunityRepository {
     override suspend fun get(
         page: Int?,
@@ -46,6 +48,7 @@ class CommunityRepository(
             emit(CheeseResult.Error(error))
         }.onSuccess { post ->
             productsLocalStorage.insert(post.products)
+            categoriesLocalStorage.insert(post.products.map { it.category })
             emit(CheeseResult.Success(data = post.toModel()))
         }
 

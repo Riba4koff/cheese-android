@@ -15,6 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.remote.services.addresses.AddressesService
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
+import ru.antares.cheese_android.data.remote.services.auth.AuthorizationServiceHandler
 import ru.antares.cheese_android.data.remote.services.cart.CartService
 import ru.antares.cheese_android.data.remote.services.cart.CartServiceHandler
 import ru.antares.cheese_android.data.remote.services.community.CommunityService
@@ -85,6 +86,7 @@ private val serviceHandlerModule = module {
     factoryOf(::ProfileServiceHandler)
     factoryOf(::CatalogServiceHandler)
     factoryOf(::ProductsServiceHandler)
+    factoryOf(::AuthorizationServiceHandler)
 }
 
 private fun provideAuthorizationService(retrofit: Retrofit): AuthorizationService =

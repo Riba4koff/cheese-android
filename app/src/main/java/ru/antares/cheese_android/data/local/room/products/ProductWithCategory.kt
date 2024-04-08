@@ -1,8 +1,8 @@
-package ru.antares.cheese_android.data.local.room.dao.products
+package ru.antares.cheese_android.data.local.room.products
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
+import ru.antares.cheese_android.data.local.room.catalog.CategoryEntity
 
 /**
  * ProductWithCategory.kt

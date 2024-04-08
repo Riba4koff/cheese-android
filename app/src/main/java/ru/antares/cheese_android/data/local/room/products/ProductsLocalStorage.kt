@@ -1,11 +1,11 @@
-package ru.antares.cheese_android.data.local.room.dao.products
+package ru.antares.cheese_android.data.local.room.products
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoriesDao
-import ru.antares.cheese_android.data.local.room.dao.catalog.toCategoryUIModel
+import ru.antares.cheese_android.data.local.room.catalog.CategoriesDao
+import ru.antares.cheese_android.data.local.room.catalog.toCategoryUIModel
 import ru.antares.cheese_android.data.remote.dto.ProductDTO
 import ru.antares.cheese_android.domain.models.ProductModel
 

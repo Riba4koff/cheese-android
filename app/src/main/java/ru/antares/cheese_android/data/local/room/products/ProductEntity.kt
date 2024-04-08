@@ -1,11 +1,11 @@
-package ru.antares.cheese_android.data.local.room.dao.products
+package ru.antares.cheese_android.data.local.room.products
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import ru.antares.cheese_android.data.local.room.dao.cart.CartEntity
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
+import ru.antares.cheese_android.data.local.room.cart.CartEntity
+import ru.antares.cheese_android.data.local.room.catalog.CategoryEntity
 
 /**
  * ProductEntity.kt

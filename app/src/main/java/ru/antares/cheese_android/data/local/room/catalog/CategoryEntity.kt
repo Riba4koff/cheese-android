@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.local.room.dao.catalog
+package ru.antares.cheese_android.data.local.room.catalog
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

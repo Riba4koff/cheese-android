@@ -4,12 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ru.antares.cheese_android.data.local.room.dao.cart.CartDao
-import ru.antares.cheese_android.data.local.room.dao.cart.CartEntity
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoriesDao
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
-import ru.antares.cheese_android.data.local.room.dao.products.ProductEntity
-import ru.antares.cheese_android.data.local.room.dao.products.ProductsDao
+import ru.antares.cheese_android.data.local.room.cart.CartDao
+import ru.antares.cheese_android.data.local.room.cart.CartEntity
+import ru.antares.cheese_android.data.local.room.catalog.CategoriesDao
+import ru.antares.cheese_android.data.local.room.catalog.CategoryEntity
+import ru.antares.cheese_android.data.local.room.products.ProductEntity
+import ru.antares.cheese_android.data.local.room.products.ProductsDao
 
 /**
  * @author Pavel Rybakov

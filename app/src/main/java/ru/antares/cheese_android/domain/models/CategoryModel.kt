@@ -1,7 +1,7 @@
 package ru.antares.cheese_android.domain.models
 
 import androidx.compose.runtime.Immutable
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoryEntity
+import ru.antares.cheese_android.data.local.room.catalog.CategoryEntity
 
 @Immutable
 data class CategoryModel(

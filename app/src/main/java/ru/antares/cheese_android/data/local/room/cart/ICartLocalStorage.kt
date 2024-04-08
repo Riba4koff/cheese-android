@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.local.room.dao.cart
+package ru.antares.cheese_android.data.local.room.cart
 
 import kotlinx.coroutines.flow.Flow
 
@@ -21,7 +21,7 @@ interface ICartLocalStorage {
 
 class CartLocalStorage(
     private val dao: CartDao
-):ICartLocalStorage {
+): ICartLocalStorage {
     override val cart: Flow<List<CartEntity>> = dao.subscribeCartFlow()
 
     override suspend fun insert(entity: CartEntity) {

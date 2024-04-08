@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.local.room.dao.products
+package ru.antares.cheese_android.data.local.room.products
 
 import androidx.room.Dao
 import androidx.room.Insert

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import ru.antares.cheese_android.data.local.room.dao.products.ProductsDao
+import ru.antares.cheese_android.data.local.room.products.ProductsDao
 import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService
 import ru.antares.cheese_android.data.repository.main.ProductsRepository
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall

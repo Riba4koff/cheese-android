@@ -3,7 +3,7 @@ package ru.antares.cheese_android.data.repository.main.catalog
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import ru.antares.cheese_android.data.local.room.dao.catalog.ICategoriesLocalStorage
+import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService

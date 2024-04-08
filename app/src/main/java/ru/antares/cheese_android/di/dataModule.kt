@@ -15,15 +15,15 @@ import ru.antares.cheese_android.data.local.datastore.token.AuthorizationDataSto
 import ru.antares.cheese_android.data.local.datastore.user.IUserDataStore
 import ru.antares.cheese_android.data.local.datastore.user.UserDataStore
 import ru.antares.cheese_android.data.local.room.CheeseDataBase
-import ru.antares.cheese_android.data.local.room.dao.cart.CartDao
-import ru.antares.cheese_android.data.local.room.dao.cart.CartLocalStorage
-import ru.antares.cheese_android.data.local.room.dao.cart.ICartLocalStorage
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoriesDao
-import ru.antares.cheese_android.data.local.room.dao.catalog.CategoriesLocalStorage
-import ru.antares.cheese_android.data.local.room.dao.catalog.ICategoriesLocalStorage
-import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
-import ru.antares.cheese_android.data.local.room.dao.products.ProductsDao
-import ru.antares.cheese_android.data.local.room.dao.products.ProductsLocalStorage
+import ru.antares.cheese_android.data.local.room.cart.CartDao
+import ru.antares.cheese_android.data.local.room.cart.CartLocalStorage
+import ru.antares.cheese_android.data.local.room.cart.ICartLocalStorage
+import ru.antares.cheese_android.data.local.room.catalog.CategoriesDao
+import ru.antares.cheese_android.data.local.room.catalog.CategoriesLocalStorage
+import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
+import ru.antares.cheese_android.data.local.room.products.IProductsLocalStorage
+import ru.antares.cheese_android.data.local.room.products.ProductsDao
+import ru.antares.cheese_android.data.local.room.products.ProductsLocalStorage
 
 val localModule: List<Module>
     get() = listOf(

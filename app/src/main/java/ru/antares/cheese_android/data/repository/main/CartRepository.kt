@@ -4,10 +4,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
-import ru.antares.cheese_android.data.local.room.dao.cart.CartEntity
-import ru.antares.cheese_android.data.local.room.dao.cart.ICartLocalStorage
-import ru.antares.cheese_android.data.local.room.dao.catalog.ICategoriesLocalStorage
-import ru.antares.cheese_android.data.local.room.dao.products.IProductsLocalStorage
+import ru.antares.cheese_android.data.local.room.cart.CartEntity
+import ru.antares.cheese_android.data.local.room.cart.ICartLocalStorage
+import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
+import ru.antares.cheese_android.data.local.room.products.IProductsLocalStorage
 import ru.antares.cheese_android.data.remote.services.cart.BasketResponse
 import ru.antares.cheese_android.data.remote.services.cart.CartService
 import ru.antares.cheese_android.data.remote.services.cart.UpdateCartRequest

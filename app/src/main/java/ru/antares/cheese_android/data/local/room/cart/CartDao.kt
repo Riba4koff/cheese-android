@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.local.room.dao.cart
+package ru.antares.cheese_android.data.local.room.cart
 
 import androidx.room.Dao
 import androidx.room.Insert
