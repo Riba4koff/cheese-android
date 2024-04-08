@@ -15,6 +15,9 @@ import ru.antares.cheese_android.data.local.datastore.token.AuthorizationDataSto
 import ru.antares.cheese_android.data.local.datastore.user.IUserDataStore
 import ru.antares.cheese_android.data.local.datastore.user.UserDataStore
 import ru.antares.cheese_android.data.local.room.CheeseDataBase
+import ru.antares.cheese_android.data.local.room.addresses.AddressesDao
+import ru.antares.cheese_android.data.local.room.addresses.AddressesLocalStorage
+import ru.antares.cheese_android.data.local.room.addresses.IAddressesLocalStorage
 import ru.antares.cheese_android.data.local.room.cart.CartDao
 import ru.antares.cheese_android.data.local.room.cart.CartLocalStorage
 import ru.antares.cheese_android.data.local.room.cart.ICartLocalStorage
@@ -46,12 +49,14 @@ private val daoModule = module {
     singleOf(::provideCartDao)
     singleOf(::provideProductsDao)
     singleOf(::provideCategoryDao)
+    singleOf(::provideAddressesDao)
 }
 
 private val localStorageModule = module {
     factoryOf(::CartLocalStorage) { bind<ICartLocalStorage>() }
     factoryOf(::ProductsLocalStorage) { bind<IProductsLocalStorage>() }
     factoryOf(::CategoriesLocalStorage) { bind<ICategoriesLocalStorage>() }
+    factoryOf(::AddressesLocalStorage) { bind<IAddressesLocalStorage>() }
 }
 
 private val dataStoreModule = module {
@@ -81,3 +86,6 @@ private fun provideProductsDao(database: CheeseDataBase): ProductsDao {
     return database.productsDao()
 }
 
+private fun provideAddressesDao(database: CheeseDataBase): AddressesDao {
+    return database.addressesDao()
+}

@@ -135,9 +135,13 @@ fun PersonalDataScreen(
                         )
                     }
                 },
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = CheeseTheme.colors.white
+                )
             )
-        }
+        },
+        containerColor = CheeseTheme.colors.white
     ) { paddingValues ->
         AnimatedContent(
             modifier = Modifier.padding(paddingValues),

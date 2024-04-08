@@ -33,7 +33,7 @@ fun CheeseTopBarWrapper(
     enabledSearch: Boolean = true,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val topBarHeight = 42.dp
+    val topBarHeight = 64.dp
     Column {
         Box(
             modifier = Modifier
@@ -42,7 +42,6 @@ fun CheeseTopBarWrapper(
         ) {
             topBarContent()
         }
-        Divider(color = CheeseTheme.colors.gray, modifier = Modifier.height(0.5.dp))
         onSearchChange?.let {
             CheeseSearchTextField(
                 modifier = Modifier

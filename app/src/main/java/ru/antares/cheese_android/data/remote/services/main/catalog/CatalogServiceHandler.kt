@@ -1,7 +1,5 @@
 package ru.antares.cheese_android.data.remote.services.main.catalog
 
-import retrofit2.http.Query
-import ru.antares.cheese_android.data.remote.dto.CategoryDTO
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.domain.result.CheeseResult
 import java.net.UnknownHostException

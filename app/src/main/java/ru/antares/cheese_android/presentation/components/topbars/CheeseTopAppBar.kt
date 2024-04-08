@@ -41,6 +41,7 @@ fun CheeseTopAppBar(
         },
         topBar = {
             TopAppBar(
+                modifier = Modifier,
                 title = {
                     Text(
                         text = title,
@@ -56,7 +57,8 @@ fun CheeseTopAppBar(
                 ),
                 scrollBehavior = scrollBehavior
             )
-        }
+        },
+        containerColor = CheeseTheme.colors.white
     ) { paddingValues ->
         Box(modifier = Modifier
             .fillMaxSize()

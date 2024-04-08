@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.products.IProductsLocalStorage
-import ru.antares.cheese_android.data.remote.dto.ProductDTO
+import ru.antares.cheese_android.data.remote.services.main.products.ProductDTO
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.models.map
 import ru.antares.cheese_android.data.remote.services.main.products.ProductsService

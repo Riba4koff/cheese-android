@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.data.remote.services.community.dto
 
-import ru.antares.cheese_android.data.remote.dto.ProductDTO
+import ru.antares.cheese_android.data.remote.services.main.products.ProductDTO
 import ru.antares.cheese_android.domain.models.community.PostModel
 
 data class PostDTO(

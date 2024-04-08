@@ -1,7 +1,8 @@
 package ru.antares.cheese_android.presentation.models
 
-import ru.antares.cheese_android.data.remote.dto.AddressDTO
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class AddressModel(
     val id: String,
     val userID: String,

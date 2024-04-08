@@ -1,4 +1,4 @@
-package ru.antares.cheese_android.data.remote.dto
+package ru.antares.cheese_android.data.remote.services.main.catalog
 
 import ru.antares.cheese_android.data.local.room.catalog.CategoryEntity
 import ru.antares.cheese_android.domain.models.CategoryModel

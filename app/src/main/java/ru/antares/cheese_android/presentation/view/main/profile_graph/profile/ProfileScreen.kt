@@ -99,15 +99,15 @@ fun ProfileScreen(
             }
 
             ProfileNavigationEvent.NavigateToMyTickets -> {
-
+                profileNavController.navigate(Screen.ProfileNavigationGraph.Tickets.route)
             }
 
             ProfileNavigationEvent.NavigateToOrders -> {
-
+                profileNavController.navigate(Screen.ProfileNavigationGraph.Orders.route)
             }
 
             ProfileNavigationEvent.NavigateToAboutApp -> {
-
+                profileNavController.navigate(Screen.ProfileNavigationGraph.AboutApp.route)
             }
 
             ProfileNavigationEvent.NavigateToPersonalData -> {
@@ -115,7 +115,7 @@ fun ProfileScreen(
             }
 
             ProfileNavigationEvent.NavigateToSavedAddresses -> {
-
+                profileNavController.navigate(Screen.ProfileNavigationGraph.Addresses.route)
             }
 
             ProfileNavigationEvent.Authorize -> {

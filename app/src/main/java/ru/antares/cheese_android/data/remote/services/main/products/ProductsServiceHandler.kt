@@ -1,6 +1,5 @@
 package ru.antares.cheese_android.data.remote.services.main.products
 
-import ru.antares.cheese_android.data.remote.dto.ProductDTO
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.domain.result.CheeseResult
 import java.net.UnknownHostException

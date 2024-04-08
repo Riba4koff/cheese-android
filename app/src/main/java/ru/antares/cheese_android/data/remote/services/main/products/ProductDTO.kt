@@ -1,6 +1,7 @@
-package ru.antares.cheese_android.data.remote.dto
+package ru.antares.cheese_android.data.remote.services.main.products
 
 import ru.antares.cheese_android.data.local.room.products.ProductEntity
+import ru.antares.cheese_android.data.remote.services.main.catalog.CategoryDTO
 import ru.antares.cheese_android.domain.models.ProductModel
 
 data class ProductDTO(

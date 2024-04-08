@@ -3,7 +3,7 @@ package ru.antares.cheese_android.data.local.room.catalog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import ru.antares.cheese_android.data.remote.dto.CategoryDTO
+import ru.antares.cheese_android.data.remote.services.main.catalog.CategoryDTO
 
 interface ICategoriesLocalStorage {
     suspend fun subscribeToCategoriesFlow(): Flow<List<CategoryEntity>>

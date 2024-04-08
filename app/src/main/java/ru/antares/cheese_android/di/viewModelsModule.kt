@@ -16,6 +16,7 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.P
 import ru.antares.cheese_android.presentation.view.main.community_graph.community.CommunityViewModel
 import ru.antares.cheese_android.presentation.view.main.community_graph.activity.ActivityViewModel
 import ru.antares.cheese_android.presentation.view.main.community_graph.post.PostViewModel
+import ru.antares.cheese_android.presentation.view.main.profile_graph.addresses.AddressesViewModel
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataViewModel
 import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileViewModel
 import ru.antares.cheese_android.presentation.view.splash.SplashScreenViewModel
@@ -28,7 +29,8 @@ val viewModelsModule: List<Module>
         profileViewModelsModule,
         catalogViewModelsModule,
         cartViewModelsModule,
-        communityViewModelsModule
+        communityViewModelsModule,
+        addressesViewModelModule
     )
 
 private val splashScreenViewModelModule = module {
@@ -66,4 +68,8 @@ private val communityViewModelsModule = module {
     viewModelOf(::CommunityViewModel)
     viewModelOf(::ActivityViewModel)
     viewModelOf(::PostViewModel)
+}
+
+private val addressesViewModelModule = module {
+    viewModelOf(::AddressesViewModel)
 }

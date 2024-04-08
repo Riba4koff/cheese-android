@@ -7,7 +7,7 @@ import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService
-import ru.antares.cheese_android.data.remote.dto.CategoryDTO
+import ru.antares.cheese_android.data.remote.services.main.catalog.CategoryDTO
 import ru.antares.cheese_android.data.remote.models.map
 import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
 import ru.antares.cheese_android.domain.ResourceState

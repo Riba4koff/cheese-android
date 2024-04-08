@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.data.remote.services.cart
 
-import ru.antares.cheese_android.data.remote.dto.ProductDTO
+import ru.antares.cheese_android.data.remote.services.main.products.ProductDTO
 import ru.antares.cheese_android.domain.models.CartProductModel
 
 data class CartProductDTO(

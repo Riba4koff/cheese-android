@@ -14,6 +14,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.remote.services.addresses.AddressesService
+import ru.antares.cheese_android.data.remote.services.addresses.AddressesServiceHandler
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
 import ru.antares.cheese_android.data.remote.services.auth.AuthorizationServiceHandler
 import ru.antares.cheese_android.data.remote.services.cart.CartService
@@ -29,11 +30,13 @@ import ru.antares.cheese_android.data.remote.services.main.profile.ProfileServic
 import ru.antares.cheese_android.data.remote.services.main.profile.response.Attachment
 import ru.antares.cheese_android.data.remote.services.main.profile.response.AttachmentAdapter
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
+import ru.antares.cheese_android.data.repository.main.AddressesRepository
 import ru.antares.cheese_android.data.repository.main.CartRepository
 import ru.antares.cheese_android.data.repository.main.CommunityRepository
 import ru.antares.cheese_android.data.repository.main.ProductsRepository
 import ru.antares.cheese_android.data.repository.main.ProfileRepository
 import ru.antares.cheese_android.data.repository.main.catalog.CatalogRepository
+import ru.antares.cheese_android.domain.repository.IAddressesRepository
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 import ru.antares.cheese_android.domain.repository.ICartRepository
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
@@ -68,6 +71,7 @@ private val repositoryModule = module {
     singleOf(::ProductsRepository) { bind<IProductsRepository>() }
     singleOf(::CartRepository) { bind<ICartRepository>() }
     singleOf(::CommunityRepository) { bind<ICommunityRepository>() }
+    singleOf(::AddressesRepository) { bind<IAddressesRepository>() }
 }
 
 private val servicesModule = module {
@@ -87,6 +91,7 @@ private val serviceHandlerModule = module {
     factoryOf(::CatalogServiceHandler)
     factoryOf(::ProductsServiceHandler)
     factoryOf(::AuthorizationServiceHandler)
+    factoryOf(::AddressesServiceHandler)
 }
 
 private fun provideAuthorizationService(retrofit: Retrofit): AuthorizationService =
