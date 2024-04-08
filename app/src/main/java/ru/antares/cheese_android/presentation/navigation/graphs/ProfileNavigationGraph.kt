@@ -26,6 +26,7 @@ import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.domain.animations.Animations
 import ru.antares.cheese_android.presentation.models.AddressModel
 import ru.antares.cheese_android.presentation.navigation.util.Screen
+import ru.antares.cheese_android.presentation.view.main.profile_graph.about_app.AboutAppScreen
 import ru.antares.cheese_android.presentation.view.main.profile_graph.addresses.AddressesNavigationEvent
 import ru.antares.cheese_android.presentation.view.main.profile_graph.addresses.AddressesScreen
 import ru.antares.cheese_android.presentation.view.main.profile_graph.addresses.AddressesViewModel
@@ -128,10 +129,8 @@ fun NavGraphBuilder.profileNavigationGraph(
             route = Screen.ProfileNavigationGraph.AboutApp.route,
             enterTransition = Animations.AnimateToLeft.enter,
             exitTransition = Animations.AnimateToLeft.exit
-        ) { navBackStackEntry ->
-            Box(modifier = Modifier.fillMaxSize()) {
-                Text(text = "О приложении")
-            }
+        ) { _ ->
+            AboutAppScreen(navController = profileNavController)
         }
     }
 }

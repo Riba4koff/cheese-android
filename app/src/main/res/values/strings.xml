@@ -62,4 +62,8 @@
     <string name="load_posts_error">Произошла ошибка при загрузке постов</string>
     <string name="products">Продукты</string>
     <string name="saved_addresses">Сохраненные адреса</string>
+    <string name="about_app_title">О приложении</string>
+    <string name="terms_of_use">Пользовательское соглашение</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="mesie_rokfor">Месье Рокфор</string>
 </resources>
