@@ -36,29 +36,27 @@ class ProductsViewModel(
     private val getCartFlowUseCase: GetCartFlowUseCase
 ) : ViewModel() {
     companion object {
-        const val PAGE_SIZE = 4
+        const val PAGE_SIZE = 5
     }
 
     private val _mutableStateFlow: MutableStateFlow<ProductsState> =
         MutableStateFlow(ProductsState())
-    val state: StateFlow<ProductsState> = combine(
-        _mutableStateFlow,
-        getCartFlowUseCase.entitites
-    ) { state, cart ->
-        state.copy(
-            products = state.products.map { product ->
-                product.copy(
-                    countInCart = cart.find { entity ->
-                        entity.productID == product.value.id
-                    }?.amount ?: 0
-                )
-            }
+    val state: StateFlow<ProductsState> =
+        _mutableStateFlow.combine(getCartFlowUseCase.entitites) { state, entities ->
+            state.copy(
+                products = state.products.map { product ->
+                    product.copy(
+                        countInCart = entities.find { entity ->
+                            entity.productID == product.value.id
+                        }?.amount ?: 0
+                    )
+                }
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            ProductsState()
         )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000L),
-        ProductsState()
-    )
 
     private val _navigationEvents: Channel<ProductsNavigationEvent> = Channel()
     val navigationEvents: Flow<ProductsNavigationEvent> = _navigationEvents.receiveAsFlow()

@@ -33,7 +33,7 @@ class MainViewModel(
     init {
         viewModelScope.launch {
             launch {
-                authDataStore.authorizedState.collectLatest { isAuthorizedState ->
+                authDataStore.userAuthorizationState.collectLatest { isAuthorizedState ->
                     _isAuthorized.emit(isAuthorizedState == UserAuthorizationState.AUTHORIZED)
                 }
             }

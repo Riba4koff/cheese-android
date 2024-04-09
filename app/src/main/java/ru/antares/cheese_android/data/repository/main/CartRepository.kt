@@ -65,37 +65,7 @@ class CartRepository(
     override suspend fun get(): Flow<ResourceState<BasketResponse>> =
         flow {
             emit(ResourceState.Loading(isLoading = true))
-            /*handler.get().onSuccess { response ->
-                val cartEntities = response.result.map { cartProductDTO ->
-                    CartEntity(
-                        amount = cartProductDTO.amount,
-                        productID = cartProductDTO.product.id
-                    )
-                }
 
-                val products = response.result.map { it.product }
-                val categories = products.map { it.category }
-
-                categoriesLocalStorage.insert(categories)
-                productsLocalStorage.insert(products)
-
-                cartEntities.forEach { entity ->
-                    cartLocalStorage.insert(
-                        entity = entity
-                    )
-                }
-
-                emit(ResourceState.Success(response))
-                return@onSuccess
-            }.onError { error ->
-                if (error == CartError.Unauthorized) {
-                    cartLocalStorage.clear()
-                    emit(ResourceState.Error(CartAppError.UnauthorizedError()))
-                } else {
-                    emit(ResourceState.Error(CartAppError.LoadCartError()))
-                }
-                return@onError
-            }*/
             safeNetworkCall {
                 withContext(Dispatchers.IO) {
                     cartService.get()

@@ -8,10 +8,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,7 +29,7 @@ import ru.antares.cheese_android.domain.errors.AppError
 
 
 class ProfileViewModel(
-    private val tokenService: IAuthorizationDataStore,
+    private val authorizationDataStore: IAuthorizationDataStore,
     private val authorizationRepository: AuthorizationRepository,
     private val profileRepository: ProfileRepository,
     private val userDataStore: IUserDataStore,
@@ -33,33 +37,27 @@ class ProfileViewModel(
     private val _mutableStateFlow: MutableStateFlow<ProfileState> =
         MutableStateFlow(ProfileState())
     val state: StateFlow<ProfileState> = _mutableStateFlow.asStateFlow()
-
     private val _navigationEvents: Channel<ProfileNavigationEvent> = Channel()
     val navigationEvents: Flow<ProfileNavigationEvent> = _navigationEvents.receiveAsFlow()
 
     init {
-        viewModelScope.launch {
-            launch {
-                userDataStore.user.collectLatest { user ->
-                    _mutableStateFlow.update { state ->
-                        state.copy {
-                            ProfileState.surname set user.surname
-                            ProfileState.name set user.name
-                            ProfileState.patronymic set user.patronymic
-                        }
+        userDataStore.user.combine(authorizationDataStore.userAuthorizationState) { user, authState ->
+            if (authState == AUTHORIZED) user else null
+        }.combine(_mutableStateFlow) { user, state ->
+            _mutableStateFlow.update {
+                state.copy {
+                    if (user != null) {
+                        ProfileState.isAuthorized set true
+                        ProfileState.profileLoaded set true
+                        ProfileState.surname set user.surname
+                        ProfileState.name set user.name
+                        ProfileState.patronymic set user.patronymic
+                    } else {
+                        ProfileState.isAuthorized set false
                     }
                 }
             }
-            launch {
-                tokenService.authorizedState.collectLatest { authState ->
-                    _mutableStateFlow.update { state ->
-                        state.copy {
-                            ProfileState.isAuthorized set (authState == AUTHORIZED)
-                        }
-                    }
-                }
-            }
-        }
+        }.launchIn(viewModelScope)
     }
 
 
@@ -78,7 +76,9 @@ class ProfileViewModel(
         when (appError as ProfileAppError) {
             is ProfileAppError.LoadProfileError -> loadProfileV2()
             is ProfileAppError.LogoutError -> logout()
-            is ProfileAppError.UnauthorizedError -> { tokenService.logout() }
+            is ProfileAppError.UnauthorizedError -> {
+                authorizationDataStore.logout()
+            }
         }
     }
 

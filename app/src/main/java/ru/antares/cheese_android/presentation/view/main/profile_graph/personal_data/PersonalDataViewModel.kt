@@ -1,6 +1,5 @@
 package ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.optics.copy
@@ -37,7 +36,7 @@ class PersonalDataViewModel(
     val state: StateFlow<PersonalDataState> = _mutableStateFlow.asStateFlow()
 
     init {
-        initialize()
+        loadData()
     }
 
     fun onEvent(event: PersonalDataEvent) = viewModelScope.launch {
@@ -60,7 +59,7 @@ class PersonalDataViewModel(
 
             is PersonalDataAppError.UpdateProfile -> {
                 /* TODO: handling profile update error */
-                initialize()
+                loadData()
             }
         }
     }
@@ -72,13 +71,8 @@ class PersonalDataViewModel(
         _navigationEvents.send(navigationEvent)
     }
 
-    private fun initialize() = viewModelScope.launch {
-        Log.d("PD_VM", "initializing")
-
+    private fun loadData() = viewModelScope.launch {
         val user = withContext(Dispatchers.IO) { getUserUseCase.value.first() }
-
-        Log.d("USER", user.toString())
-        Log.d("USER", user.email.isEmpty().toString())
 
         _mutableStateFlow.update { state ->
             state.copy {

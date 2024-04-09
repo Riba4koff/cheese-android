@@ -63,6 +63,7 @@ import ru.antares.cheese_android.presentation.models.ProductUIModel
 import ru.antares.cheese_android.presentation.util.parsePrice
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.LoadingProductView
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductView
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsViewModel
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 /**
@@ -267,7 +268,7 @@ fun ProductDetailScreenContent(
                         ProductDetailEvent.LoadNextPageOfRecommendations(
                             categoryID = product.value.categoryId,
                             page = 0,
-                            size = 4
+                            size = 5
                         )
                     )
                 }

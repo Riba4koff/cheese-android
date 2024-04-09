@@ -1,9 +1,11 @@
 package ru.antares.cheese_android.data.repository.main
 
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.products.IProductsLocalStorage
 import ru.antares.cheese_android.data.remote.services.main.products.ProductDTO
@@ -60,8 +62,8 @@ class ProductsRepository(
             val products = data.result
             val categories = data.result.map { it.category }
 
-            productsLocalStorage.insert(products)
             categoriesLocalStorage.insert(categories)
+            productsLocalStorage.insert(products)
 
             emit(
                 ResourceState.Success(data.map { it.toModel() })

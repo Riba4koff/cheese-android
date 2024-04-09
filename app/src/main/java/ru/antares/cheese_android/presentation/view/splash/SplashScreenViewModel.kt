@@ -21,7 +21,7 @@ class SplashScreenViewModel(
     init {
         viewModelScope.launch {
             launch {
-                authorizationDataStore.authorizedState.map { authState ->
+                authorizationDataStore.userAuthorizationState.map { authState ->
                     if (authState == UserAuthorizationState.AUTHORIZED || authState == UserAuthorizationState.SKIPPED) SplashScreenState.NAVIGATE_TO_HOME_SCREEN
                     else SplashScreenState.NAVIGATE_TO_AUTHORIZE
                 }.collect(_userAuthorizedState)

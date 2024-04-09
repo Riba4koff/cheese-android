@@ -36,7 +36,7 @@ class AuthorizationDataStore(context: Context) : IAuthorizationDataStore {
         preferences[bearerToken] ?: ""
     }.first()
 
-    override val authorizedState: Flow<UserAuthorizationState> = dataStore.data.map { preferences ->
+    override val userAuthorizationState: Flow<UserAuthorizationState> = dataStore.data.map { preferences ->
         val authorizationSkipped = preferences[authorizationSkipped] ?: false
         preferences[bearerToken].let { token ->
             if (token.isNullOrEmpty().not()) UserAuthorizationState.AUTHORIZED

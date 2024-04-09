@@ -21,7 +21,7 @@ data class ProductsState(
     val loadingNextPage: Boolean = true,
     val endReached: Boolean = false,
     val currentPage: Int = 0,
-    val pageSize: Int = 4,
+    val pageSize: Int = ProductsViewModel.PAGE_SIZE,
     val loadingCart: Boolean = false
 ) {
     companion object

@@ -21,7 +21,7 @@ data class ProductDetailViewState(
     val loadingNextPageRecommendations: Boolean = true,
     val recommendations: List<ProductUIModel> = emptyList(),
     val endReached: Boolean = false,
-    val pageSize: Int = 4,
+    val pageSize: Int = 5,
     val currentPage: Int = 0,
     val loadingCart: Boolean = false
 ) { companion object }

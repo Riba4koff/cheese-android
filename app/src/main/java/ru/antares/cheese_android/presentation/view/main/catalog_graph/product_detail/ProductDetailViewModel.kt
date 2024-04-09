@@ -1,5 +1,6 @@
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.optics.copy
@@ -38,26 +39,25 @@ class ProductDetailViewModel(
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<ProductDetailViewState> =
         MutableStateFlow(ProductDetailViewState())
-    val state: StateFlow<ProductDetailViewState> = combine(
-        _mutableStateFlow,
-        getCartFlowUseCase.entitites
-    ) { state, cart ->
-        val countInCart = cart.find { it.productID == state.product?.value?.id }?.amount ?: 0
+    val state: StateFlow<ProductDetailViewState> =
+        _mutableStateFlow.combine(getCartFlowUseCase.entitites) { state, cart ->
+            val countInCart = cart.find { it.productID == state.product?.value?.id }?.amount ?: 0
 
-        state.copy(
-            product = state.product?.copy(countInCart = countInCart),
-            recommendations = state.recommendations.map { recommendation ->
-                val countInCartRec = cart.find { it.productID == recommendation.value.id }?.amount
+            state.copy(
+                product = state.product?.copy(countInCart = countInCart),
+                recommendations = state.recommendations.map { recommendation ->
+                    val countInCartRec =
+                        cart.find { it.productID == recommendation.value.id }?.amount
 
-                if (countInCartRec != null) recommendation.copy(countInCart = countInCartRec)
-                else recommendation
-            }
+                    if (countInCartRec != null) recommendation.copy(countInCart = countInCartRec)
+                    else recommendation
+                }
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            ProductDetailViewState()
         )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000L),
-        ProductDetailViewState()
-    )
 
 
     private val _navigationEvents: Channel<ProductDetailNavigationEvent> = Channel()
@@ -96,6 +96,7 @@ class ProductDetailViewModel(
             is ProductDetailAppError.LoadingError -> {
                 loadProduct(productID)
             }
+
             else -> {
                 _mutableStateFlow.update { state ->
                     state.copy(appError = null)
@@ -128,10 +129,14 @@ class ProductDetailViewModel(
         }
     }
 
-    private fun loadNextPageOfRecommendations(categoryID: String, page: Int, pageSize: Int) =
-        viewModelScope.launch(Dispatchers.IO) {
+    private fun loadNextPageOfRecommendations(
+        categoryID: String,
+        page: Int, pageSize: Int
+    ) = viewModelScope.launch(Dispatchers.IO) {
             prodRepo.get(
-                categoryID = categoryID, page = page, size = ProductsViewModel.PAGE_SIZE
+                categoryID = categoryID,
+                page = page,
+                size = pageSize
             ).collectLatest { resource ->
                 resource.onLoading { isLoading ->
                     _mutableStateFlow.update { state ->
@@ -146,9 +151,10 @@ class ProductDetailViewModel(
                         }
                     }
                 }.onSuccess { pagination ->
+                    Log.d("TAG", "page: $page, pageSize: $pageSize, loadNextPageOfRecommendations: ${pagination.result.map { it.name }}")
                     _mutableStateFlow.update { state ->
                         state.copy {
-                            ProductDetailViewState.recommendations set state.recommendations + pagination.result.toUIModels()
+                            ProductDetailViewState.recommendations set (state.recommendations + pagination.result.toUIModels())
                             ProductDetailViewState.loading set false
                             ProductDetailViewState.currentPage set page
                             ProductDetailViewState.endReached set (pagination.sizeResult <= pageSize && pagination.amountOfPages - 1 == page)

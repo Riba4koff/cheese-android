@@ -134,8 +134,8 @@ fun AboutAppScreen(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.medium)
                 ) {
-                    AboutAppTab(stringResource(R.string.terms_of_use)) { uriHandler.openUri("https://mrokfor.ru/policy") }
-                    AboutAppTab(stringResource(R.string.privacy_policy)) { uriHandler.openUri("https://mrokfor.ru/agreement") }
+                    AboutAppTab(stringResource(R.string.terms_of_use)) { uriHandler.openUri("https://mrokfor.ru/agreement") }
+                    AboutAppTab(stringResource(R.string.privacy_policy)) { uriHandler.openUri("https://mrokfor.ru/policy") }
                 }
             }
         }

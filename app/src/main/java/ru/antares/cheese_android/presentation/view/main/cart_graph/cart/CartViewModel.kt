@@ -1,5 +1,6 @@
 package ru.antares.cheese_android.presentation.view.main.cart_graph.cart
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.optics.copy
@@ -9,10 +10,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
+import ru.antares.cheese_android.data.remote.services.cart.CartError
 import ru.antares.cheese_android.data.repository.main.CartRepository
 import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
@@ -24,8 +28,8 @@ import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
  */
 
 class CartViewModel(
+    getCartFlowUseCase: GetCartFlowUseCase,
     private val authorizationDataStore: IAuthorizationDataStore,
-    private val getCartFlowUseCase: GetCartFlowUseCase,
     private val repository: CartRepository
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<CartState> = MutableStateFlow(CartState())
@@ -35,43 +39,31 @@ class CartViewModel(
     val navigationEvents: Flow<CartNavigationEvent> = _navigationEvents.receiveAsFlow()
 
     init {
-        viewModelScope.launch {
-            launch {
-                getCartFlowUseCase.products.collectLatest { products ->
-                    _mutableStateFlow.update { state ->
-                        state.copy {
-                            CartState.products set products
-                            CartState.totalCost set products.sumOf { it.price * it.amount }
-                        }
-                    }
+        getCartFlowUseCase.products.map { products ->
+            _mutableStateFlow.update { state ->
+                state.copy {
+                    CartState.products set products
+                    CartState.totalCost set products.sumOf { it.price * it.amount }
                 }
             }
-            launch {
-                repository.get().collectLatest { resourceState ->
-                    resourceState.onError { uiError ->
-                        if (uiError == CartAppError.UnauthorizedError()) {
-                            _mutableStateFlow.update { state ->
-                                state.copy {
-                                    CartState.loading set false
-                                }
-                            }
-                        } else {
-                            _mutableStateFlow.update { state ->
-                                state.copy {
-                                    CartState.error set uiError
-                                    CartState.loading set false
-                                }
-                            }
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            repository.getV2().collectLatest { resourceState ->
+                resourceState.onError { uiError ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            CartState.loading set false
                         }
-                    }.onSuccess { response ->
-                        _mutableStateFlow.update { state ->
-                            state.copy {
-                                CartState.totalCost set response.totalCost
-                                CartState.totalCostWithDiscount set response.totalCostWithDiscount
-                                CartState.currentPage set response.page
-                                CartState.loading set false
-                                CartState.authorized set true
-                            }
+                    }
+                }.onSuccess { response ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            CartState.totalCost set response.totalCost
+                            CartState.totalCostWithDiscount set response.totalCostWithDiscount
+                            CartState.currentPage set response.page
+                            CartState.loading set false
+                            CartState.authorized set true
                         }
                     }
                 }
