@@ -28,6 +28,7 @@ fun BottomBarNavHost(globalNavController: NavHostController) {
     val bottomBarNavController = rememberNavController()
     val mainViewModel: MainViewModel = koinViewModel()
     val countInProductsInCart by mainViewModel.countProductsInCart.collectAsStateWithLifecycle()
+    val isAuthorized by mainViewModel.isAuthorized.collectAsStateWithLifecycle()
 
     val navBackStackEntry by bottomBarNavController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -48,7 +49,8 @@ fun BottomBarNavHost(globalNavController: NavHostController) {
                         restoreState = true
                     }
                 },
-                currentRoute = currentRoute
+                currentRoute = currentRoute,
+                isAuthorized = isAuthorized
             )
         },
     ) { paddings ->

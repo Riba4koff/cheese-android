@@ -2,7 +2,9 @@ package ru.antares.cheese_android.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.antares.cheese_android.data.remote.services.cart.BasketResponse
+import ru.antares.cheese_android.data.remote.services.cart.CartError
 import ru.antares.cheese_android.domain.ResourceState
+import ru.antares.cheese_android.domain.result.CheeseResult
 
 /**
  * ICartRepository.kt
@@ -14,6 +16,7 @@ import ru.antares.cheese_android.domain.ResourceState
 interface ICartRepository {
     suspend fun updateLocalCart(): Unit
     suspend fun get(): Flow<ResourceState<BasketResponse>>
+    suspend fun getV2(): Flow<CheeseResult<CartError, BasketResponse>>
     suspend fun increment(currentAmount: Int, productID: String): Flow<ResourceState<Boolean>>
     suspend fun decrement(currentAmount: Int, productID: String): Flow<ResourceState<Boolean>>
     suspend fun delete(productID: String): Flow<ResourceState<Boolean>>

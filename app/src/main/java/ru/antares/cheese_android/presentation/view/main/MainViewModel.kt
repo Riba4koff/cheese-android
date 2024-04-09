@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ru.antares.cheese_android.data.local.datastore.token.UserAuthorizationState
+import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.repository.main.CartRepository
 import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
 
@@ -19,13 +21,22 @@ import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
 
 class MainViewModel(
     private val cartRepository: CartRepository,
-    private val getCartFlowUseCase: GetCartFlowUseCase
+    private val getCartFlowUseCase: GetCartFlowUseCase,
+    private val authDataStore: IAuthorizationDataStore
 ): ViewModel() {
     private val _countProductsInCart: MutableStateFlow<Int> = MutableStateFlow(0)
     val countProductsInCart: StateFlow<Int> = _countProductsInCart.asStateFlow()
 
+    private val _isAuthorized: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isAuthorized: StateFlow<Boolean> = _isAuthorized.asStateFlow()
+
     init {
         viewModelScope.launch {
+            launch {
+                authDataStore.authorizedState.collectLatest { isAuthorizedState ->
+                    _isAuthorized.emit(isAuthorizedState == UserAuthorizationState.AUTHORIZED)
+                }
+            }
             launch {
                 cartRepository.updateLocalCart()
             }

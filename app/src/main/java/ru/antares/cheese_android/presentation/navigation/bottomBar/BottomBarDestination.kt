@@ -6,7 +6,7 @@ import ru.antares.cheese_android.presentation.navigation.util.Screen
 enum class BottomBarDestination(
     val icon: Int,
     val title: String,
-    val route: String
+    val route: String,
 ) {
     Home(icon = R.drawable.bottom_bar_home_icon, title = "Главная", route = Screen.HomeNavigationGraph.route),
     Catalog(icon = R.drawable.bottom_bar_catalog_icon, title = "Каталог", route = Screen.CatalogNavigationGraph.route),

@@ -9,11 +9,37 @@ import ru.antares.cheese_android.domain.result.CheeseError
  */
 
 sealed interface CartError : CheeseError {
-    data object ServerError : CartError
-    data object UnknownError : CartError
-    data object NoInternetError : CartError
-    data object ReceiveError: CartError
-    data object UpdateError : CartError
-    data object ClearError : CartError
-    data object DeleteProductError : CartError
+    val message: String
+
+    data class ServerError(
+        override val message: String = "Произошла ошибка на сервере"
+    ) : CartError
+
+    data class Unauthorized(
+        override val message: String = "Вы не авторизованы"
+    ) : CartError
+
+    data class UnknownError(
+        override val message: String = "Произошла неизвестная ошибка"
+    ) : CartError
+
+    data class NoInternetError(
+        override val message: String = "Нет подключения к интернету"
+    ) : CartError
+
+    data class ReceiveError(
+        override val message: String = "Произошла ошибка при загрузке"
+    ) : CartError
+
+    data class UpdateError(
+        override val message: String = "Не удалось обновить корзину"
+    ) : CartError
+
+    data class ClearError(
+        override val message: String = "Не удалось очистить корзину"
+    ) : CartError
+
+    data class DeleteProductError(
+        override val message: String = "Не удалось удалить продукт из корзины"
+    ) : CartError
 }

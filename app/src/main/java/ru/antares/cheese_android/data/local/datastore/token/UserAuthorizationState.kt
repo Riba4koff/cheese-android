@@ -1,6 +1,6 @@
 package ru.antares.cheese_android.data.local.datastore.token
 
-enum class AuthorizedState {
+enum class UserAuthorizationState {
     AUTHORIZED,
     NOT_AUTHORIZED,
     SKIPPED

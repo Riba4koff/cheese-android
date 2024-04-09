@@ -12,31 +12,37 @@ import java.net.UnknownHostException
 class CartServiceHandler(
     private val service: CartService
 ) {
-    suspend fun get(): CheeseResult<CartError, BasketResponse> = try {
-        val response = service.get()
+    suspend fun get(): CheeseResult<CartError, BasketResponse> {
+        return try {
+            val response = service.get()
 
-        when (response.code()) {
-            in 200..299 -> {
-                val data = response.body()?.data
+            if (response.code() == 401) return CheeseResult.Error(CartError.Unauthorized())
 
-                if (data != null) {
-                    CheeseResult.Success(data)
-                } else {
-                    CheeseResult.Error(CartError.ReceiveError)
+            when (response.code()) {
+                in 200..299 -> {
+                    val data = response.body()?.data
+
+                    if (data != null) {
+                        CheeseResult.Success(data)
+                    } else {
+                        CheeseResult.Error(CartError.ReceiveError())
+                    }
+                }
+
+                in 500..599 -> {
+                    CheeseResult.Error(CartError.ServerError())
+                }
+
+                else -> {
+                    CheeseResult.Error(CartError.UnknownError())
                 }
             }
-            in 500..599 -> {
-                CheeseResult.Error(CartError.ServerError)
-            }
-            else -> {
-                CheeseResult.Error(CartError.UnknownError)
-            }
+        } catch (e: UnknownHostException) {
+            CheeseResult.Error(CartError.NoInternetError())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            CheeseResult.Error(CartError.UnknownError())
         }
-    } catch (e: UnknownHostException) {
-        CheeseResult.Error(CartError.NoInternetError)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        CheeseResult.Error(CartError.UnknownError)
     }
 
     suspend fun update(request: UpdateCartRequest): CheeseResult<CartError, Boolean> = try {
@@ -49,21 +55,23 @@ class CartServiceHandler(
                 if (data != null) {
                     CheeseResult.Success(data)
                 } else {
-                    CheeseResult.Error(CartError.UpdateError)
+                    CheeseResult.Error(CartError.UpdateError())
                 }
             }
+
             in 500..599 -> {
-                CheeseResult.Error(CartError.ServerError)
+                CheeseResult.Error(CartError.ServerError())
             }
+
             else -> {
-                CheeseResult.Error(CartError.UnknownError)
+                CheeseResult.Error(CartError.UnknownError())
             }
         }
     } catch (e: UnknownHostException) {
-        CheeseResult.Error(CartError.NoInternetError)
+        CheeseResult.Error(CartError.NoInternetError())
     } catch (e: Exception) {
         e.printStackTrace()
-        CheeseResult.Error(CartError.UnknownError)
+        CheeseResult.Error(CartError.UnknownError())
     }
 
     suspend fun delete(id: String): CheeseResult<CartError, Boolean> = try {
@@ -75,21 +83,23 @@ class CartServiceHandler(
                 if (data != null) {
                     CheeseResult.Success(data)
                 } else {
-                    CheeseResult.Error(CartError.DeleteProductError)
+                    CheeseResult.Error(CartError.DeleteProductError())
                 }
             }
+
             in 500..599 -> {
-                CheeseResult.Error(CartError.ServerError)
+                CheeseResult.Error(CartError.ServerError())
             }
+
             else -> {
-                CheeseResult.Error(CartError.UnknownError)
+                CheeseResult.Error(CartError.UnknownError())
             }
         }
     } catch (e: UnknownHostException) {
-        CheeseResult.Error(CartError.NoInternetError)
+        CheeseResult.Error(CartError.NoInternetError())
     } catch (e: Exception) {
         e.printStackTrace()
-        CheeseResult.Error(CartError.UnknownError)
+        CheeseResult.Error(CartError.UnknownError())
     }
 
     suspend fun clear(): CheeseResult<CartError, Boolean> = try {
@@ -101,20 +111,22 @@ class CartServiceHandler(
                 if (data != null) {
                     CheeseResult.Success(data)
                 } else {
-                    CheeseResult.Error(CartError.ClearError)
+                    CheeseResult.Error(CartError.ClearError())
                 }
             }
+
             in 500..599 -> {
-                CheeseResult.Error(CartError.ServerError)
+                CheeseResult.Error(CartError.ServerError())
             }
+
             else -> {
-                CheeseResult.Error(CartError.UnknownError)
+                CheeseResult.Error(CartError.UnknownError())
             }
         }
     } catch (e: UnknownHostException) {
-        CheeseResult.Error(CartError.NoInternetError)
+        CheeseResult.Error(CartError.NoInternetError())
     } catch (e: Exception) {
         e.printStackTrace()
-        CheeseResult.Error(CartError.UnknownError)
+        CheeseResult.Error(CartError.UnknownError())
     }
 }

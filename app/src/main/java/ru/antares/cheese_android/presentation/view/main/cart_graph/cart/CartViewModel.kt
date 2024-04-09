@@ -49,9 +49,18 @@ class CartViewModel(
             launch {
                 repository.get().collectLatest { resourceState ->
                     resourceState.onError { uiError ->
-                        _mutableStateFlow.update { state ->
-                            state.copy {
-                                CartState.error set uiError
+                        if (uiError == CartAppError.UnauthorizedError()) {
+                            _mutableStateFlow.update { state ->
+                                state.copy {
+                                    CartState.loading set false
+                                }
+                            }
+                        } else {
+                            _mutableStateFlow.update { state ->
+                                state.copy {
+                                    CartState.error set uiError
+                                    CartState.loading set false
+                                }
                             }
                         }
                     }.onSuccess { response ->
@@ -115,7 +124,9 @@ class CartViewModel(
             }
 
             is CartAppError.UnauthorizedError -> {
-                /* TODO() ... */
+                _mutableStateFlow.update { state ->
+                    state.copy(error = null)
+                }
             }
         }
     }

@@ -39,7 +39,7 @@ fun PreviewBottomBar() {
     CheeseTheme {
         BottomBar(navigate = {
 
-        }, countInCart = 1, currentRoute = null)
+        }, countInCart = 1, currentRoute = null, isAuthorized = true)
     }
 }
 
@@ -47,7 +47,8 @@ fun PreviewBottomBar() {
 fun BottomBar(
     navigate: (BottomBarDestination) -> Unit,
     countInCart: Int,
-    currentRoute: String?
+    currentRoute: String?,
+    isAuthorized: Boolean
 ) {
     val heightBottomBar = 52.dp
 
@@ -67,20 +68,31 @@ fun BottomBar(
                 BottomBarButtonBody(
                     modifier = Modifier
                         .pointerInput(Unit) {
-                            detectTapGestures(onTap = {
-                                navigate(destination)
-                            }, onPress = {
-                                onPressedChange(true)
-                                tryAwaitRelease()
-                                onPressedChange(false)
-                            })
+                            if (!(!isAuthorized && (destination == BottomBarDestination.Cart || destination == BottomBarDestination.Community))) {
+                                detectTapGestures(onTap = {
+                                    navigate(destination)
+                                }, onPress = {
+                                    onPressedChange(true)
+                                    tryAwaitRelease()
+                                    onPressedChange(false)
+                                })
+                            }
                         }
-                        .scale(scale)
-                ) {
-                    SelectedPageBackground(
-                        destination = destination,
-                        currentRoute = currentRoute
-                    )
+                        .scale(scale),
+
+                    ) {
+                    if (!isAuthorized && (destination == BottomBarDestination.Cart || destination == BottomBarDestination.Community)) {
+                        SelectedPageBackground(
+                            destination = destination,
+                            currentRoute = currentRoute,
+                            enabled = false
+                        )
+                    } else {
+                        SelectedPageBackground(
+                            destination = destination,
+                            currentRoute = currentRoute,
+                        )
+                    }
                     BottomBarButtonBadgedBox(
                         countInCart = countInCart,
                         destination = destination
@@ -95,6 +107,7 @@ fun BottomBar(
 private fun SelectedPageBackground(
     destination: BottomBarDestination,
     currentRoute: String?,
+    enabled: Boolean = true
 ) {
     val animateBackgroundOfBottomBarButtonBackground by animateColorAsState(
         targetValue = if (destination.route == currentRoute) CheeseTheme.colors.accent
@@ -115,7 +128,7 @@ private fun SelectedPageBackground(
                 .align(Alignment.Center),
             painter = painterResource(id = destination.icon),
             contentDescription = null,
-            tint = CheeseTheme.colors.black
+            tint = if (enabled) CheeseTheme.colors.black else CheeseTheme.colors.gray
         )
     }
 }
