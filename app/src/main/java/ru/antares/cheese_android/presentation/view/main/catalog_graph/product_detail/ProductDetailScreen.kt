@@ -214,7 +214,6 @@ fun ProductDetailScreen(
                 ProductDetailScreenContent(
                     state = state,
                     onEvent = onEvent,
-                    onNavigationEvent = onNavigationEvent,
                     navigateToProduct = navigateToProduct
                 )
             }
@@ -246,7 +245,6 @@ fun ProductDetailScreen(
 fun ProductDetailScreenContent(
     state: ProductDetailViewState,
     onEvent: (ProductDetailEvent) -> Unit,
-    onNavigationEvent: (ProductDetailNavigationEvent) -> Unit,
     navigateToProduct: (ProductUIModel) -> Unit
 ) {
     state.product?.let { product ->
