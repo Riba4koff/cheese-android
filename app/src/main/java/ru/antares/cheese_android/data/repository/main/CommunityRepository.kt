@@ -6,9 +6,9 @@ import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.products.IProductsLocalStorage
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.models.map
-import ru.antares.cheese_android.data.remote.services.community.CommunityServiceHandler
-import ru.antares.cheese_android.data.remote.services.community.CommunityError
-import ru.antares.cheese_android.data.remote.services.community.dto.PostDTO
+import ru.antares.cheese_android.data.remote.api.community.CommunityApiHandler
+import ru.antares.cheese_android.data.remote.api.community.CommunityError
+import ru.antares.cheese_android.data.remote.api.community.dto.PostDTO
 import ru.antares.cheese_android.domain.models.community.PostModel
 import ru.antares.cheese_android.domain.repository.ICommunityRepository
 import ru.antares.cheese_android.domain.result.CheeseResult
@@ -20,7 +20,7 @@ import ru.antares.cheese_android.domain.result.CheeseResult
  */
 
 class CommunityRepository(
-    private val handler: CommunityServiceHandler,
+    private val handler: CommunityApiHandler,
     private val productsLocalStorage: IProductsLocalStorage,
     private val categoriesLocalStorage: ICategoriesLocalStorage
 ) : ICommunityRepository {

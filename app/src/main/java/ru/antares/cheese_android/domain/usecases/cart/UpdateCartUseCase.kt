@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.local.room.cart.CartDao
 import ru.antares.cheese_android.data.local.room.cart.CartEntity
-import ru.antares.cheese_android.data.remote.services.cart.CartProductDTO
+import ru.antares.cheese_android.data.remote.api.cart.CartProductDTO
 
 /**
  * UpdateCartUseCase.kt

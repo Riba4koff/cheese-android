@@ -8,11 +8,11 @@ import ru.antares.cheese_android.data.local.room.cart.CartEntity
 import ru.antares.cheese_android.data.local.room.cart.ICartLocalStorage
 import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.products.IProductsLocalStorage
-import ru.antares.cheese_android.data.remote.services.cart.BasketResponse
-import ru.antares.cheese_android.data.remote.services.cart.CartError
-import ru.antares.cheese_android.data.remote.services.cart.CartService
-import ru.antares.cheese_android.data.remote.services.cart.CartServiceHandler
-import ru.antares.cheese_android.data.remote.services.cart.UpdateCartRequest
+import ru.antares.cheese_android.data.remote.api.cart.BasketResponse
+import ru.antares.cheese_android.data.remote.api.cart.CartError
+import ru.antares.cheese_android.data.remote.api.cart.CartApi
+import ru.antares.cheese_android.data.remote.api.cart.CartApiHandler
+import ru.antares.cheese_android.data.remote.api.cart.UpdateCartRequest
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.repository.ICartRepository
@@ -27,8 +27,8 @@ import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.CartAppE
  */
 
 class CartRepository(
-    private val cartService: CartService,
-    private val handler: CartServiceHandler,
+    private val cartService: CartApi,
+    private val handler: CartApiHandler,
     private val cartLocalStorage: ICartLocalStorage,
     private val productsLocalStorage: IProductsLocalStorage,
     private val categoriesLocalStorage: ICategoriesLocalStorage

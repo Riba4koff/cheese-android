@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
-import ru.antares.cheese_android.data.remote.services.auth.dto.DeviceDTO
-import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
+import ru.antares.cheese_android.data.remote.api.auth.dto.DeviceDTO
+import ru.antares.cheese_android.data.remote.api.auth.request.SendCodeRequest
 import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 

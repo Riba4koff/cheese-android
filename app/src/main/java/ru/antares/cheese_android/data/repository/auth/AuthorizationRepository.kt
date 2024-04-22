@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
-import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
-import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
+import ru.antares.cheese_android.data.remote.api.auth.AuthorizationApi
+import ru.antares.cheese_android.data.remote.api.auth.request.SendCodeRequest
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
@@ -15,7 +15,7 @@ import ru.antares.cheese_android.presentation.view.authorization.confirm_code.Co
 import ru.antares.cheese_android.presentation.view.authorization.input_phone.InputPhoneAppError
 
 class AuthorizationRepository(
-    private val authorizationService: AuthorizationService,
+    private val authorizationService: AuthorizationApi,
     private val tokenService: IAuthorizationDataStore,
 ) : IAuthorizationRepository {
     override suspend fun makeCallV2(phone: String): Flow<ResourceState<Boolean?>> = flow {

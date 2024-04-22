@@ -2,7 +2,7 @@ package ru.antares.cheese_android.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
-import ru.antares.cheese_android.data.remote.services.auth.request.SendCodeRequest
+import ru.antares.cheese_android.data.remote.api.auth.request.SendCodeRequest
 import ru.antares.cheese_android.domain.ResourceState
 
 interface IAuthorizationRepository {

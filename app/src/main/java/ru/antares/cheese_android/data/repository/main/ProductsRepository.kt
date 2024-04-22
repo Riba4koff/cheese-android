@@ -1,17 +1,15 @@
 package ru.antares.cheese_android.data.repository.main
 
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.products.IProductsLocalStorage
-import ru.antares.cheese_android.data.remote.services.main.products.ProductDTO
+import ru.antares.cheese_android.data.remote.api.main.products.ProductDTO
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.models.map
-import ru.antares.cheese_android.data.remote.services.main.products.ProductsService
+import ru.antares.cheese_android.data.remote.api.main.products.ProductsApi
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
 import ru.antares.cheese_android.domain.ResourceState
@@ -23,7 +21,7 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.P
  * @author Pavel Rybakov
  * */
 class ProductsRepository(
-    private val productsService: ProductsService,
+    private val productsService: ProductsApi,
     private val productsLocalStorage: IProductsLocalStorage,
     private val categoriesLocalStorage: ICategoriesLocalStorage
 ) : IProductsRepository {

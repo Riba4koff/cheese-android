@@ -1,6 +1,5 @@
 package ru.antares.cheese_android.presentation.view.main.cart_graph.cart
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.optics.copy
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
-import ru.antares.cheese_android.data.remote.services.cart.CartError
 import ru.antares.cheese_android.data.repository.main.CartRepository
 import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase

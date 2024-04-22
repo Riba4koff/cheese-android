@@ -13,22 +13,22 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
-import ru.antares.cheese_android.data.remote.services.addresses.AddressesService
-import ru.antares.cheese_android.data.remote.services.addresses.AddressesServiceHandler
-import ru.antares.cheese_android.data.remote.services.auth.AuthorizationService
-import ru.antares.cheese_android.data.remote.services.auth.AuthorizationServiceHandler
-import ru.antares.cheese_android.data.remote.services.cart.CartService
-import ru.antares.cheese_android.data.remote.services.cart.CartServiceHandler
-import ru.antares.cheese_android.data.remote.services.community.CommunityService
-import ru.antares.cheese_android.data.remote.services.community.CommunityServiceHandler
-import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService
-import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogServiceHandler
-import ru.antares.cheese_android.data.remote.services.main.products.ProductsService
-import ru.antares.cheese_android.data.remote.services.main.products.ProductsServiceHandler
-import ru.antares.cheese_android.data.remote.services.main.profile.ProfileService
-import ru.antares.cheese_android.data.remote.services.main.profile.ProfileServiceHandler
-import ru.antares.cheese_android.data.remote.services.main.profile.response.Attachment
-import ru.antares.cheese_android.data.remote.services.main.profile.response.AttachmentAdapter
+import ru.antares.cheese_android.data.remote.api.addresses.AddressesApi
+import ru.antares.cheese_android.data.remote.api.addresses.AddressesApiHandler
+import ru.antares.cheese_android.data.remote.api.auth.AuthorizationApi
+import ru.antares.cheese_android.data.remote.api.auth.AuthorizationApiHandler
+import ru.antares.cheese_android.data.remote.api.cart.CartApi
+import ru.antares.cheese_android.data.remote.api.cart.CartApiHandler
+import ru.antares.cheese_android.data.remote.api.community.CommunityApi
+import ru.antares.cheese_android.data.remote.api.community.CommunityApiHandler
+import ru.antares.cheese_android.data.remote.api.main.catalog.CatalogApi
+import ru.antares.cheese_android.data.remote.api.main.catalog.CatalogApiHandler
+import ru.antares.cheese_android.data.remote.api.main.products.ProductsApi
+import ru.antares.cheese_android.data.remote.api.main.products.ProductsApiHandler
+import ru.antares.cheese_android.data.remote.api.main.profile.ProfileApi
+import ru.antares.cheese_android.data.remote.api.main.profile.ProfileApiHandler
+import ru.antares.cheese_android.data.remote.api.main.profile.response.Attachment
+import ru.antares.cheese_android.data.remote.api.main.profile.response.AttachmentAdapter
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
 import ru.antares.cheese_android.data.repository.main.AddressesRepository
 import ru.antares.cheese_android.data.repository.main.CartRepository
@@ -52,8 +52,8 @@ val netModule: List<Module>
         retrofitModule,
         okHttpModule,
         repositoryModule,
-        servicesModule,
-        serviceHandlerModule
+        apiModule,
+        apiHandlerModule
     )
 
 private val retrofitModule = module {
@@ -74,46 +74,46 @@ private val repositoryModule = module {
     singleOf(::AddressesRepository) { bind<IAddressesRepository>() }
 }
 
-private val servicesModule = module {
-    single { provideAuthorizationService(get()) }
-    single { provideProfileService(get()) }
-    single { provideAddressesService(get()) }
-    single { provideCatalogService(get()) }
-    single { provideProductsService(get()) }
-    single { provideCartService(get()) }
-    single { provideCommunityService(get()) }
+private val apiModule = module {
+    single { provideAuthorizationApi(get()) }
+    single { provideProfileApi(get()) }
+    single { provideAddressesApi(get()) }
+    single { provideCatalogApi(get()) }
+    single { provideProductsApi(get()) }
+    single { provideCartApi(get()) }
+    single { provideCommunityApi(get()) }
 }
 
-private val serviceHandlerModule = module {
-    factoryOf(::CommunityServiceHandler)
-    factoryOf(::CartServiceHandler)
-    factoryOf(::ProfileServiceHandler)
-    factoryOf(::CatalogServiceHandler)
-    factoryOf(::ProductsServiceHandler)
-    factoryOf(::AuthorizationServiceHandler)
-    factoryOf(::AddressesServiceHandler)
+private val apiHandlerModule = module {
+    factoryOf(::CommunityApiHandler)
+    factoryOf(::CartApiHandler)
+    factoryOf(::ProfileApiHandler)
+    factoryOf(::CatalogApiHandler)
+    factoryOf(::ProductsApiHandler)
+    factoryOf(::AuthorizationApiHandler)
+    factoryOf(::AddressesApiHandler)
 }
 
-private fun provideAuthorizationService(retrofit: Retrofit): AuthorizationService =
-    retrofit.create(AuthorizationService::class.java)
+private fun provideAuthorizationApi(retrofit: Retrofit): AuthorizationApi =
+    retrofit.create(AuthorizationApi::class.java)
 
-private fun provideProfileService(retrofit: Retrofit): ProfileService =
-    retrofit.create(ProfileService::class.java)
+private fun provideProfileApi(retrofit: Retrofit): ProfileApi =
+    retrofit.create(ProfileApi::class.java)
 
-private fun provideAddressesService(retrofit: Retrofit): AddressesService =
-    retrofit.create(AddressesService::class.java)
+private fun provideAddressesApi(retrofit: Retrofit): AddressesApi =
+    retrofit.create(AddressesApi::class.java)
 
-private fun provideCatalogService(retrofit: Retrofit): CatalogService =
-    retrofit.create(CatalogService::class.java)
+private fun provideCatalogApi(retrofit: Retrofit): CatalogApi =
+    retrofit.create(CatalogApi::class.java)
 
-private fun provideProductsService(retrofit: Retrofit): ProductsService =
-    retrofit.create(ProductsService::class.java)
+private fun provideProductsApi(retrofit: Retrofit): ProductsApi =
+    retrofit.create(ProductsApi::class.java)
 
-private fun provideCommunityService(retrofit: Retrofit): CommunityService =
-    retrofit.create(CommunityService::class.java)
+private fun provideCommunityApi(retrofit: Retrofit): CommunityApi =
+    retrofit.create(CommunityApi::class.java)
 
-private fun provideCartService(retrofit: Retrofit): CartService =
-    retrofit.create(CartService::class.java)
+private fun provideCartApi(retrofit: Retrofit): CartApi =
+    retrofit.create(CartApi::class.java)
 
 private fun provideOkHttpClient(tokenService: IAuthorizationDataStore): OkHttpClient {
     val httpLoggingInterceptor = HttpLoggingInterceptor()

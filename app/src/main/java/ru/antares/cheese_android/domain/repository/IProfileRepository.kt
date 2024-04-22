@@ -2,8 +2,8 @@ package ru.antares.cheese_android.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
-import ru.antares.cheese_android.data.remote.services.main.profile.request.UpdateProfileRequest
-import ru.antares.cheese_android.data.remote.services.main.profile.response.ProfileResponse
+import ru.antares.cheese_android.data.remote.api.main.profile.request.UpdateProfileRequest
+import ru.antares.cheese_android.data.remote.api.main.profile.response.ProfileResponse
 import ru.antares.cheese_android.domain.ResourceState
 
 interface IProfileRepository {

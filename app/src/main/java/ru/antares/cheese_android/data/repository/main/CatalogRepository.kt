@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.flow
 import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
 import ru.antares.cheese_android.data.remote.models.Pagination
-import ru.antares.cheese_android.data.remote.services.main.catalog.CatalogService
-import ru.antares.cheese_android.data.remote.services.main.catalog.CategoryDTO
+import ru.antares.cheese_android.data.remote.api.main.catalog.CatalogApi
+import ru.antares.cheese_android.data.remote.api.main.catalog.CategoryDTO
 import ru.antares.cheese_android.data.remote.models.map
 import ru.antares.cheese_android.data.repository.util.safeNetworkCallWithPagination
 import ru.antares.cheese_android.domain.ResourceState
@@ -34,7 +34,7 @@ import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_pa
  * */
 
 class CatalogRepository(
-    private val service: CatalogService,
+    private val service: CatalogApi,
     private val categoriesLocalStorage: ICategoriesLocalStorage
 ) : ICatalogRepository {
 

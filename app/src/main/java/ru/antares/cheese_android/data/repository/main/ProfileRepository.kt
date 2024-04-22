@@ -3,13 +3,12 @@ package ru.antares.cheese_android.data.repository.main
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
 import ru.antares.cheese_android.data.local.datastore.user.IUserDataStore
 import ru.antares.cheese_android.data.local.datastore.user.User
 import ru.antares.cheese_android.data.remote.models.NetworkResponse
-import ru.antares.cheese_android.data.remote.services.main.profile.ProfileService
-import ru.antares.cheese_android.data.remote.services.main.profile.request.UpdateProfileRequest
-import ru.antares.cheese_android.data.remote.services.main.profile.response.ProfileResponse
+import ru.antares.cheese_android.data.remote.api.main.profile.ProfileApi
+import ru.antares.cheese_android.data.remote.api.main.profile.request.UpdateProfileRequest
+import ru.antares.cheese_android.data.remote.api.main.profile.response.ProfileResponse
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.repository.IProfileRepository
@@ -21,7 +20,7 @@ import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.Pr
  * */
 
 class ProfileRepository(
-    private val profileService: ProfileService,
+    private val profileService: ProfileApi,
     private val userDS: IUserDataStore,
 ) : IProfileRepository {
     override fun get(): Flow<ResourceState<ProfileResponse>> = flow {

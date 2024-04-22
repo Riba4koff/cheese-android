@@ -5,10 +5,10 @@ import kotlinx.coroutines.flow.flow
 import ru.antares.cheese_android.data.local.room.addresses.IAddressesLocalStorage
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.models.map
-import ru.antares.cheese_android.data.remote.services.addresses.AddressesError
-import ru.antares.cheese_android.data.remote.services.addresses.AddressesServiceHandler
-import ru.antares.cheese_android.data.remote.services.addresses.request.CreateAddressRequest
-import ru.antares.cheese_android.data.remote.services.addresses.request.UpdateAddressRequest
+import ru.antares.cheese_android.data.remote.api.addresses.AddressesError
+import ru.antares.cheese_android.data.remote.api.addresses.AddressesApiHandler
+import ru.antares.cheese_android.data.remote.api.addresses.request.CreateAddressRequest
+import ru.antares.cheese_android.data.remote.api.addresses.request.UpdateAddressRequest
 import ru.antares.cheese_android.domain.repository.IAddressesRepository
 import ru.antares.cheese_android.domain.result.CheeseResult
 import ru.antares.cheese_android.presentation.models.AddressModel
@@ -20,7 +20,7 @@ import ru.antares.cheese_android.presentation.models.AddressModel
  */
 
 class AddressesRepository(
-    private val handler: AddressesServiceHandler,
+    private val handler: AddressesApiHandler,
     private val localStorage: IAddressesLocalStorage
 ) : IAddressesRepository {
     override suspend fun get(

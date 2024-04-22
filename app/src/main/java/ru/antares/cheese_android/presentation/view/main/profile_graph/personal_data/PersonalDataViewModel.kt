@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ru.antares.cheese_android.data.remote.services.main.profile.request.UpdateProfileRequest
-import ru.antares.cheese_android.data.remote.services.main.profile.response.Attachment
+import ru.antares.cheese_android.data.remote.api.main.profile.request.UpdateProfileRequest
+import ru.antares.cheese_android.data.remote.api.main.profile.response.Attachment
 import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.repository.IProfileRepository
 import ru.antares.cheese_android.domain.usecases.personal_data.GetUserFromDSInfoUseCase

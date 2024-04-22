@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import ru.antares.cheese_android.data.local.room.catalog.toCategoryUIModel
-import ru.antares.cheese_android.data.remote.services.main.products.ProductDTO
+import ru.antares.cheese_android.data.remote.api.main.products.ProductDTO
 import ru.antares.cheese_android.domain.models.ProductModel
 
 /**

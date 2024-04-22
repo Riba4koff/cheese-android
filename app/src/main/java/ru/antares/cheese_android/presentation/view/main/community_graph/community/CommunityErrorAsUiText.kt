@@ -1,8 +1,8 @@
 package ru.antares.cheese_android.presentation.view.main.community_graph.community
 
 import ru.antares.cheese_android.R
-import ru.antares.cheese_android.data.remote.services.community.CommunityError
-import ru.antares.cheese_android.data.remote.services.community.CommunityError.*
+import ru.antares.cheese_android.data.remote.api.community.CommunityError
+import ru.antares.cheese_android.data.remote.api.community.CommunityError.*
 import ru.antares.cheese_android.domain.UiText
 
 /**
