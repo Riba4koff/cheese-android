@@ -31,6 +31,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -97,40 +98,48 @@ fun AddressesScreen(
 ) {
     CheeseTopBarWrapper(
         topBarContent = {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.CenterStart),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center
             ) {
-                IconButton(
-                    modifier = Modifier
-                        .padding(start = CheeseTheme.paddings.smallest)
-                        .size(CheeseTheme.paddings.large),
-                    onClick = {
-                        onNavigationEvent(AddressesNavigationEvent.NavigateBack)
-                    }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = null
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        IconButton(
+                            modifier = Modifier
+                                .padding(start = CheeseTheme.paddings.smallest)
+                                .size(CheeseTheme.paddings.large),
+                            onClick = {
+                                onNavigationEvent(AddressesNavigationEvent.NavigateBack)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                                contentDescription = null
+                            )
+                        }
+                        Text(
+                            text = stringResource(id = R.string.back),
+                            style = CheeseTheme.typography.common16Medium
+                        )
+                    }
+                    TextButton(
+                        onClick = {
+                            onNavigationEvent(AddressesNavigationEvent.NavigateToAddAddress)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.add),
+                            color = CheeseTheme.colors.blue
+                        )
+                    }
                 }
-                Text(
-                    text = stringResource(id = R.string.back),
-                    style = CheeseTheme.typography.common16Medium
-                )
-            }
-            TextButton(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd),
-                onClick = {
-                    onNavigationEvent(AddressesNavigationEvent.NavigateToAddAddress)
-                }
-            ) {
-                Text(
-                    text = stringResource(id = R.string.add),
-                    color = CheeseTheme.colors.blue
-                )
+                HorizontalDivider()
             }
         }
     ) {

@@ -12,11 +12,9 @@ import ru.antares.cheese_android.presentation.navigation.util.Screen
 
 @Composable
 fun CommunityNavHost(
-    paddings: PaddingValues,
     communityNavController: NavHostController
 ) {
     NavHost(
-        modifier = Modifier.padding(paddings),
         navController = communityNavController,
         startDestination = Screen.CommunityNavigationGraph.route
     ) {

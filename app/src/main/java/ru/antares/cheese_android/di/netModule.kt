@@ -29,12 +29,15 @@ import ru.antares.cheese_android.data.remote.api.main.profile.ProfileApi
 import ru.antares.cheese_android.data.remote.api.main.profile.ProfileApiHandler
 import ru.antares.cheese_android.data.remote.api.main.profile.response.Attachment
 import ru.antares.cheese_android.data.remote.api.main.profile.response.AttachmentAdapter
+import ru.antares.cheese_android.data.remote.api.tickets.TicketsApi
+import ru.antares.cheese_android.data.remote.api.tickets.TicketsApiHandler
 import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
 import ru.antares.cheese_android.data.repository.main.AddressesRepository
 import ru.antares.cheese_android.data.repository.main.CartRepository
 import ru.antares.cheese_android.data.repository.main.CommunityRepository
 import ru.antares.cheese_android.data.repository.main.ProductsRepository
 import ru.antares.cheese_android.data.repository.main.ProfileRepository
+import ru.antares.cheese_android.data.repository.main.TicketsRepository
 import ru.antares.cheese_android.data.repository.main.catalog.CatalogRepository
 import ru.antares.cheese_android.domain.repository.IAddressesRepository
 import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
@@ -43,6 +46,7 @@ import ru.antares.cheese_android.domain.repository.ICatalogRepository
 import ru.antares.cheese_android.domain.repository.ICommunityRepository
 import ru.antares.cheese_android.domain.repository.IProductsRepository
 import ru.antares.cheese_android.domain.repository.IProfileRepository
+import ru.antares.cheese_android.domain.repository.ITicketsRepository
 import java.util.concurrent.TimeUnit
 
 private const val BASE_URL = "https://mobile-backend.cheese.asg-demo.ru/api/v1/"
@@ -72,6 +76,7 @@ private val repositoryModule = module {
     singleOf(::CartRepository) { bind<ICartRepository>() }
     singleOf(::CommunityRepository) { bind<ICommunityRepository>() }
     singleOf(::AddressesRepository) { bind<IAddressesRepository>() }
+    singleOf(::TicketsRepository) { bind<ITicketsRepository>()}
 }
 
 private val apiModule = module {
@@ -82,6 +87,7 @@ private val apiModule = module {
     single { provideProductsApi(get()) }
     single { provideCartApi(get()) }
     single { provideCommunityApi(get()) }
+    single { provideTicketsApi(get()) }
 }
 
 private val apiHandlerModule = module {
@@ -92,6 +98,7 @@ private val apiHandlerModule = module {
     factoryOf(::ProductsApiHandler)
     factoryOf(::AuthorizationApiHandler)
     factoryOf(::AddressesApiHandler)
+    factoryOf(::TicketsApiHandler)
 }
 
 private fun provideAuthorizationApi(retrofit: Retrofit): AuthorizationApi =
@@ -114,6 +121,9 @@ private fun provideCommunityApi(retrofit: Retrofit): CommunityApi =
 
 private fun provideCartApi(retrofit: Retrofit): CartApi =
     retrofit.create(CartApi::class.java)
+
+private fun provideTicketsApi(retrofit: Retrofit): TicketsApi =
+    retrofit.create(TicketsApi::class.java)
 
 private fun provideOkHttpClient(tokenService: IAuthorizationDataStore): OkHttpClient {
     val httpLoggingInterceptor = HttpLoggingInterceptor()

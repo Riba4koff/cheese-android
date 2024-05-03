@@ -13,14 +13,12 @@ import ru.antares.cheese_android.presentation.navigation.util.Screen
 
 @Composable
 fun CatalogNavHost(
-    paddings: PaddingValues,
     catalogNavController: NavHostController
 ) {
     val navBackStackEntry by catalogNavController.currentBackStackEntryAsState()
     val nextRoute = navBackStackEntry?.destination?.route
 
     NavHost(
-        modifier = Modifier.padding(paddings),
         navController = catalogNavController,
         startDestination = Screen.CatalogNavigationGraph.route
     ) {

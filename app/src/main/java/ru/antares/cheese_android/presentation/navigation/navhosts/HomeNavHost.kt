@@ -13,10 +13,8 @@ import ru.antares.cheese_android.presentation.navigation.graphs.homeNavigationGr
 @Composable
 fun HomeNavHost(
     homeNavController: NavHostController,
-    paddings: PaddingValues
 ) {
     NavHost(
-        modifier = Modifier.padding(paddings),
         navController = homeNavController,
         startDestination = Screen.HomeNavigationGraph.route
     ) {

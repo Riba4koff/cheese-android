@@ -151,6 +151,7 @@ sealed class Screen(
         data object Orders : Screen(route = "OrdersScreen")
         data object AboutApp : Screen(route = "PaymentMethodsScreen")
         data object Tickets : Screen(route = "TicketsScreen")
+        data object Activity: Screen(route = "ActivityScreen")
         // Screens ...
     }
 }

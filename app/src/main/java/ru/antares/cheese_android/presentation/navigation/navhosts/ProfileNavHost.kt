@@ -13,12 +13,10 @@ import ru.antares.cheese_android.presentation.navigation.util.Screen
 
 @Composable
 fun ProfileNavHost(
-    paddings: PaddingValues,
     globalNavController: NavController,
     profileNavController: NavHostController
 ) {
     NavHost(
-        modifier = Modifier.padding(paddings),
         navController = profileNavController,
         startDestination = Screen.ProfileNavigationGraph.route
     ) {

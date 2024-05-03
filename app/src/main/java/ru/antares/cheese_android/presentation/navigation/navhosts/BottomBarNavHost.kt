@@ -1,17 +1,14 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-
 package ru.antares.cheese_android.presentation.navigation.navhosts
 
-import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.material.Scaffold
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -54,89 +51,86 @@ fun BottomBarNavHost(globalNavController: NavHostController) {
             )
         },
     ) { paddings ->
-        NavHost(
-            navController = bottomBarNavController,
-            startDestination = Screen.HomeNavigationGraph.route
-        ) {
-            composable(
-                enterTransition = {
-                    fadeIn(tween(128))
-                },
-                exitTransition = {
-                    fadeOut(tween(128))
-                },
-                route = Screen.HomeNavigationGraph.route,
-            ) { _ ->
-                val homeNavController = rememberNavController()
+        Box(modifier = Modifier.padding(paddings)) {
+            NavHost(
+                navController = bottomBarNavController,
+                startDestination = Screen.HomeNavigationGraph.route
+            ) {
+                composable(
+                    enterTransition = {
+                        fadeIn(tween(128))
+                    },
+                    exitTransition = {
+                        fadeOut(tween(128))
+                    },
+                    route = Screen.HomeNavigationGraph.route,
+                ) { _ ->
+                    val homeNavController = rememberNavController()
 
-                HomeNavHost(
-                    paddings = paddings,
-                    homeNavController = homeNavController
-                )
-            }
-            composable(
-                enterTransition = {
-                    fadeIn(tween(128))
-                },
-                exitTransition = {
-                    fadeOut(tween(128))
-                },
-                route = Screen.CatalogNavigationGraph.route
-            ) { _ ->
-                val catalogNavController = rememberNavController()
+                    HomeNavHost(
+                        homeNavController = homeNavController
+                    )
+                }
+                composable(
+                    enterTransition = {
+                        fadeIn(tween(128))
+                    },
+                    exitTransition = {
+                        fadeOut(tween(128))
+                    },
+                    route = Screen.CatalogNavigationGraph.route
+                ) { _ ->
+                    val catalogNavController = rememberNavController()
 
-                CatalogNavHost(
-                    paddings = paddings,
-                    catalogNavController = catalogNavController
-                )
-            }
-            composable(
-                enterTransition = {
-                    fadeIn(tween(128))
-                }, exitTransition = {
-                    fadeOut(tween(128))
-                },
-                route = Screen.CommunityNavigationGraph.route
-            ) { _ ->
-                val communityNavController = rememberNavController()
+                    CatalogNavHost(
+                        catalogNavController = catalogNavController
+                    )
+                }
+                composable(
+                    enterTransition = {
+                        fadeIn(tween(128))
+                    }, exitTransition = {
+                        fadeOut(tween(128))
+                    },
+                    route = Screen.CommunityNavigationGraph.route
+                ) { _ ->
+                    val communityNavController = rememberNavController()
 
-                CommunityNavHost(
-                    paddings = paddings,
-                    communityNavController = communityNavController
-                )
-            }
-            composable(
-                enterTransition = {
-                    fadeIn(tween(128))
-                },
-                exitTransition = {
-                    fadeOut(tween(128))
-                },
-                route = Screen.CartNavigationGraph.route
-            ) { _ ->
-                val cartNavController = rememberNavController()
+                    CommunityNavHost(
+                        communityNavController = communityNavController
+                    )
+                }
+                composable(
+                    enterTransition = {
+                        fadeIn(tween(128))
+                    },
+                    exitTransition = {
+                        fadeOut(tween(128))
+                    },
+                    route = Screen.CartNavigationGraph.route
+                ) { _ ->
+                    val cartNavController = rememberNavController()
 
-                CartNavHost(
-                    paddings = paddings,
-                    cartNavController = cartNavController
-                )
-            }
-            composable(
-                enterTransition = {
-                    fadeIn(tween(128))
-                },
-                exitTransition = {
-                    fadeOut(tween(128))
-                },
-                route = Screen.ProfileNavigationGraph.route
-            ) { _ ->
-                val profileNavController = rememberNavController()
+                    CartNavHost(
+                        cartNavController = cartNavController
+                    )
+                }
+                composable(
+                    enterTransition = {
+                        fadeIn(tween(128))
+                    },
+                    exitTransition = {
+                        fadeOut(tween(128))
+                    },
+                    route = Screen.ProfileNavigationGraph.route
+                ) { _ ->
+                    val profileNavController = rememberNavController()
 
-                ProfileNavHost(
-                    paddings = paddings,
-                    globalNavController = globalNavController,
-                    profileNavController = profileNavController
-                )
+                    ProfileNavHost(
+                        globalNavController = globalNavController,
+                        profileNavController = profileNavController
+                    )
+                }
             }
         }
     }

@@ -1,12 +1,5 @@
 package ru.antares.cheese_android.presentation.navigation.graphs
 
-import android.widget.Toast
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -15,16 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import kotlinx.serialization.serializer
 import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.compose.koinViewModel
 import ru.antares.cheese_android.ObserveAsNavigationEvents
 import ru.antares.cheese_android.domain.animations.Animations
-import ru.antares.cheese_android.presentation.models.AddressModel
 import ru.antares.cheese_android.presentation.navigation.util.Screen
 import ru.antares.cheese_android.presentation.view.main.profile_graph.about_app.AboutAppScreen
 import ru.antares.cheese_android.presentation.view.main.profile_graph.addresses.AddressesNavigationEvent
@@ -34,6 +23,9 @@ import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_d
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.PersonalDataViewModel
 import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileScreen
 import ru.antares.cheese_android.presentation.view.main.profile_graph.profile.ProfileViewModel
+import ru.antares.cheese_android.presentation.view.main.profile_graph.tickets.TicketsNavigationEvents
+import ru.antares.cheese_android.presentation.view.main.profile_graph.tickets.TicketsScreen
+import ru.antares.cheese_android.presentation.view.main.profile_graph.tickets.TicketsViewModel
 import ru.antares.cheese_android.sharedViewModel
 
 fun NavGraphBuilder.profileNavigationGraph(
@@ -121,9 +113,26 @@ fun NavGraphBuilder.profileNavigationGraph(
             enterTransition = Animations.AnimateToLeft.enter,
             exitTransition = Animations.AnimateToLeft.exit
         ) { navBackStackEntry ->
-            Box(modifier = Modifier.fillMaxSize()) {
-                Text(text = "Мои билеты")
+            val viewModel = koinViewModel<TicketsViewModel>()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
+                when (navigationEvent) {
+                    TicketsNavigationEvents.NavigateBack -> {
+                        profileNavController.popBackStack()
+                    }
+                    is TicketsNavigationEvents.NavigateToActivity -> {
+                        profileNavController.navigate("")
+                    }
+                }
+
             }
+
+            TicketsScreen(
+                state = state,
+                onNavigationEvent = viewModel::onNavigationEvent,
+                onEvent = viewModel::onEvent
+            )
         }
         composable(
             route = Screen.ProfileNavigationGraph.AboutApp.route,

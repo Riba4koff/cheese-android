@@ -11,11 +11,9 @@ import ru.antares.cheese_android.presentation.navigation.util.Screen
 
 @Composable
 fun CartNavHost(
-    paddings: PaddingValues,
     cartNavController: NavHostController
 ) {
     NavHost(
-        modifier = Modifier.padding(paddings),
         navController = cartNavController,
         startDestination = Screen.CartNavigationGraph.route
     ) {
