@@ -2,12 +2,12 @@
 
 package ru.antares.cheese_android.presentation.view.main.home_graph.home
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,11 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -37,7 +33,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import ru.antares.cheese_android.R
 import ru.antares.cheese_android.domain.models.CategoryModel
 import ru.antares.cheese_android.domain.models.ProductModel
@@ -50,25 +45,32 @@ import ru.antares.cheese_android.presentation.models.ProductUIModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductView
 import ru.antares.cheese_android.presentation.view.main.community_graph.community.ActivityItemView
 import ru.antares.cheese_android.presentation.view.main.community_graph.community.PostItemView
-import ru.antares.cheese_android.shimmerLoadingAnimation
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
     CheeseTheme {
-        HomeScreen()
+        HomeScreen(
+            state = HomeScreenState(
+                loadingPosts = LoadingPosts.Initial
+            ),
+            onEvent = {},
+            onNavigationEvent = {}
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun HomeHorizontalPagerPreview() {
+    val state = LoadingActivities.Initial
+
     CheeseTheme {
         HomeHorizontalPager(
-            isLoading = true,
+            isLoading = state == LoadingActivities.Initial,
             title = "Блог",
-            items = listOf("1", "2", "3", "4", "5")
+            items = listOf("1", "2", "3", "4", "5"),
         ) {
             Box(modifier = Modifier.aspectRatio(2f / 1f)) {
                 AsyncImage(
@@ -85,222 +87,36 @@ private fun HomeHorizontalPagerPreview() {
 }
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    state: HomeScreenState,
+    onEvent: (HomeScreenEvent) -> Unit,
+    onNavigationEvent: (HomeScreenNavigationEvent) -> Unit
+) {
     val upcomingEventsTitle = "Ближайшие мероприятия"
     val recommendationsTitle = "Рекомендации"
     val blogTitle = "Блог"
 
-    val activities = listOf(
-        PostModel(
-            id = "2",
-            title = "title",
-            description = "description",
-            subtitle = "subtitle",
-            createdAt = "createdAt",
-            publishedAt = "publishedAt",
-            activityModel = ActivityModel(
-                id = "1",
-                event = EventModel(
-                    id = "1",
-                    title = "Сырная тусовка",
-                    description = "description",
-                ),
-                startFrom = "04.08.2023 20:00",
-                longitude = 0.0,
-                latitude = 0.0,
-                address = "Ломоносова 16. ТЦ Мармелад",
-                addressDescription = "",
-                ticketPrice = 15000.0,
-                amountOfTicket = 0,
-                ticketsLeft = 0
-            ),
-            products = emptyList(),
-            posts = emptyList(),
-        ),
-        PostModel(
-            id = "2",
-            title = "title",
-            description = "description",
-            subtitle = "subtitle",
-            createdAt = "createdAt",
-            publishedAt = "publishedAt",
-            activityModel = ActivityModel(
-                id = "1",
-                event = EventModel(
-                    id = "1",
-                    title = "Сырная тусовка",
-                    description = "description",
-                ),
-                startFrom = "04.08.2023 20:00",
-                longitude = 0.0,
-                latitude = 0.0,
-                address = "Ломоносова 16. ТЦ Мармелад",
-                addressDescription = "",
-                ticketPrice = 15000.0,
-                amountOfTicket = 0,
-                ticketsLeft = 0
-            ),
-            products = emptyList(),
-            posts = emptyList(),
-        ),
-        PostModel(
-            id = "2",
-            title = "title",
-            description = "description",
-            subtitle = "subtitle",
-            createdAt = "createdAt",
-            publishedAt = "publishedAt",
-            activityModel = ActivityModel(
-                id = "1",
-                event = EventModel(
-                    id = "1",
-                    title = "Сырная тусовка",
-                    description = "description",
-                ),
-                startFrom = "04.08.2023 20:00",
-                longitude = 0.0,
-                latitude = 0.0,
-                address = "Ломоносова 16. ТЦ Мармелад",
-                addressDescription = "",
-                ticketPrice = 15000.0,
-                amountOfTicket = 0,
-                ticketsLeft = 0
-            ),
-            products = emptyList(),
-            posts = emptyList(),
-        )
-    )
-    val posts = listOf(
-        PostModel(
-            id = "2",
-            title = "Пост 1",
-            description = "description",
-            subtitle = "subtitle",
-            createdAt = "createdAt",
-            publishedAt = "publishedAt",
-            activityModel = null,
-            products = emptyList(),
-            posts = emptyList(),
-        ),
-        PostModel(
-            id = "2",
-            title = "Новости",
-            description = "description",
-            subtitle = "subtitle",
-            createdAt = "createdAt",
-            publishedAt = "publishedAt",
-            activityModel = null,
-            products = emptyList(),
-            posts = emptyList(),
-        ),
-        PostModel(
-            id = "2",
-            title = "Акция дня",
-            description = "description",
-            subtitle = "subtitle",
-            createdAt = "createdAt",
-            publishedAt = "publishedAt",
-            activityModel = null,
-            products = emptyList(),
-            posts = emptyList(),
-        ),
-        PostModel(
-            id = "2",
-            title = "Самый вкусный сыр",
-            description = "description",
-            subtitle = "subtitle",
-            createdAt = "createdAt",
-            publishedAt = "publishedAt",
-            activityModel = null,
-            products = emptyList(),
-            posts = emptyList(),
-        )
-    )
-    val products = listOf(
-        ProductUIModel(
-            value = ProductModel(
-                id = "",
-                name = "Сыр твердый очень вкусный",
-                price = 15000.0,
-                description = "",
-                unit = 0,
-                category = CategoryModel(
-                    id = "", name = "Сыр", position = 0, parentID = null
-                ),
-                categories = emptyList(),
-                categoryId = "",
-                recommend = false,
-                outOfStock = false,
-                unitName = "шт"
-            ), countInCart = 0
-        ),
-        ProductUIModel(
-            value = ProductModel(
-                id = "",
-                name = "Сыр твердый очень вкусный",
-                price = 15000.0,
-                description = "",
-                unit = 0,
-                category = CategoryModel(
-                    id = "", name = "Сыр", position = 0, parentID = null
-                ),
-                categories = emptyList(),
-                categoryId = "",
-                recommend = false,
-                outOfStock = false,
-                unitName = "шт"
-            ), countInCart = 0
-        ),
-        ProductUIModel(
-            value = ProductModel(
-                id = "",
-                name = "Сыр твердый очень вкусный",
-                price = 15000.0,
-                description = "",
-                unit = 0,
-                category = CategoryModel(
-                    id = "", name = "Сыр", position = 0, parentID = null
-                ),
-                categories = emptyList(),
-                categoryId = "",
-                recommend = false,
-                outOfStock = false,
-                unitName = "шт"
-            ), countInCart = 0
-        )
-    )
-
-    val postsPagerState = rememberPagerState {
-        activities.size
+    val activitiesPagerState = rememberPagerState {
+        if (state.activities.isEmpty()) 1 else state.activities.size
     }
-    var loading1 by remember { mutableStateOf(true) }
-    var loading2 by remember { mutableStateOf(true) }
-    var loading3 by remember { mutableStateOf(true) }
-
-    val scope = rememberCoroutineScope()
+    val postsPagerState = rememberPagerState {
+        if (state.activities.isEmpty()) 1 else state.activities.size
+    }
+    val recommendationsPagerState = rememberPagerState {
+        if (state.activities.isEmpty()) 1 else state.activities.size
+    }
 
     LaunchedEffect(Unit) {
-        scope.launch {
-            delay(2_000L)
-            loading2 = false
+        Log.d("state", state.toString())
+        while (true) {
+            delay(5_000L)
 
-            delay(1000L)
-            loading1 = false
-
-            delay(2000L)
-            loading3 = false
-        }
-        scope.launch {
-            while (true) {
-                delay(5_000L)
-
-                val nextPage =
-                    if (postsPagerState.currentPage == postsPagerState.pageCount - 1) 0 else postsPagerState.currentPage + 1
-                postsPagerState.animateScrollToPage(
-                    nextPage,
-                    animationSpec = spring(dampingRatio = 1.5f)
-                )
-            }
+            val nextPage =
+                if (activitiesPagerState.currentPage == activitiesPagerState.pageCount - 1) 0 else activitiesPagerState.currentPage + 1
+            activitiesPagerState.animateScrollToPage(
+                nextPage,
+                animationSpec = spring(dampingRatio = 1.5f)
+            )
         }
     }
 
@@ -313,19 +129,51 @@ fun HomeScreen() {
             verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.medium)
         ) {
             HomeHorizontalPager(
-                isLoading = loading1,
-                pagerState = postsPagerState,
+                isLoading = state.loadingActivities == LoadingActivities.Initial,
+                pagerState = activitiesPagerState,
                 title = upcomingEventsTitle,
-                items = posts
+                items = state.posts
             ) { post ->
-                PostItemView(post = post) {
-
+                PostItemView(post = post) { _ ->
+                    onNavigationEvent(HomeScreenNavigationEvent.NavigateToActivity(post.id))
                 }
             }
             HomeHorizontalPager(
-                isLoading = loading2,
+                isLoading = state.loadingRecommendations == LoadingRecommendations.Initial,
+                pagerState = recommendationsPagerState,
                 title = recommendationsTitle,
-                items = activities
+                items = state.recommendations
+            ) { recommendation ->
+                ProductView(
+                    product = recommendation,
+                    onClick = { _ ->
+                        onNavigationEvent(
+                            HomeScreenNavigationEvent.NavigateToRecommendation(
+                                recommendation.value.id
+                            )
+                        )
+                    }, addToCart = { _ ->
+                        onEvent(
+                            HomeScreenRecommendationsEvent.AddToCart(
+                                recommendation.value.id,
+                                recommendation.countInCart
+                            )
+                        )
+                    }, removeFromCart = { _ ->
+                        onEvent(
+                            HomeScreenRecommendationsEvent.RemoveFromCart(
+                                recommendation.value.id,
+                                recommendation.countInCart
+                            )
+                        )
+                    }
+                )
+            }
+            HomeHorizontalPager(
+                isLoading = state.loadingPosts == LoadingPosts.Initial,
+                pagerState = postsPagerState,
+                title = blogTitle,
+                items = state.posts
             ) { post ->
                 post.activityModel?.let { activity ->
                     ActivityItemView(
@@ -333,27 +181,11 @@ fun HomeScreen() {
                         postID = post.id,
                         model = activity,
                         imageUrl = post.imageURL,
-                        onClickToPost = { postID: String ->
-
+                        onClickToPost = { activityID: String ->
+                            onNavigationEvent(HomeScreenNavigationEvent.NavigateToPost(activityID))
                         }
                     )
                 }
-            }
-            HomeHorizontalPager(
-                isLoading = loading3,
-                title = blogTitle,
-                items = products
-            ) { product ->
-                ProductView(
-                    product = product,
-                    onClick = { _ ->
-
-                    }, addToCart = { _ ->
-
-                    }, removeFromCart = { _ ->
-
-                    }
-                )
             }
         }
     }
@@ -362,7 +194,7 @@ fun HomeScreen() {
 @Composable
 fun <T> HomeHorizontalPager(
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false,
+    isLoading: Boolean,
     title: String,
     contentPadding: PaddingValues = PaddingValues(horizontal = CheeseTheme.paddings.medium),
     items: List<T>,
@@ -387,7 +219,7 @@ fun <T> HomeHorizontalPager(
             pageSpacing = CheeseTheme.paddings.medium,
             contentPadding = contentPadding
         ) { page ->
-            Box(modifier = Modifier.aspectRatio(328f/ 223f)) {
+            Box(modifier = Modifier.aspectRatio(328f / 223f)) {
                 this@Column.AnimatedVisibility(
                     visible = isLoading,
                     enter = fadeIn(),
