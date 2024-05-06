@@ -319,7 +319,7 @@ private fun CommunityScreenContent(
 }
 
 @Composable
-private fun ActivityItemView(
+fun ActivityItemView(
     modifier: Modifier = Modifier,
     postID: String,
     model: ActivityModel,
