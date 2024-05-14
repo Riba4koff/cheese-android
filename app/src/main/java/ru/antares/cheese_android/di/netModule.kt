@@ -13,14 +13,14 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.antares.cheese_android.data.local.datastore.token.IAuthorizationDataStore
-import ru.antares.cheese_android.data.remote.api.addresses.AddressesApi
-import ru.antares.cheese_android.data.remote.api.addresses.AddressesApiHandler
+import ru.antares.cheese_android.data.remote.api.main.addresses.AddressesApi
+import ru.antares.cheese_android.data.remote.api.main.addresses.AddressesApiHandler
 import ru.antares.cheese_android.data.remote.api.auth.AuthorizationApi
 import ru.antares.cheese_android.data.remote.api.auth.AuthorizationApiHandler
-import ru.antares.cheese_android.data.remote.api.cart.CartApi
-import ru.antares.cheese_android.data.remote.api.cart.CartApiHandler
-import ru.antares.cheese_android.data.remote.api.community.CommunityApi
-import ru.antares.cheese_android.data.remote.api.community.CommunityApiHandler
+import ru.antares.cheese_android.data.remote.api.main.cart.CartApi
+import ru.antares.cheese_android.data.remote.api.main.cart.CartApiHandler
+import ru.antares.cheese_android.data.remote.api.main.community.CommunityApi
+import ru.antares.cheese_android.data.remote.api.main.community.CommunityApiHandler
 import ru.antares.cheese_android.data.remote.api.main.catalog.CatalogApi
 import ru.antares.cheese_android.data.remote.api.main.catalog.CatalogApiHandler
 import ru.antares.cheese_android.data.remote.api.main.products.ProductsApi
@@ -33,6 +33,7 @@ import ru.antares.cheese_android.data.repository.auth.AuthorizationRepository
 import ru.antares.cheese_android.data.repository.main.AddressesRepository
 import ru.antares.cheese_android.data.repository.main.CartRepository
 import ru.antares.cheese_android.data.repository.main.CommunityRepository
+import ru.antares.cheese_android.data.repository.main.OrdersRepository
 import ru.antares.cheese_android.data.repository.main.ProductsRepository
 import ru.antares.cheese_android.data.repository.main.ProfileRepository
 import ru.antares.cheese_android.data.repository.main.catalog.CatalogRepository
@@ -41,6 +42,7 @@ import ru.antares.cheese_android.domain.repository.IAuthorizationRepository
 import ru.antares.cheese_android.domain.repository.ICartRepository
 import ru.antares.cheese_android.domain.repository.ICatalogRepository
 import ru.antares.cheese_android.domain.repository.ICommunityRepository
+import ru.antares.cheese_android.domain.repository.IOrdersRepository
 import ru.antares.cheese_android.domain.repository.IProductsRepository
 import ru.antares.cheese_android.domain.repository.IProfileRepository
 import java.util.concurrent.TimeUnit
@@ -72,6 +74,7 @@ private val repositoryModule = module {
     singleOf(::CartRepository) { bind<ICartRepository>() }
     singleOf(::CommunityRepository) { bind<ICommunityRepository>() }
     singleOf(::AddressesRepository) { bind<IAddressesRepository>() }
+    singleOf(::OrdersRepository) { bind<IOrdersRepository>() }
 }
 
 private val apiModule = module {

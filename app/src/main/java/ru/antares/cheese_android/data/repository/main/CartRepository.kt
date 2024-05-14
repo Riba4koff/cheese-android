@@ -8,11 +8,11 @@ import ru.antares.cheese_android.data.local.room.cart.CartEntity
 import ru.antares.cheese_android.data.local.room.cart.ICartLocalStorage
 import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.products.IProductsLocalStorage
-import ru.antares.cheese_android.data.remote.api.cart.BasketResponse
-import ru.antares.cheese_android.data.remote.api.cart.CartError
-import ru.antares.cheese_android.data.remote.api.cart.CartApi
-import ru.antares.cheese_android.data.remote.api.cart.CartApiHandler
-import ru.antares.cheese_android.data.remote.api.cart.UpdateCartRequest
+import ru.antares.cheese_android.data.remote.api.main.cart.BasketResponse
+import ru.antares.cheese_android.data.remote.api.main.cart.CartError
+import ru.antares.cheese_android.data.remote.api.main.cart.CartApi
+import ru.antares.cheese_android.data.remote.api.main.cart.CartApiHandler
+import ru.antares.cheese_android.data.remote.api.main.cart.UpdateCartRequest
 import ru.antares.cheese_android.data.repository.util.safeNetworkCall
 import ru.antares.cheese_android.domain.ResourceState
 import ru.antares.cheese_android.domain.repository.ICartRepository

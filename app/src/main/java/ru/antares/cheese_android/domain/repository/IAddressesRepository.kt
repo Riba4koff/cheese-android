@@ -2,9 +2,9 @@ package ru.antares.cheese_android.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.antares.cheese_android.data.remote.models.Pagination
-import ru.antares.cheese_android.data.remote.api.addresses.AddressesError
-import ru.antares.cheese_android.data.remote.api.addresses.request.CreateAddressRequest
-import ru.antares.cheese_android.data.remote.api.addresses.request.UpdateAddressRequest
+import ru.antares.cheese_android.data.remote.api.main.addresses.AddressesError
+import ru.antares.cheese_android.data.remote.api.main.addresses.request.CreateAddressRequest
+import ru.antares.cheese_android.data.remote.api.main.addresses.request.UpdateAddressRequest
 import ru.antares.cheese_android.domain.result.CheeseResult
 import ru.antares.cheese_android.presentation.models.AddressModel
 

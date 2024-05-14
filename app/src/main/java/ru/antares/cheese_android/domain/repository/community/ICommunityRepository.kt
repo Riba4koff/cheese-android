@@ -1,7 +1,7 @@
 package ru.antares.cheese_android.domain.repository.community
 
 import ru.antares.cheese_android.data.remote.models.Pagination
-import ru.antares.cheese_android.data.remote.api.community.PostDTO
+import ru.antares.cheese_android.data.remote.api.main.community.PostDTO
 import ru.antares.cheese_android.domain.Result
 
 /**

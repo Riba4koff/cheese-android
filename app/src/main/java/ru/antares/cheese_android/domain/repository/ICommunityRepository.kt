@@ -2,7 +2,7 @@ package ru.antares.cheese_android.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.antares.cheese_android.data.remote.models.Pagination
-import ru.antares.cheese_android.data.remote.api.community.CommunityError
+import ru.antares.cheese_android.data.remote.api.main.community.CommunityError
 import ru.antares.cheese_android.domain.models.community.PostModel
 import ru.antares.cheese_android.domain.result.CheeseResult
 

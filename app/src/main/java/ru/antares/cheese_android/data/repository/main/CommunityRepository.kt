@@ -6,9 +6,9 @@ import ru.antares.cheese_android.data.local.room.catalog.ICategoriesLocalStorage
 import ru.antares.cheese_android.data.local.room.products.IProductsLocalStorage
 import ru.antares.cheese_android.data.remote.models.Pagination
 import ru.antares.cheese_android.data.remote.models.map
-import ru.antares.cheese_android.data.remote.api.community.CommunityApiHandler
-import ru.antares.cheese_android.data.remote.api.community.CommunityError
-import ru.antares.cheese_android.data.remote.api.community.dto.PostDTO
+import ru.antares.cheese_android.data.remote.api.main.community.CommunityApiHandler
+import ru.antares.cheese_android.data.remote.api.main.community.CommunityError
+import ru.antares.cheese_android.data.remote.api.main.community.dto.PostDTO
 import ru.antares.cheese_android.domain.models.community.PostModel
 import ru.antares.cheese_android.domain.repository.ICommunityRepository
 import ru.antares.cheese_android.domain.result.CheeseResult
