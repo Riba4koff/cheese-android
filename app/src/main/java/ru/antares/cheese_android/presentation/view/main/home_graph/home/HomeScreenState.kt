@@ -25,5 +25,7 @@ data class HomeScreenState(
 
     // state of recommendations
     val loadingRecommendations: LoadingRecommendations = LoadingRecommendations.Initial,
-    val recommendations: List<ProductUIModel> = emptyList()
+    val recommendations: List<ProductUIModel> = emptyList(),
+    val currentRecommendationsPage: Int = 0,
+    val recommendationsEndReached: Boolean = false
 ) { companion object }

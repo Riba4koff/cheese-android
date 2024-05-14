@@ -100,4 +100,28 @@ class ProductsRepository(
 
         emit(ResourceState.Loading(isLoading = false))
     }
+
+    override suspend fun get(
+        name: String?,
+        recommend: Boolean,
+        page: Int?,
+        size: Int?,
+        sortDirection: String?,
+        sortByColumn: String?
+    ): Flow<ResourceState<Pagination<ProductModel>>> = flow {
+        emit(ResourceState.Loading(isLoading = true))
+
+        safeNetworkCallWithPagination {
+            productsService.get(name, recommend, page, size, sortDirection, sortByColumn)
+        }.onFailure { error ->
+            Log.d(GET_PRODUCTS_ERROR_TAG, error.toString())
+            emit(ResourceState.Error(ProductsAppError.LoadingError()))
+            return@onFailure
+        }.onSuccess { data: Pagination<ProductDTO> ->
+            val mapped = data.map { it.toModel() }
+            emit(ResourceState.Success(mapped))
+        }
+
+        emit(ResourceState.Loading(isLoading = false))
+    }
 }

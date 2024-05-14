@@ -41,4 +41,26 @@ interface ProductsApi {
     suspend fun getProductByID(
         @Path("id") productID: String
     ): Response<CheeseNetworkResponse<ProductDTO>>
+
+    /**
+     * GET: List of products
+     *
+     * @param [name] Product name
+     * @param [recommend] Product recommendation
+     * @param [page] Page number
+     * @param [size] Size of the page
+     * @param [sortDirection] ASC/DESC
+     * @param [sortByColumn] Column name
+     *
+     * @return [Response]<[CheeseNetworkResponse]<[Pagination]<[ProductDTO]>>
+    * */
+    @GET("store/products")
+    suspend fun get(
+        @Query("name") name: String? = null,
+        @Query("recommend") recommend: Boolean,
+        @Query("page") page: Int? = null,
+        @Query("size") size: Int? = null,
+        @Query("sortDirection") sortDirection: String? = null,
+        @Query("sortByColumn") sortByColumn: String? = null
+    ): Response<CheeseNetworkResponse<Pagination<ProductDTO>>>
 }

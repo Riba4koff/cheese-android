@@ -16,4 +16,12 @@ interface IProductsRepository{
         sortByColumn: String? = null
     ): Flow<ResourceState<Pagination<ProductModel>>>
     suspend fun get(id: String): Flow<ResourceState<ProductModel>>
+    suspend fun get(
+        name: String? = null,
+        recommend: Boolean,
+        page: Int? = null,
+        size: Int? = null,
+        sortDirection: String? = null,
+        sortByColumn: String? = null
+    ): Flow<ResourceState<Pagination<ProductModel>>>
 }

@@ -12,4 +12,5 @@ sealed interface HomeScreenEvent
 sealed interface HomeScreenRecommendationsEvent: HomeScreenEvent {
     data class AddToCart(val id: String, val amount: Int) : HomeScreenRecommendationsEvent
     data class RemoveFromCart(val id: String, val amount: Int) : HomeScreenRecommendationsEvent
+    data class LoadNextPage(val page: Int, val size: Int) : HomeScreenRecommendationsEvent
 }

@@ -100,10 +100,10 @@ fun HomeScreen(
         if (state.activities.isEmpty()) 1 else state.activities.size
     }
     val postsPagerState = rememberPagerState {
-        if (state.activities.isEmpty()) 1 else state.activities.size
+        if (state.posts.isEmpty()) 1 else state.posts.size
     }
     val recommendationsPagerState = rememberPagerState {
-        if (state.activities.isEmpty()) 1 else state.activities.size
+        if (state.recommendations.isEmpty()) 1 else state.recommendations.size
     }
 
     LaunchedEffect(Unit) {
@@ -129,13 +129,13 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(CheeseTheme.paddings.medium)
         ) {
             HomeHorizontalPager(
-                isLoading = state.loadingActivities == LoadingActivities.Initial,
-                pagerState = activitiesPagerState,
+                isLoading = state.loadingPosts == LoadingPosts.Initial,
+                pagerState = postsPagerState,
                 title = upcomingEventsTitle,
                 items = state.posts
             ) { post ->
                 PostItemView(post = post) { _ ->
-                    onNavigationEvent(HomeScreenNavigationEvent.NavigateToActivity(post.id))
+                    onNavigationEvent(HomeScreenNavigationEvent.NavigateToPost(post.id))
                 }
             }
             HomeHorizontalPager(
@@ -171,7 +171,7 @@ fun HomeScreen(
             }
             HomeHorizontalPager(
                 isLoading = state.loadingPosts == LoadingPosts.Initial,
-                pagerState = postsPagerState,
+                pagerState = activitiesPagerState,
                 title = blogTitle,
                 items = state.posts
             ) { post ->
@@ -182,7 +182,7 @@ fun HomeScreen(
                         model = activity,
                         imageUrl = post.imageURL,
                         onClickToPost = { activityID: String ->
-                            onNavigationEvent(HomeScreenNavigationEvent.NavigateToPost(activityID))
+                            onNavigationEvent(HomeScreenNavigationEvent.NavigateToActivity(activityID))
                         }
                     )
                 }
@@ -236,7 +236,9 @@ fun <T> HomeHorizontalPager(
                     enter = fadeIn(),
                     exit = fadeOut()
                 ) {
-                    item(items[page])
+                    if (items.isNotEmpty()) {
+                        item(items[page])
+                    }
                 }
             }
         }
