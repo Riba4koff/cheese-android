@@ -71,6 +71,9 @@ private fun HomeHorizontalPagerPreview() {
             isLoading = state == LoadingActivities.Initial,
             title = "Блог",
             items = listOf("1", "2", "3", "4", "5"),
+            pagerState = rememberPagerState {
+                5
+            }
         ) {
             Box(modifier = Modifier.aspectRatio(2f / 1f)) {
                 AsyncImage(
@@ -107,7 +110,6 @@ fun HomeScreen(
     }
 
     LaunchedEffect(Unit) {
-        Log.d("state", state.toString())
         while (true) {
             delay(5_000L)
 
@@ -173,7 +175,7 @@ fun HomeScreen(
                 isLoading = state.loadingPosts == LoadingPosts.Initial,
                 pagerState = activitiesPagerState,
                 title = blogTitle,
-                items = state.posts
+                items = state.activities
             ) { post ->
                 post.activityModel?.let { activity ->
                     ActivityItemView(
@@ -198,9 +200,7 @@ fun <T> HomeHorizontalPager(
     title: String,
     contentPadding: PaddingValues = PaddingValues(horizontal = CheeseTheme.paddings.medium),
     items: List<T>,
-    pagerState: PagerState = rememberPagerState {
-        items.size
-    },
+    pagerState: PagerState,
     item: @Composable (T) -> Unit
 ) {
 
