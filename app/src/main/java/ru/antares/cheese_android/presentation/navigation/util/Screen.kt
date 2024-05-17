@@ -148,6 +148,7 @@ sealed class Screen(
         data object Profile : Screen(route = "ProfileScreen")
         data object PersonalData : Screen(route = "PersonalDataScreen")
         data object Addresses : Screen(route = "AddressesScreen")
+        data object CreateAddress : Screen(route = "CreateAddressScreen")
         data object Orders : Screen(route = "OrdersScreen")
         data object AboutApp : Screen(route = "PaymentMethodsScreen")
         data object Tickets : Screen(route = "TicketsScreen")

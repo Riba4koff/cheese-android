@@ -4,7 +4,7 @@ data class CreateAddressRequest(
     val city: String,
     val street: String,
     val house: String,
-    val title: String?,
+    val title: String,
     val building: String? = null,
     val apartment: String? = null,
     val entrance: String? = null,
