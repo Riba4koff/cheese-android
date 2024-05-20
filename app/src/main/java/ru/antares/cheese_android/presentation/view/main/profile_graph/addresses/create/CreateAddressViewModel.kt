@@ -11,8 +11,10 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.antares.cheese_android.R
 import ru.antares.cheese_android.data.remote.api.main.addresses.request.CreateAddressRequest
 import ru.antares.cheese_android.domain.repository.IAddressesRepository
+import ru.antares.cheese_android.domain.validators.ValidationTextFieldResult
 
 /**
  * @author pavelrybakov
@@ -63,6 +65,13 @@ class CreateAddressViewModel(
         _mutableState.update { state ->
             state.copy {
                 CreateAddressScreenState.city set value
+                CreateAddressScreenState.validation set state.validation.copy {
+                    CreateAddressScreenValidation.cityValidation set if (value.isEmpty()) ValidationTextFieldResult(
+                        text = R.string.the_field_must_not_be_empty,
+                        success = false
+                    )
+                    else ValidationTextFieldResult()
+                }
             }
         }
     }
@@ -71,6 +80,12 @@ class CreateAddressViewModel(
         _mutableState.update { state ->
             state.copy {
                 CreateAddressScreenState.street set value
+                CreateAddressScreenState.validation set state.validation.copy {
+                    CreateAddressScreenValidation.streetValidation set if (value.isEmpty()) ValidationTextFieldResult(
+                        text = R.string.the_field_must_not_be_empty,
+                        success = false
+                    ) else ValidationTextFieldResult()
+                }
             }
         }
     }
@@ -79,6 +94,12 @@ class CreateAddressViewModel(
         _mutableState.update { state ->
             state.copy {
                 CreateAddressScreenState.house set value
+                CreateAddressScreenState.validation set state.validation.copy {
+                    CreateAddressScreenValidation.houseValidation set if (value.isEmpty()) ValidationTextFieldResult(
+                        text = R.string.the_field_must_not_be_empty,
+                        success = false
+                    ) else ValidationTextFieldResult()
+                }
             }
         }
     }
@@ -119,6 +140,12 @@ class CreateAddressViewModel(
         _mutableState.update { state ->
             state.copy {
                 CreateAddressScreenState.comment set value
+                CreateAddressScreenState.validation set state.validation.copy {
+                    CreateAddressScreenValidation.commentValidation set if (value.isEmpty()) ValidationTextFieldResult(
+                        text = R.string.the_field_must_not_be_empty,
+                        success = false
+                    ) else ValidationTextFieldResult()
+                }
             }
         }
     }
@@ -134,26 +161,65 @@ class CreateAddressViewModel(
         comment: String
     ) {
         viewModelScope.launch {
-            repository.create(
-                request = CreateAddressRequest(
-                    city = city,
-                    house = house,
-                    street = street,
-                    building = building.ifEmpty { null },
-                    entrance = entrance.ifEmpty { null },
-                    floor = floor.ifEmpty { null },
-                    apartment = apartment.ifEmpty { null },
-                    title = comment
-                )
-            ).collectLatest { result ->
-                result.onLoading { loading ->
-                    _mutableState.update { state ->
-                        state.copy {
-                            CreateAddressScreenState.loading set loading
+            updateValidation(
+                city = city,
+                street = street,
+                house = house,
+                comment = comment
+            )
+
+            if (state.value.validation.allFieldsAreValid()) {
+                repository.create(
+                    request = CreateAddressRequest(
+                        city = city,
+                        house = house,
+                        street = street,
+                        building = building.ifEmpty { null },
+                        entrance = entrance.ifEmpty { null },
+                        floor = floor.ifEmpty { null },
+                        apartment = apartment.ifEmpty { null },
+                        title = comment
+                    )
+                ).collectLatest { result ->
+                    result.onLoading { loading ->
+                        _mutableState.update { state ->
+                            state.copy {
+                                CreateAddressScreenState.loading set loading
+                            }
                         }
+                    }.onSuccess { _ ->
+                        onNavigationEvent(CreateAddressNavigationEvent.NavigateBack)
                     }
-                }.onSuccess { _ ->
-                    onNavigationEvent(CreateAddressNavigationEvent.NavigateBack)
+                }
+            }
+        }
+    }
+
+    private fun updateValidation(
+        city: String,
+        street: String,
+        house: String,
+        comment: String
+    ) {
+        _mutableState.update { state ->
+            state.copy {
+                CreateAddressScreenState.validation set state.validation.copy {
+                    CreateAddressScreenValidation.cityValidation set if (city.isEmpty()) ValidationTextFieldResult(
+                        text = R.string.the_field_must_not_be_empty,
+                        success = false
+                    ) else ValidationTextFieldResult()
+                    CreateAddressScreenValidation.streetValidation set if (street.isEmpty()) ValidationTextFieldResult(
+                        text = R.string.the_field_must_not_be_empty,
+                        success = false
+                    ) else ValidationTextFieldResult()
+                    CreateAddressScreenValidation.houseValidation set if (house.isEmpty()) ValidationTextFieldResult(
+                        text = R.string.the_field_must_not_be_empty,
+                        success = false
+                    ) else ValidationTextFieldResult()
+                    CreateAddressScreenValidation.commentValidation set if (comment.isEmpty()) ValidationTextFieldResult(
+                        text = R.string.the_field_must_not_be_empty,
+                        success = false
+                    ) else ValidationTextFieldResult()
                 }
             }
         }

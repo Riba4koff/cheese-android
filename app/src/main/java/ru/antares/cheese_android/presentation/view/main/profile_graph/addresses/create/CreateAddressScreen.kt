@@ -148,7 +148,8 @@ private fun CreateAddressScreenContent(
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next
-                )
+                ),
+                validationTextFieldResult = state.validation.cityValidation
             )
         }
         Column(
@@ -174,7 +175,8 @@ private fun CreateAddressScreenContent(
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next
-                )
+                ),
+                validationTextFieldResult = state.validation.streetValidation
             )
         }
         Column(
@@ -200,7 +202,8 @@ private fun CreateAddressScreenContent(
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next
-                )
+                ),
+                validationTextFieldResult = state.validation.houseValidation
             )
         }
         Column(
@@ -304,7 +307,7 @@ private fun CreateAddressScreenContent(
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next
-                )
+                ),
             )
         }
         Column(
@@ -330,7 +333,8 @@ private fun CreateAddressScreenContent(
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
-                )
+                ),
+                validationTextFieldResult = state.validation.commentValidation
             )
         }
         CheeseButton(
@@ -338,7 +342,7 @@ private fun CreateAddressScreenContent(
                 .height(64.dp)
                 .fillMaxWidth()
                 .padding(horizontal = CheeseTheme.paddings.medium),
-            text = "Сохранить"
+            text = "Сохранить",
         ) {
             onEvent(
                 CreateAddressEvent.OnSaveClick(
@@ -353,6 +357,5 @@ private fun CreateAddressScreenContent(
                 )
             )
         }
-        Spacer(modifier = Modifier.height(CheeseTheme.paddings.large))
     }
 }
