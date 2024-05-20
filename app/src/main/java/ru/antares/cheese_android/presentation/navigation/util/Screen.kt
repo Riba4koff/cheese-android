@@ -165,6 +165,10 @@ sealed class Screen(
         data object SelectAddress: Screen(
             route = "SelectAddressScreen"
         )
+
+        data object AddAddress: Screen(
+            route = "AddAddressScreen"
+        )
         // Screens ...
     }
 

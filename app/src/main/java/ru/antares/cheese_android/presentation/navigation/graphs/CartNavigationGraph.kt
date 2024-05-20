@@ -10,7 +10,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import org.koin.androidx.compose.koinViewModel
@@ -30,6 +29,9 @@ import ru.antares.cheese_android.presentation.view.main.cart_graph.order.confirm
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.select_address.SelectAddressNavigationEvent
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.select_address.SelectAddressScreen
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.select_address.SelectAddressViewModel
+import ru.antares.cheese_android.presentation.view.main.profile_graph.addresses.create.CreateAddressNavigationEvent
+import ru.antares.cheese_android.presentation.view.main.profile_graph.addresses.create.CreateAddressScreen
+import ru.antares.cheese_android.presentation.view.main.profile_graph.addresses.create.CreateAddressViewModel
 import ru.antares.cheese_android.sharedViewModel
 
 fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
@@ -192,7 +194,9 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
         ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvents ->
             when (navigationEvents) {
                 SelectAddressNavigationEvent.NavigateBack -> cartNavController.popBackStack()
-                SelectAddressNavigationEvent.NavigateToAddAddress -> TODO()
+                SelectAddressNavigationEvent.NavigateToAddAddress -> {
+                    cartNavController.navigate(Screen.CartNavigationGraph.AddAddress.route)
+                }
                 is SelectAddressNavigationEvent.NavigateToCheckoutOrder -> {
                     cartNavController.previousBackStackEntry?.savedStateHandle?.set("address_id", navigationEvents.id)
                     cartNavController.popBackStack()
@@ -201,6 +205,33 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
         }
 
         SelectAddressScreen(
+            state = state,
+            onEvent = viewModel::onEvent,
+            onNavigationEvent = viewModel::onNavigationEvent
+        )
+    }
+
+    composable(
+        route = Screen.CartNavigationGraph.AddAddress.route,
+        enterTransition = {
+            fadeIn(tween(100))
+        },
+        exitTransition = {
+            fadeOut(tween(100))
+        }
+    ) { _ ->
+        val viewModel: CreateAddressViewModel = koinViewModel()
+        val state by viewModel.state.collectAsStateWithLifecycle()
+
+        ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
+            when (navigationEvent) {
+                CreateAddressNavigationEvent.NavigateBack -> {
+                    cartNavController.popBackStack()
+                }
+            }
+        }
+
+        CreateAddressScreen(
             state = state,
             onEvent = viewModel::onEvent,
             onNavigationEvent = viewModel::onNavigationEvent

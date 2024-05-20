@@ -30,7 +30,7 @@ class CreateAddressViewModel(
     val state: StateFlow<CreateAddressScreenState> = _mutableState.asStateFlow()
 
     private val _navigationEventChannel = Channel<CreateAddressNavigationEvent>(Channel.BUFFERED)
-    val navigationEvent = _navigationEventChannel.receiveAsFlow()
+    val navigationEvents = _navigationEventChannel.receiveAsFlow()
 
     fun onEvent(event: CreateAddressEvent) {
         when (event) {

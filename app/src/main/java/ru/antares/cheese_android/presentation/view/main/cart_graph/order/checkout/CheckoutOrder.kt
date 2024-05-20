@@ -70,8 +70,11 @@ import ru.antares.cheese_android.presentation.components.shaker.ShakeController
 import ru.antares.cheese_android.presentation.components.shaker.rememberShakeController
 import ru.antares.cheese_android.presentation.components.shaker.shake
 import ru.antares.cheese_android.presentation.components.textfields.CheeseTextField
+import ru.antares.cheese_android.presentation.components.wrappers.CheeseTopBarWrapper
 import ru.antares.cheese_android.presentation.models.AddressModel
 import ru.antares.cheese_android.presentation.util.parsePrice
+import ru.antares.cheese_android.presentation.view.main.cart_graph.order.confirm.ConfirmOrderNavigationEvent
+import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailNavigationEvent
 import ru.antares.cheese_android.presentation.view.main.profile_graph.personal_data.vibrate
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
@@ -176,44 +179,39 @@ fun CheckoutOrderScreen(
     onNavigationEvent: (CheckoutOrderNavigationEvent) -> Unit,
     onError: (AppError) -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-        state = rememberTopAppBarState()
-    )
-
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.back),
-                        style = CheeseTheme.typography.common18Regular
-                    )
-                }, navigationIcon = {
-                    IconButton(
-                        modifier = Modifier.size(32.dp),
-                        onClick = {
-                            onNavigationEvent(CheckoutOrderNavigationEvent.NavigateBack)
-                        }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(32.dp),
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                            contentDescription = null
-                        )
+    CheeseTopBarWrapper(
+        topBarContent = {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterStart),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    modifier = Modifier
+                        .padding(start = CheeseTheme.paddings.smallest)
+                        .size(CheeseTheme.paddings.large),
+                    onClick = {
+                        onNavigationEvent(CheckoutOrderNavigationEvent.NavigateBack)
                     }
-                }, scrollBehavior = scrollBehavior,
-            )
-        },
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            CreateOrderScreenContent(
-                state = state,
-                onEvent = onEvent,
-                onNavigationEvent = onNavigationEvent,
-                totalCost = totalCost
-            )
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        contentDescription = null
+                    )
+                }
+                Text(
+                    text = stringResource(id = R.string.back),
+                    style = CheeseTheme.typography.common16Medium
+                )
+            }
         }
+    ) {
+        CreateOrderScreenContent(
+            state = state,
+            onEvent = onEvent,
+            onNavigationEvent = onNavigationEvent,
+            totalCost = totalCost
+        )
     }
 }
 

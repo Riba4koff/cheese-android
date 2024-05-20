@@ -42,10 +42,12 @@ import ru.antares.cheese_android.domain.models.ProductModel
 import ru.antares.cheese_android.domain.paymentType.PaymentType
 import ru.antares.cheese_android.presentation.components.buttons.CheeseButton
 import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
+import ru.antares.cheese_android.presentation.components.wrappers.CheeseTopBarWrapper
 import ru.antares.cheese_android.presentation.models.AddressModel
 import ru.antares.cheese_android.presentation.util.parsePrice
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.checkout.CheckoutOrderNavigationEvent
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.checkout.OrderProducts
+import ru.antares.cheese_android.presentation.view.main.community_graph.post.PostNavigationEvent
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 /**
@@ -173,39 +175,34 @@ fun ConfirmOrderScreen(
     onNavigationEvent: (ConfirmOrderNavigationEvent) -> Unit,
     state: ConfirmOrderState
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-        state = rememberTopAppBarState()
-    )
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.back),
-                        style = CheeseTheme.typography.common18Regular
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        modifier = Modifier.size(32.dp),
-                        onClick = {
-                            onNavigationEvent(ConfirmOrderNavigationEvent.NavigateBack)
-                        }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(32.dp),
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                            contentDescription = null
-                        )
+    CheeseTopBarWrapper(
+        topBarContent = {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterStart),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    modifier = Modifier
+                        .padding(start = CheeseTheme.paddings.smallest)
+                        .size(CheeseTheme.paddings.large),
+                    onClick = {
+                        onNavigationEvent(ConfirmOrderNavigationEvent.NavigateBack)
                     }
-                },
-                scrollBehavior = scrollBehavior,
-            )
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        contentDescription = null
+                    )
+                }
+                Text(
+                    text = stringResource(id = R.string.back),
+                    style = CheeseTheme.typography.common16Medium
+                )
+            }
         }
-    ) { paddings ->
+    ) {
         ConfirmOrderScreenContent(
-            modifier = Modifier.padding(paddings),
             onEvent = onEvent,
             state = state
         )

@@ -70,7 +70,8 @@ fun CheeseTextField(
             placeholder = {
                 Text(
                     text = placeholder,
-                    style = CheeseTheme.typography.common14Medium
+                    style = CheeseTheme.typography.common14Regular,
+                    color = CheeseTheme.colors.gray
                 )
             },
             colors = textFieldColors,

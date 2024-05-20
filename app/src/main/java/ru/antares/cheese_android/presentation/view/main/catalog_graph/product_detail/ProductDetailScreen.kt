@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class
+)
 
 package ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail
 
@@ -29,9 +31,15 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -41,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -61,9 +70,11 @@ import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.wrappers.CheeseTopBarWrapper
 import ru.antares.cheese_android.presentation.models.ProductUIModel
 import ru.antares.cheese_android.presentation.util.parsePrice
+import ru.antares.cheese_android.presentation.view.main.cart_graph.order.checkout.CheckoutOrderNavigationEvent
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.LoadingProductView
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductView
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductsViewModel
+import ru.antares.cheese_android.presentation.view.main.profile_graph.addresses.AddressesNavigationEvent
 import ru.antares.cheese_android.ui.theme.CheeseTheme
 
 /**
@@ -196,7 +207,7 @@ fun ProductDetailScreen(
                 }
                 Text(
                     text = stringResource(id = R.string.back),
-                    style = CheeseTheme.typography.common16Regular
+                    style = CheeseTheme.typography.common16Medium
                 )
             }
         }
