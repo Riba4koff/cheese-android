@@ -42,6 +42,24 @@ sealed class Screen(
          * URL: HomeScreen
          * */
         data object Home : Screen(route = "HomeScreen")
+
+        /**
+         * ROUTE: HomePostScreen
+         * URL: HomePostScreen/{id}
+         * */
+        data object Post : Screen(route = "HomePostScreen", "id")
+
+        /**
+         * ROUTE: HomeActivityScreen
+         * URL: HomeActivityScreen/{id}
+         * */
+        data object Activity: Screen(route = "HomeActivityScreen", "id")
+
+        /**
+         * ROUTE: HomeRecommendationScreen
+         * URL: HomeRecommendationScreen/{id}
+         * */
+        data object ProductDetailScreen: Screen(route = "HomeProductDetailScreen", "id")
         // Screens ...
     }
 

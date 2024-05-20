@@ -27,7 +27,6 @@ import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
 
 class CartViewModel(
     getCartFlowUseCase: GetCartFlowUseCase,
-    private val authorizationDataStore: IAuthorizationDataStore,
     private val repository: CartRepository
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<CartState> = MutableStateFlow(CartState())

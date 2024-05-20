@@ -39,7 +39,9 @@ import ru.antares.cheese_android.domain.models.ProductModel
 import ru.antares.cheese_android.domain.models.community.ActivityModel
 import ru.antares.cheese_android.domain.models.community.EventModel
 import ru.antares.cheese_android.domain.models.community.PostModel
+import ru.antares.cheese_android.onClick
 import ru.antares.cheese_android.presentation.components.ShimmerLoadingBox
+import ru.antares.cheese_android.presentation.components.screens.LoadingScreen
 import ru.antares.cheese_android.presentation.components.topbars.CheeseTopAppBar
 import ru.antares.cheese_android.presentation.models.ProductUIModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.products.ProductView
@@ -190,6 +192,16 @@ fun HomeScreen(
                 }
             }
         }
+    }
+    AnimatedVisibility(
+        visible = state.loadingCart,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        LoadingScreen(
+            modifier = Modifier
+                .onClick { /* DO NOTHING */ }
+        )
     }
 }
 

@@ -15,10 +15,17 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.antares.cheese_android.data.repository.main.CartRepository
 import ru.antares.cheese_android.data.repository.main.CommunityRepository
 import ru.antares.cheese_android.data.repository.main.ProductsRepository
+import ru.antares.cheese_android.domain.TimestampParser
 import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
 import ru.antares.cheese_android.presentation.models.ProductUIModel
+import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.CartState
+import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.cartLoading
+import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.error
+import ru.antares.cheese_android.presentation.view.main.community_graph.community.CommunityScreenState
+import ru.antares.cheese_android.presentation.view.main.community_graph.community.posts
 
 /**
  * HomeScreenViewModel.kt
@@ -30,7 +37,9 @@ import ru.antares.cheese_android.presentation.models.ProductUIModel
 class HomeScreenViewModel(
     getCartFlowUseCase: GetCartFlowUseCase,
     private val productsRepository: ProductsRepository,
-    private val communityRepository: CommunityRepository
+    private val communityRepository: CommunityRepository,
+    private val parser: TimestampParser,
+    private val repository: CartRepository
 ) : ViewModel() {
     private val _mutableStateFlow: MutableStateFlow<HomeScreenState> =
         MutableStateFlow(HomeScreenState())
@@ -46,6 +55,13 @@ class HomeScreenViewModel(
                     }?.amount ?: 0
                 )
             }
+            HomeScreenState.activities set (state.activities.map {
+                it.copy(
+                    activityModel = it.activityModel?.copy(
+                        startFrom = parser(it.activityModel.startFrom)
+                    )
+                )
+            })
         }
     }.stateIn(
         viewModelScope,
@@ -141,13 +157,29 @@ class HomeScreenViewModel(
 
     private fun addRecommendationToCart(id: String, amount: Int) {
         viewModelScope.launch {
-            /*TODO ... add recommendation to cart*/
+            repository.increment(amount, id).collectLatest { resource ->
+                resource.onLoading { isLoading ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            HomeScreenState.loadingCart set isLoading
+                        }
+                    }
+                }
+            }
         }
     }
 
     private fun removeRecommendationFromCart(id: String, amount: Int) {
         viewModelScope.launch {
-            /*TODO ... remove recommendation from cart*/
+            repository.decrement(amount, id).collectLatest { resource ->
+                resource.onLoading { isLoading ->
+                    _mutableStateFlow.update { state ->
+                        state.copy {
+                            HomeScreenState.loadingCart set isLoading
+                        }
+                    }
+                }
+            }
         }
     }
 }
