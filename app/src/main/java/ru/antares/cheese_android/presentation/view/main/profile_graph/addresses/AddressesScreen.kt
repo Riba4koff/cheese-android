@@ -219,7 +219,7 @@ private fun AddressView(
                         .padding(CheeseTheme.paddings.medium)
                         .weight(1f),
                     text = address.get(),
-                    style = CheeseTheme.typography.common14Regular,
+                    style = CheeseTheme.typography.common12Regular,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -235,7 +235,7 @@ private fun AddressView(
 }
 
 @Composable
-private fun AddressLoadingView() {
+fun AddressLoadingView() {
     Column(
         modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally

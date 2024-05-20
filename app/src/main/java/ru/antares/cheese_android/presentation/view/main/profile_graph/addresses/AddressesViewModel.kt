@@ -26,7 +26,7 @@ import ru.antares.cheese_android.domain.repository.IAddressesRepository
 
 class AddressesViewModel(
     private val repository: IAddressesRepository,
-    private val addressesLocalStorage: AddressesLocalStorage
+    addressesLocalStorage: AddressesLocalStorage
 ) : ViewModel() {
     private val _mutableState: MutableStateFlow<AddressesScreenState> =
         MutableStateFlow(AddressesScreenState())

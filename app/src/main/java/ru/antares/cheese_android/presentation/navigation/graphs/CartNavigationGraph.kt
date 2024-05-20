@@ -27,6 +27,9 @@ import ru.antares.cheese_android.presentation.view.main.cart_graph.order.checkou
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.confirm.ConfirmOrderNavigationEvent
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.confirm.ConfirmOrderScreen
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.confirm.ConfirmOrderViewModel
+import ru.antares.cheese_android.presentation.view.main.cart_graph.order.select_address.SelectAddressNavigationEvent
+import ru.antares.cheese_android.presentation.view.main.cart_graph.order.select_address.SelectAddressScreen
+import ru.antares.cheese_android.presentation.view.main.cart_graph.order.select_address.SelectAddressViewModel
 import ru.antares.cheese_android.sharedViewModel
 
 fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
@@ -37,10 +40,10 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
         composable(
             route = Screen.CartNavigationGraph.Cart.route,
             enterTransition = {
-                fadeIn(tween(250))
+                fadeIn(tween(100))
             },
             exitTransition = {
-                fadeOut(tween(250))
+                fadeOut(tween(100))
             },
         ) { navBackStackEntry ->
             val viewModel: CartViewModel =
@@ -70,10 +73,10 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
         composable(
             route = Screen.CartNavigationGraph.CheckoutOrder.url,
             enterTransition = {
-                fadeIn(tween(250))
+                fadeIn(tween(100))
             },
             exitTransition = {
-                fadeOut(tween(250))
+                fadeOut(tween(100))
             },
             arguments = listOf(
                 navArgument("total_cost") { type = NavType.FloatType }
@@ -83,10 +86,12 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
             val state by viewModel.state.collectAsStateWithLifecycle()
             val totalCost = navBackStackEntry.arguments?.getFloat("total_cost") ?: 0f
 
+            val lifeCycleOwner = LocalLifecycleOwner.current
+
             cartNavController
                 .currentBackStackEntry
                 ?.savedStateHandle
-                ?.getLiveData<String>("addressID")
+                ?.getLiveData<String>("address_id")
                 ?.observe(LocalLifecycleOwner.current) { addressID ->
                     viewModel.onEvent(CheckoutOrderEvent.OnAddressChange(addressID = addressID))
                 }
@@ -109,7 +114,7 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
                     }
 
                     CheckoutOrderNavigationEvent.NavigateToSelectAddress -> {
-                        /* TODO: ... */
+                        cartNavController.navigate(Screen.CartNavigationGraph.SelectAddress.route)
                     }
                 }
             }
@@ -126,10 +131,10 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
         composable(
             route = Screen.CartNavigationGraph.ConfirmOrder.url,
             enterTransition = {
-                fadeIn(tween(250))
+                fadeIn(tween(100))
             },
             exitTransition = {
-                fadeOut(tween(250))
+                fadeOut(tween(100))
             },
             arguments = listOf(
                 navArgument("address_id") { type = NavType.StringType },
@@ -170,5 +175,35 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
                 onNavigationEvent = viewModel::onNavigationEvent
             )
         }
+    }
+
+    composable(
+        route = Screen.CartNavigationGraph.SelectAddress.url,
+        enterTransition = {
+            fadeIn(tween(100))
+        },
+        exitTransition = {
+            fadeOut(tween(100))
+        }
+    ) { navBackStackEntry ->
+        val viewModel: SelectAddressViewModel = koinViewModel()
+        val state by viewModel.state.collectAsStateWithLifecycle()
+
+        ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvents ->
+            when (navigationEvents) {
+                SelectAddressNavigationEvent.NavigateBack -> cartNavController.popBackStack()
+                SelectAddressNavigationEvent.NavigateToAddAddress -> TODO()
+                is SelectAddressNavigationEvent.NavigateToCheckoutOrder -> {
+                    cartNavController.previousBackStackEntry?.savedStateHandle?.set("address_id", navigationEvents.id)
+                    cartNavController.popBackStack()
+                }
+            }
+        }
+
+        SelectAddressScreen(
+            state = state,
+            onEvent = viewModel::onEvent,
+            onNavigationEvent = viewModel::onNavigationEvent
+        )
     }
 }

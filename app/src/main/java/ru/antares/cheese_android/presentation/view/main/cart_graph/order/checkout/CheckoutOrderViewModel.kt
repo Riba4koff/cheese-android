@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.antares.cheese_android.data.local.room.addresses.AddressesLocalStorage
 import ru.antares.cheese_android.domain.errors.AppError
 import ru.antares.cheese_android.domain.paymentType.PaymentType
 import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
@@ -22,7 +23,8 @@ import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
  */
 
 class CheckoutOrderViewModel(
-    private val getCartFlowUseCase: GetCartFlowUseCase
+    getCartFlowUseCase: GetCartFlowUseCase,
+    private val addressesLocalStorage: AddressesLocalStorage
 ) : ViewModel() {
     private val _mutableState: MutableStateFlow<CheckoutOrderState> =
         MutableStateFlow(CheckoutOrderState())
@@ -89,6 +91,14 @@ class CheckoutOrderViewModel(
     }
 
     private fun onAddressChange(addressID: String) {
+        viewModelScope.launch {
+            val address = addressesLocalStorage.get(addressID)
 
+            _mutableState.update { state ->
+                state.copy(
+                    address = address
+                )
+            }
+        }
     }
 }

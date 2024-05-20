@@ -45,19 +45,19 @@ sealed class Screen(
 
         /**
          * ROUTE: HomePostScreen
-         * URL: HomePostScreen/{id}
+         * URL: HomePostScreen/id
          * */
         data object Post : Screen(route = "HomePostScreen", "id")
 
         /**
          * ROUTE: HomeActivityScreen
-         * URL: HomeActivityScreen/{id}
+         * URL: HomeActivityScreen/id
          * */
         data object Activity: Screen(route = "HomeActivityScreen", "id")
 
         /**
          * ROUTE: HomeRecommendationScreen
-         * URL: HomeRecommendationScreen/{id}
+         * URL: HomeRecommendationScreen/id
          * */
         data object ProductDetailScreen: Screen(route = "HomeProductDetailScreen", "id")
         // Screens ...
@@ -156,6 +156,14 @@ sealed class Screen(
             "payment_type",
             "comment",
             "total_cost"
+        )
+
+        /**
+         * Route: SelectAddressScreen
+         * URL: SelectAddressScreen
+         * */
+        data object SelectAddress: Screen(
+            route = "SelectAddressScreen"
         )
         // Screens ...
     }

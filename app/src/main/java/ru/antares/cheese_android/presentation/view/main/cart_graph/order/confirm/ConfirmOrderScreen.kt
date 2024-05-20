@@ -207,7 +207,6 @@ fun ConfirmOrderScreen(
         ConfirmOrderScreenContent(
             modifier = Modifier.padding(paddings),
             onEvent = onEvent,
-            onNavigationEvent = onNavigationEvent,
             state = state
         )
     }
@@ -217,7 +216,6 @@ fun ConfirmOrderScreen(
 private fun ConfirmOrderScreenContent(
     modifier: Modifier = Modifier,
     onEvent: (ConfirmOrderEvent) -> Unit,
-    onNavigationEvent: (ConfirmOrderNavigationEvent) -> Unit,
     state: ConfirmOrderState
 ) {
     AnimatedContent(

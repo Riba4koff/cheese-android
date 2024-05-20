@@ -1,5 +1,6 @@
 package ru.antares.cheese_android.presentation.view.main.cart_graph.order.confirm
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.antares.cheese_android.data.local.datastore.user.UserDataStore
+import ru.antares.cheese_android.data.local.room.addresses.AddressesLocalStorage
 import ru.antares.cheese_android.domain.paymentType.PaymentType
 import ru.antares.cheese_android.domain.paymentType.getPaymentType
 import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
@@ -26,12 +28,13 @@ import ru.antares.cheese_android.domain.usecases.cart.GetCartFlowUseCase
 
 class ConfirmOrderViewModel(
     cartFlowUseCase: GetCartFlowUseCase,
+    private val userDataStore: UserDataStore,
+    private val addressesLocalStorage: AddressesLocalStorage,
     addressID: String,
     receiver: String,
     paymentType: String,
     comment: String,
     totalCost: Float,
-    userDataStore: UserDataStore
 ) : ViewModel() {
     private val _mutableState: MutableStateFlow<ConfirmOrderState> =
         MutableStateFlow(ConfirmOrderState())
@@ -52,23 +55,13 @@ class ConfirmOrderViewModel(
     }
 
     init {
-        viewModelScope.launch {
-            val orderReceiver = if (receiver == "Не указан") {
-                userDataStore
-                    .user
-                    .first()
-                    .credentials()
-            } else receiver
-            setState(
-                ConfirmOrderState(
-                    address = null, /*TODO: make DB and get selected address*/
-                    receiver = orderReceiver,
-                    paymentMethod = getPaymentType(PaymentType.Type.valueOf(paymentType)),
-                    comment = comment,
-                    totalCost = totalCost.toDouble()
-                )
-            )
-        }
+        initialize(
+            receiver = receiver,
+            addressID = addressID,
+            comment = comment,
+            paymentType = paymentType,
+            totalCost = totalCost
+        )
     }
 
     fun onNavigationEvent(event: ConfirmOrderNavigationEvent) {
@@ -89,6 +82,36 @@ class ConfirmOrderViewModel(
         loading {
             /* TODO make payment call */
             delay(1000)
+        }
+    }
+
+    private fun initialize(
+        receiver: String,
+        addressID: String,
+        comment: String,
+        paymentType: String,
+        totalCost: Float
+    ) {
+        viewModelScope.launch {
+            val orderReceiver = if (receiver == "Не указан") {
+                userDataStore
+                    .user
+                    .first()
+                    .credentials()
+            } else receiver
+
+            val address = addressesLocalStorage.get(addressID)
+            Log.d("address", address.toString())
+
+            setState(
+                ConfirmOrderState(
+                    address = address,
+                    receiver = orderReceiver,
+                    paymentMethod = getPaymentType(PaymentType.Type.valueOf(paymentType)),
+                    comment = comment,
+                    totalCost = totalCost.toDouble()
+                )
+            )
         }
     }
 

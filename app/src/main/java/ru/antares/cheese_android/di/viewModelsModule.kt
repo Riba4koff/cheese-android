@@ -9,6 +9,7 @@ import ru.antares.cheese_android.presentation.view.main.MainViewModel
 import ru.antares.cheese_android.presentation.view.main.cart_graph.cart.CartViewModel
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.checkout.CheckoutOrderViewModel
 import ru.antares.cheese_android.presentation.view.main.cart_graph.order.confirm.ConfirmOrderViewModel
+import ru.antares.cheese_android.presentation.view.main.cart_graph.order.select_address.SelectAddressViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog.CatalogViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.catalog_parent_category.CatalogParentCategoryViewModel
 import ru.antares.cheese_android.presentation.view.main.catalog_graph.product_detail.ProductDetailViewModel
@@ -58,6 +59,7 @@ private val cartViewModelsModule = module {
     viewModelOf(::CartViewModel)
     viewModelOf(::CheckoutOrderViewModel)
     viewModelOf(::ConfirmOrderViewModel)
+    viewModelOf(::SelectAddressViewModel)
 }
 
 private val profileViewModelsModule = module {

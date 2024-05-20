@@ -293,7 +293,7 @@ private fun CreateOrderScreenContent(
                 } else {
                     onNavigationEvent(
                         CheckoutOrderNavigationEvent.NavigateToConfirmOrder(
-                            addressID = "0",
+                            addressID = state.address.id,
                             receiver = state.receiver,
                             paymentMethod = state.paymentMethod,
                             comment = state.comment,
