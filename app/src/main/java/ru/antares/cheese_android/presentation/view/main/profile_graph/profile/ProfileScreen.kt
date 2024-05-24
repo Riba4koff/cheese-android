@@ -124,10 +124,6 @@ fun ProfileScreen(
         }
     }
 
-    LaunchedEffect(!state.profileLoaded) {
-        onEvent(ProfileEvent.LoadProfile)
-    }
-
     val error: MutableState<AppError?> = remember { mutableStateOf(null) }
 
     LaunchedEffect(state.error) {

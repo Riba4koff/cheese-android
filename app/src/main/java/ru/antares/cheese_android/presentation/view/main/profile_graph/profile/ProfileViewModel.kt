@@ -8,14 +8,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,6 +38,9 @@ class ProfileViewModel(
     val navigationEvents: Flow<ProfileNavigationEvent> = _navigationEvents.receiveAsFlow()
 
     init {
+        viewModelScope.launch {
+            loadProfile()
+        }
         userDataStore.user.combine(authorizationDataStore.userAuthorizationState) { user, authState ->
             if (authState == AUTHORIZED) user else null
         }.combine(_mutableStateFlow) { user, state ->
@@ -68,13 +68,13 @@ class ProfileViewModel(
                 /* TODO: delete account logic */
             }
 
-            ProfileEvent.LoadProfile -> loadProfileV2()
+            ProfileEvent.LoadProfile -> loadProfile()
         }
     }
 
     fun onError(appError: AppError) = viewModelScope.launch {
         when (appError as ProfileAppError) {
-            is ProfileAppError.LoadProfileError -> loadProfileV2()
+            is ProfileAppError.LoadProfileError -> loadProfile()
             is ProfileAppError.LogoutError -> logout()
             is ProfileAppError.UnauthorizedError -> {
                 authorizationDataStore.logout()
@@ -86,8 +86,8 @@ class ProfileViewModel(
         _navigationEvents.send(navigationEvent)
     }
 
-    private suspend fun loadProfileV2() {
-        if (state.value.isAuthorized && state.value.profileLoaded.not()) {
+    private suspend fun loadProfile() {
+        if (state.value.profileLoaded.not()) {
             profileRepository.get().collect { resource ->
                 resource.onSuccess { response ->
                     val emailAttachment = response.attachments.firstOrNull {
@@ -162,8 +162,6 @@ class ProfileViewModel(
                 _navigationEvents.send(ProfileNavigationEvent.Logout)
             }
         }.onFailure { error ->
-            Log.d("LOGOUT_TAG", error.message)
-
             val uiError = ProfileAppError.LogoutError()
 
             _mutableStateFlow.update { state ->
