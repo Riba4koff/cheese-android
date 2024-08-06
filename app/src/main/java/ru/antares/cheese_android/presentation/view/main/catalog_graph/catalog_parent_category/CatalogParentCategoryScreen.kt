@@ -81,7 +81,7 @@ fun CatalogParentCategoryScreen(
             .padding(start = CheeseTheme.paddings.smallest)
             .size(CheeseTheme.paddings.large)
             .align(Alignment.CenterStart), onClick = {
-            navController.popBackStack()
+            navController.navigateUp()
         }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null

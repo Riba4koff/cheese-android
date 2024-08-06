@@ -108,7 +108,7 @@ fun PersonalDataScreen(
     ObserveAsNavigationEvents(flow = navigationEvents) { event ->
         when (event) {
             PersonalDataNavigationEvent.PopBackStack -> {
-                navController.popBackStack()
+                navController.navigateUp()
             }
         }
     }
@@ -128,7 +128,7 @@ fun PersonalDataScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = null

@@ -94,14 +94,14 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
                 .currentBackStackEntry
                 ?.savedStateHandle
                 ?.getLiveData<String>("address_id")
-                ?.observe(LocalLifecycleOwner.current) { addressID ->
+                ?.observe(lifeCycleOwner) { addressID ->
                     viewModel.onEvent(CheckoutOrderEvent.OnAddressChange(addressID = addressID))
                 }
 
             ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
                 when (navigationEvent) {
                     CheckoutOrderNavigationEvent.NavigateBack -> {
-                        cartNavController.popBackStack()
+                        cartNavController.navigateUp()
                     }
 
                     is CheckoutOrderNavigationEvent.NavigateToConfirmOrder -> {
@@ -162,7 +162,7 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
             ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
                 when (navigationEvent) {
                     ConfirmOrderNavigationEvent.NavigateBack -> {
-                        cartNavController.popBackStack()
+                        cartNavController.navigateUp()
                     }
 
                     ConfirmOrderNavigationEvent.NavigateToPay -> {
@@ -187,19 +187,19 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
         exitTransition = {
             fadeOut(tween(100))
         }
-    ) { navBackStackEntry ->
+    ) { _ ->
         val viewModel: SelectAddressViewModel = koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
 
         ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvents ->
             when (navigationEvents) {
-                SelectAddressNavigationEvent.NavigateBack -> cartNavController.popBackStack()
+                SelectAddressNavigationEvent.NavigateBack -> cartNavController.navigateUp()
                 SelectAddressNavigationEvent.NavigateToAddAddress -> {
                     cartNavController.navigate(Screen.CartNavigationGraph.AddAddress.route)
                 }
                 is SelectAddressNavigationEvent.NavigateToCheckoutOrder -> {
                     cartNavController.previousBackStackEntry?.savedStateHandle?.set("address_id", navigationEvents.id)
-                    cartNavController.popBackStack()
+                    cartNavController.navigateUp()
                 }
             }
         }
@@ -226,7 +226,7 @@ fun NavGraphBuilder.cartNavigationGraph(cartNavController: NavController) {
         ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
             when (navigationEvent) {
                 CreateAddressNavigationEvent.NavigateBack -> {
-                    cartNavController.popBackStack()
+                    cartNavController.navigateUp()
                 }
             }
         }

@@ -91,7 +91,7 @@ fun NavGraphBuilder.homeNavigationGraph(
             ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
                 when (navigationEvent) {
                     ActivityNavigationEvent.NavigateBack -> {
-                        navController.popBackStack()
+                        navController.navigateUp()
                     }
 
                     is ActivityNavigationEvent.NavigateToProduct -> {
@@ -132,7 +132,7 @@ fun NavGraphBuilder.homeNavigationGraph(
             ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
                 when (navigationEvent) {
                     PostNavigationEvent.NavigateBack -> {
-                        navController.popBackStack()
+                        navController.navigateUp()
                     }
 
                     is PostNavigationEvent.NavigateToProduct -> {
@@ -175,7 +175,7 @@ fun NavGraphBuilder.homeNavigationGraph(
             ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
                 when (navigationEvent) {
                     ProductDetailNavigationEvent.GoBack -> {
-                        navController.popBackStack()
+                        navController.navigateUp()
                     }
 
                     is ProductDetailNavigationEvent.NavigateToFeedBack -> {

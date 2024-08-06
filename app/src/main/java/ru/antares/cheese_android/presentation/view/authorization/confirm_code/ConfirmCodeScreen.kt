@@ -143,7 +143,7 @@ fun ConfirmCodeScreen(
         }
 
         PopBackButton(modifier = Modifier.align(Alignment.TopStart)) {
-            navController.popBackStack()
+            navController.navigateUp()
         }
 
         SkipAuthorizationButton(modifier = Modifier.align(Alignment.TopEnd)) {

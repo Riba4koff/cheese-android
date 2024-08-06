@@ -90,7 +90,7 @@ fun NavGraphBuilder.communityNavigationGraph(communityNavController: NavControll
             ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
                 when (navigationEvent) {
                     PostNavigationEvent.NavigateBack -> {
-                        communityNavController.popBackStack()
+                        communityNavController.navigateUp()
                     }
 
                     is PostNavigationEvent.NavigateToProduct -> {
@@ -131,7 +131,7 @@ fun NavGraphBuilder.communityNavigationGraph(communityNavController: NavControll
             ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
                 when (navigationEvent) {
                     ActivityNavigationEvent.NavigateBack -> {
-                        communityNavController.popBackStack()
+                        communityNavController.navigateUp()
                     }
 
                     is ActivityNavigationEvent.NavigateToProduct -> {
@@ -174,7 +174,7 @@ fun NavGraphBuilder.communityNavigationGraph(communityNavController: NavControll
             ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
                 when (navigationEvent) {
                     ProductDetailNavigationEvent.GoBack -> {
-                        communityNavController.popBackStack()
+                        communityNavController.navigateUp()
                     }
 
                     is ProductDetailNavigationEvent.NavigateToFeedBack -> {

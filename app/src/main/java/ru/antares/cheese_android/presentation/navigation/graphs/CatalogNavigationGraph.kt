@@ -113,7 +113,7 @@ fun NavGraphBuilder.catalogNavigationGraph(
                     }
 
                     ProductsNavigationEvent.GoBack -> {
-                        catalogNavController.popBackStack()
+                        catalogNavController.navigateUp()
                     }
                 }
             }
@@ -152,7 +152,7 @@ fun NavGraphBuilder.catalogNavigationGraph(
             ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
                 when (navigationEvent) {
                     ProductDetailNavigationEvent.GoBack -> {
-                        catalogNavController.popBackStack()
+                        catalogNavController.navigateUp()
                     }
 
                     is ProductDetailNavigationEvent.NavigateToFeedBack -> {

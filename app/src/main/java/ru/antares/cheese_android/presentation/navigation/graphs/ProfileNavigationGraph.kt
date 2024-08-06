@@ -87,7 +87,7 @@ fun NavGraphBuilder.profileNavigationGraph(
             ) { navigationEvent ->
                 when (navigationEvent) {
                     AddressesNavigationEvent.NavigateBack -> {
-                        profileNavController.popBackStack()
+                        profileNavController.navigateUp()
                     }
 
                     AddressesNavigationEvent.NavigateToAddAddress -> {
@@ -113,7 +113,7 @@ fun NavGraphBuilder.profileNavigationGraph(
             ObserveAsNavigationEvents(flow = viewModel.navigationEvents) { navigationEvent ->
                 when (navigationEvent) {
                     CreateAddressNavigationEvent.NavigateBack -> {
-                        profileNavController.popBackStack()
+                        profileNavController.navigateUp()
                     }
                 }
             }
